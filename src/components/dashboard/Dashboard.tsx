@@ -282,7 +282,7 @@ export function Dashboard() {
           <div className={`flex h-full flex-col md:transition-opacity md:duration-150 ${isSidebarHidden ? 'md:opacity-0' : 'md:opacity-100'}`} style={{ minHeight: sidebarMinHeight }}>
           <div className="p-4 border-b border-gray-700 flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="text-xl font-bold text-white flex items-center gap-2 bg-slate-950 rounded-lg px-3 py-1.5 w-fit">
                 <img
                   src={wordmarkImg}
                   alt="Skydra"
