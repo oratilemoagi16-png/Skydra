@@ -117,7 +117,7 @@ jobs:
           tagName: ${{ needs.resolve-tag.outputs.tag }}
           includeRelease: true
           uploadPlainBinary: false
-          assetNamePattern: 'open-dronelog_[version]_[platform]_[arch][_setup][ext]'
+          assetNamePattern: 'skydra_[version]_[platform]_[arch][_setup][ext]'
 
       - name: Build Windows Tauri app (no release upload)
         if: runner.os == 'Windows'
@@ -147,11 +147,11 @@ jobs:
 
             # NSIS installer(s) and related files
             find "$BASE" -type f -path '*/bundle/nsis/*.exe' -iname '*setup.exe' -exec cp -v {} unsigned/exe/ \;
-            find "$BASE" -type f -path '*/bundle/nsis/*.nsis.zip' -iname '*dronelog*' -exec cp -v {} unsigned/other/ \;
-            find "$BASE" -type f -path '*/bundle/nsis/*.sig' -iname '*dronelog*' -exec cp -v {} unsigned/other/ \;
+            find "$BASE" -type f -path '*/bundle/nsis/*.nsis.zip' -iname '*skydra*' -exec cp -v {} unsigned/other/ \;
+            find "$BASE" -type f -path '*/bundle/nsis/*.sig' -iname '*skydra*' -exec cp -v {} unsigned/other/ \;
 
             # MSI installer(s)
-            find "$BASE" -type f -path '*/bundle/msi/*.msi' -iname '*dronelog*' -exec cp -v {} unsigned/msi/ \;
+            find "$BASE" -type f -path '*/bundle/msi/*.msi' -iname '*skydra*' -exec cp -v {} unsigned/msi/ \;
           done
 
           if [ "$FOUND_ANY_ROOT" != "true" ]; then

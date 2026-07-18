@@ -1,6 +1,6 @@
 {
   "sourceFingerprint": "3d0e49d8530eeab31f2853b049b15e08ea7a3062c708a4ce0fc9805d3f066cac",
-  "packageName": "open-dronelog",
+  "packageName": "skydra",
   "projectVersion": "3.3.0",
   "dependencies": [
     "@deck.gl/layers",

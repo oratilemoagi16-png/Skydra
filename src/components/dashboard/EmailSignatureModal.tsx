@@ -92,7 +92,7 @@ function generateSignatureHtml(
 ): string {
   const darkAccent = darkenHex(accentColor, 25);
 
-  return `<a href="https://opendronelog.com" target="_blank" style="text-decoration:none;color:inherit;display:inline-block;">
+  return `<a href="https://skydra.app" target="_blank" style="text-decoration:none;color:inherit;display:inline-block;">
 <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;border-radius:8px;overflow:hidden;">
   <tr>
     <td style="background:#ffffff;padding:8px 16px;vertical-align:middle;text-align:center;">
@@ -103,7 +103,7 @@ function generateSignatureHtml(
       <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         <tr>
           <td style="vertical-align:middle;width:28px;">
-            <img src="${logoBase64}" alt="Open DroneLog" width="28" height="28" style="display:block;border:0;" />
+            <img src="${logoBase64}" alt="Skydra" width="28" height="28" style="display:block;border:0;" />
           </td>
           <td style="vertical-align:middle;padding-left:8px;">
             <div style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.5px;line-height:1.3;">DRONE PILOT</div>
@@ -120,7 +120,7 @@ function generateSignatureHtml(
   <tr>
     <td colspan="3" style="background:#f8fafc;padding:5px 12px 7px;text-align:center;border-top:1px solid #e2e8f0;">
       <span style="color:#94a3b8;font-size:8px;letter-spacing:0.3px;">Powered by </span>
-      <span style="color:${accentColor};font-size:8px;font-weight:600;letter-spacing:0.3px;">opendronelog.com</span>
+      <span style="color:${accentColor};font-size:8px;font-weight:600;letter-spacing:0.3px;">skydra.app</span>
     </td>
   </tr>
 </table>
@@ -318,9 +318,9 @@ export function EmailSignatureModal({
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(0, topH, totalW, botH);
 
-      // "Powered by " + "opendronelog.com"
+      // "Powered by " + "skydra.app"
       const pb = 'Powered by ';
-      const site = 'opendronelog.com';
+      const site = 'skydra.app';
       ctx.font = '400 8px Arial, Helvetica, sans-serif';
       const pbW = ctx.measureText(pb).width;
       ctx.font = '600 8px Arial, Helvetica, sans-serif';
@@ -342,7 +342,7 @@ export function EmailSignatureModal({
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Blob creation failed'))), 'image/png');
       });
 
-      const fileName = `OpenDroneLog_Signature_${totalFlights}flights.png`;
+      const fileName = `Skydra_Signature_${totalFlights}flights.png`;
 
       if (isWebMode()) {
         const url = URL.createObjectURL(blob);
@@ -446,7 +446,7 @@ export function EmailSignatureModal({
           >
             {/* The actual badge to capture for PNG — inline-block for tight fit */}
             <div ref={previewRef} style={{ display: 'inline-block', lineHeight: 0 }}>
-              <a href="https://opendronelog.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }}>
+              <a href="https://skydra.app" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }}>
                 <table cellPadding={0} cellSpacing={0} style={{ borderCollapse: 'collapse', fontFamily: 'Arial, Helvetica, sans-serif', borderRadius: 8, overflow: 'hidden' }}>
                   <tbody>
                     <tr>
@@ -465,7 +465,7 @@ export function EmailSignatureModal({
                           <tbody>
                             <tr>
                               <td style={{ verticalAlign: 'middle', width: 28 }}>
-                                <img src={logoBase64 || logoIcon} alt="Open DroneLog" width={28} height={28} style={{ display: 'block', border: 0 }} />
+                                <img src={logoBase64 || logoIcon} alt="Skydra" width={28} height={28} style={{ display: 'block', border: 0 }} />
                               </td>
                               <td style={{ verticalAlign: 'middle', paddingLeft: 8 }}>
                                 <div style={{ color: '#ffffff', fontSize: 11, fontWeight: 700, letterSpacing: 0.5, lineHeight: 1.3 }}>
@@ -496,7 +496,7 @@ export function EmailSignatureModal({
                           {t('signature.poweredBy')}{' '}
                         </span>
                         <span style={{ color: accentColor, fontSize: 8, fontWeight: 600, letterSpacing: 0.3 }}>
-                          opendronelog.com
+                          skydra.app
                         </span>
                       </td>
                     </tr>

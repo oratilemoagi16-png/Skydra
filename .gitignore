@@ -55,5 +55,5 @@ src-tauri/bindings/
 *.jks
 *.keystore
 *.jks.b64
-opendronelog-upload.jks
-opendronelog-upload.jks.b64
+skydra-upload.jks
+skydra-upload.jks.b64

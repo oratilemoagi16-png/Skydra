@@ -1,4 +1,4 @@
-# Context Management for Open DroneLog
+# Context Management for Skydra
 
 This document explains how to keep context docs continuously up to date as code evolves.
 

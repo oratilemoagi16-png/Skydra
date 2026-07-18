@@ -1,4 +1,4 @@
-//! Data models for the Open DroneLog application.
+//! Data models for the Skydra application.
 //!
 //! These structs are shared between Rust backend and TypeScript frontend
 //! via Tauri's IPC system with serde serialization.

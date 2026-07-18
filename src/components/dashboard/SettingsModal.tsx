@@ -12,8 +12,7 @@ import { Select } from '@/components/ui/Select';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { getBlacklist, getSyncFolderPath, removeFromBlacklist } from './FlightImporter';
 import { SMART_TAG_TYPES, getEnabledSmartTagTypes, setEnabledSmartTagTypes, SmartTagTypeId } from '@/lib/api';
-import { FaComments, FaDiscord, FaGithub } from 'react-icons/fa';
-import { FiBookOpen, FiGlobe, FiMail } from 'react-icons/fi';
+
 import { useIsMobileRuntime } from '@/hooks/platform/useIsMobileRuntime';
 
 interface SettingsModalProps {
@@ -1344,14 +1343,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </label>
                 <p className="text-xs text-gray-500 mb-3">
                   {t('settings.djiApiKeyDesc')}{' '}
-                  <a
-                    href="https://github.com/arpanghosh8453/open-dronelog#how-to-obtain-your-own-dji-developer-api-key"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-drone-primary hover:underline"
-                  >
+                  <span className="text-drone-primary font-medium">
                     {t('settings.thisGuide')}
-                  </a>
+                  </span>
                 </p>
 
                 {/* Status indicator */}
@@ -1502,99 +1496,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </span>
                   </button>
 
-                  <a
-                    href="https://ko-fi.com/arpandesign/shop"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 rounded-lg border border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 transition-colors text-sm flex items-center justify-center gap-1.5 no-underline whitespace-nowrap"
-                  >
-                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                      <line x1="3" y1="6" x2="21" y2="6"></line>
-                      <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                    {t('settings.exploreMore', 'Explore more')}
-                  </a>
+
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                    {t('settings.needHelp', 'Need Help?')}
-                  </p>
-                  <div className="mt-2 grid grid-cols-3 gap-2">
-                    <a
-                      href="https://github.com/arpanghosh8453/open-dronelog/blob/main/docs/manual.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-cyan-500/10 hover:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-cyan-500/15 text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
-                        <FiBookOpen className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.docs', 'Docs')}
-                    </a>
 
-                    <a
-                      href="https://opendronelog.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-emerald-500/10 hover:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
-                        <FiGlobe className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.website', 'Website')}
-                    </a>
-
-                    <a
-                      href="https://opendronelog.com/#about"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-sky-500/10 hover:border-sky-500/50 focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/15 text-sky-400 group-hover:bg-sky-500/20 transition-colors">
-                        <FiMail className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.contact', 'Contact')}
-                    </a>
-
-                    <a
-                      href="https://github.com/arpanghosh8453/open-dronelog/issues/new/choose"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-rose-500/10 hover:border-rose-500/50 focus:outline-none focus:ring-2 focus:ring-rose-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-500/15 text-rose-400 group-hover:bg-rose-500/20 transition-colors">
-                        <FaGithub className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.reportBug', 'Issues')}
-                    </a>
-
-                    <a
-                      href="https://github.com/arpanghosh8453/open-dronelog/discussions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-amber-500/10 hover:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-500/15 text-amber-400 group-hover:bg-amber-500/20 transition-colors">
-                        <FaComments className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.discussion', 'Discussion')}
-                    </a>
-
-                    <a
-                      href="https://discord.gg/YKgKTmSm7B"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-indigo-500/10 hover:border-indigo-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-indigo-500/15 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors">
-                        <FaDiscord className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.discord', 'Discord')}
-                    </a>
-                  </div>
-                </div>
               </div>
 
               {/* Info Section */}
@@ -1615,16 +1520,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </span>
                   )}
                   {updateStatus === 'outdated' && latestVersion && (
-                    <a
-                      href="https://github.com/arpanghosh8453/open-dronelog/releases/latest"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors cursor-pointer no-underline"
-                      title="Click to open release page"
-                    >
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors cursor-pointer no-underline">
                       <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 110 14A7 7 0 018 1zM7.5 4v5h1V4h-1zm0 6v1h1v-1h-1z" /></svg>
                       {t('settings.updateToVersion', { version: latestVersion })}
-                    </a>
+                    </span>
                   )}
                   {updateStatus === 'failed' && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">
@@ -2016,14 +1915,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <span className="text-drone-primary font-semibold shrink-0">1.</span>
                       <span>
                         Visit{' '}
-                        <a
-                          href="https://ko-fi.com/s/e06c1d4359"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-drone-primary hover:underline font-medium"
-                        >
+                        <span className="text-drone-primary font-medium">
                           this page
-                        </a>
+                        </span>
                         {' '}to get your supporter code.
                       </span>
                     </p>

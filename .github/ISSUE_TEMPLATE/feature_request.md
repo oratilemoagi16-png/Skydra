@@ -1,9 +1,9 @@
 ---
 name: Feature request
-about: Suggest an idea for Open DroneLog
+about: Suggest an idea for Skydra
 title: "[FEATURE] "
 labels: enhancement
-assignees: arpanghosh8453
+
 
 ---
 
