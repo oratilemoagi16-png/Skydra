@@ -323,7 +323,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                 >
                   <img
                     src={logoIcon}
-                    alt="OpenDroneLog"
+                    alt="Skydra"
                     style={{
                       width: '18px',
                       height: '18px',

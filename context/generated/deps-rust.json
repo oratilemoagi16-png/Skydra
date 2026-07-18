@@ -1,6 +1,6 @@
 {
   "sourceFingerprint": "e6299bd31c108ff50395f7fbf6d02a80228874cf9dccc3529af386f9ae0426e1",
-  "crate": "open-dronelog",
+  "crate": "skydra",
   "dependencies": [
     "anyhow",
     "argon2",

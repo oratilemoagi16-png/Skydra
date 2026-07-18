@@ -1,12 +1,12 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Open DroneLog",
+  "productName": "Skydra",
   "identifier": "com.opendronelog",
   "app": {
     "windows": [
       {
         "label": "main",
-        "title": "Open DroneLog",
+        "title": "Skydra",
         "width": 420,
         "height": 860,
         "resizable": true,

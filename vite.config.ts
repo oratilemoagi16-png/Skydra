@@ -27,6 +27,8 @@ export default defineConfig({
   server: {
     port: 1420,
     strictPort: true,
+    host: '0.0.0.0',
+    allowedHosts: ['.devinapps.com'],
     watch: {
       ignored: ['**/src-tauri/**', '**/src-tauri/target/**'],
     },

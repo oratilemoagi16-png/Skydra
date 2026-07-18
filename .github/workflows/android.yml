@@ -99,7 +99,7 @@ jobs:
             exit 0
           fi
 
-          KNOWN_WARN_RE='RustWebView\.kt:26:18.*databaseEnabled|WryActivity\.kt:34:42.*onBackPressed\(\).*deprecated|buildSrc/src/main/java/com/opendronelog/kotlin/BuildTask\.kt:53:17.*exec\(Action<in ExecSpec!>!\): ExecResult.*deprecated|tauri-[0-9]+\.[0-9]+\.[0-9]+/mobile/android/src/main/java/app/tauri/AppPlugin\.kt:35:37.*onBackPressed\(\).*deprecated|tauri-[0-9]+\.[0-9]+\.[0-9]+/mobile/android/src/main/java/app/tauri/plugin/PluginMethodData\.kt:11:23.*methodDecorator.*never used|tauri-plugin-android-fs-[0-9]+\.[0-9]+\.[0-9]+/android/src/main/java/AFThumbnails\.kt:70:47.*WEBP.*deprecated'
+          KNOWN_WARN_RE='RustWebView\.kt:26:18.*databaseEnabled|WryActivity\.kt:34:42.*onBackPressed\(\).*deprecated|buildSrc/src/main/java/com/skydra/kotlin/BuildTask\.kt:53:17.*exec\(Action<in ExecSpec!>!\): ExecResult.*deprecated|tauri-[0-9]+\.[0-9]+\.[0-9]+/mobile/android/src/main/java/app/tauri/AppPlugin\.kt:35:37.*onBackPressed\(\).*deprecated|tauri-[0-9]+\.[0-9]+\.[0-9]+/mobile/android/src/main/java/app/tauri/plugin/PluginMethodData\.kt:11:23.*methodDecorator.*never used|tauri-plugin-android-fs-[0-9]+\.[0-9]+\.[0-9]+/android/src/main/java/AFThumbnails\.kt:70:47.*WEBP.*deprecated'
 
           TOTAL_WARNINGS=$(grep -c '^w:' "$LOG_PATH" || true)
           KNOWN_WARNINGS=$(grep -Ec "$KNOWN_WARN_RE" "$LOG_PATH" || true)
@@ -201,9 +201,9 @@ jobs:
             ALIGNED_APK="$RUNNER_TEMP/aligned-${BASE_NAME/-unsigned.apk/.apk}"
 
             if [[ "$BASE_NAME" == *universal* ]] || [[ "$APK_VARIANT" == universal ]]; then
-              OUTPUT_NAME="open-dronelog_${TAG}_android-universal.apk"
+              OUTPUT_NAME="skydra_${TAG}_android-universal.apk"
             else
-              OUTPUT_NAME="open-dronelog_${TAG}_${APK_VARIANT}_android.apk"
+              OUTPUT_NAME="skydra_${TAG}_${APK_VARIANT}_android.apk"
             fi
 
             OUTPUT_APK="$SIGNED_DIR/$OUTPUT_NAME"

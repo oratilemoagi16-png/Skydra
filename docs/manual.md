@@ -1,6 +1,6 @@
-# Open DroneLog User Manual
+# Skydra User Manual
 
-**A comprehensive guide to using Open DroneLog, your local-first drone flight log analyzer.**
+**A comprehensive guide to using Skydra, your local-first drone flight log analyzer.**
 
 ---
 
@@ -32,7 +32,7 @@
 
 ## Overview
 
-Open DroneLog is a high-performance application for analyzing drone flight logs. It supports DJI flight logs (`.txt` format), Litchi CSV exports, and Airdata CSV exports. All your data is stored locally in a DuckDB database with no cloud uploads, no subscriptions, and complete privacy.
+Skydra is a high-performance application for analyzing drone flight logs. It supports DJI flight logs (`.txt` format), Litchi CSV exports, and Airdata CSV exports. All your data is stored locally in a DuckDB database with no cloud uploads, no subscriptions, and complete privacy.
 
 ### Key Capabilities
 
@@ -57,7 +57,7 @@ Open DroneLog is a high-performance application for analyzing drone flight logs.
 
 ### First Launch
 
-When you first open Open DroneLog, you will see an empty dashboard with the import section expanded. The application automatically detects whether you have existing flights and adjusts the interface accordingly.
+When you first open Skydra, you will see an empty dashboard with the import section expanded. The application automatically detects whether you have existing flights and adjusts the interface accordingly.
 
 ### Importing Your First Flight
 
@@ -227,7 +227,7 @@ Click the **Manual Entry** button in the Import section of the sidebar.
 
 ## Profiles
 
-Open DroneLog supports multiple named profiles. Each profile is a fully isolated environment with its own database, configuration, uploaded files, and sync folder. This is useful for separating data by pilot, drone fleet, client, or purpose.
+Skydra supports multiple named profiles. Each profile is a fully isolated environment with its own database, configuration, uploaded files, and sync folder. This is useful for separating data by pilot, drone fleet, client, or purpose.
 
 ### Creating a Profile
 
@@ -1021,7 +1021,7 @@ Options to support the project and activate a supporter badge.
 ## Security Considerations (Web/Docker)
 
 > [!WARNING]
-> Open DroneLog does **not** include built-in TLS/HTTPS. If you expose your Docker instance to the internet, passwords and session tokens will be transmitted in **plaintext** over HTTP.
+> Skydra does **not** include built-in TLS/HTTPS. If you expose your Docker instance to the internet, passwords and session tokens will be transmitted in **plaintext** over HTTP.
 
 ### Recommendations for internet-facing deployments
 
@@ -1169,4 +1169,4 @@ If you need any help, want to discuss features, or report issues, join our commu
 
 ---
 
-**For more information, visit the [GitHub repository](https://github.com/arpanghosh8453/open-dronelog) or check the README for technical details.**
+**For more information, visit the [GitHub repository](https://skydra.app) or check the README for technical details.**

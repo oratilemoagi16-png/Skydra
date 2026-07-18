@@ -885,7 +885,7 @@
         std::fs::create_dir_all(&temp_dir)
             .map_err(|e| format!("Failed to create temp directory: {}", e))?;
         let temp_path = temp_dir.join(format!(
-            "open-dronelog-backup-{}.backup",
+            "skydra-backup-{}.backup",
             uuid::Uuid::new_v4()
         ));
 
@@ -927,7 +927,7 @@
         std::fs::create_dir_all(&temp_dir)
             .map_err(|e| format!("Failed to create temp directory: {}", e))?;
         let temp_path = temp_dir.join(format!(
-            "open-dronelog-restore-{}.backup",
+            "skydra-restore-{}.backup",
             uuid::Uuid::new_v4()
         ));
 
@@ -1050,12 +1050,12 @@
             .map(|d| d.as_nanos())
             .unwrap_or(0);
         let test_file = folder.join(format!(
-            ".open-dronelog-write-test-{}-{}.tmp",
+            ".skydra-write-test-{}-{}.tmp",
             std::process::id(),
             nonce
         ));
 
-        let payload = b"open-dronelog-write-check";
+        let payload = b"skydra-write-check";
 
         std::fs::write(&test_file, payload)
             .map_err(|e| format!("Failed to write test file: {}", e))?;
@@ -1674,7 +1674,7 @@
                     log::info!("Allowed import extensions at startup: {:?}", allowed_extensions);
                 }
 
-                log::info!("Open DroneLog initialized successfully");
+                log::info!("Skydra initialized successfully");
                 Ok(())
             })
             .invoke_handler(tauri::generate_handler![
@@ -1742,5 +1742,5 @@
                 set_setting_value,
             ])
             .run(tauri::generate_context!())
-            .expect("Failed to run Open DroneLog");
+            .expect("Failed to run Skydra");
     }

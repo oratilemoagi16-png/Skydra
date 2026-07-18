@@ -1,7 +1,7 @@
 {
   "$schema": "https://schemas.tauri.app/config/2/capability",
   "identifier": "default",
-  "description": "Default capability for the Open DroneLog application",
+  "description": "Default capability for the Skydra application",
   "windows": ["main"],
   "permissions": [
     "core:default",

@@ -1,9 +1,9 @@
 ---
 name: Bug report
-about: Report a bug in Open DroneLog
+about: Report a bug in Skydra
 title: "[BUG] "
 labels: bug
-assignees: arpanghosh8453
+
 
 ---
 

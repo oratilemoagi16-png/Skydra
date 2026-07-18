@@ -1,8 +1,8 @@
 # Custom Parsers Guideline
 
-Open-DroneLog supports plugins for parsing custom and proprietary drone log formats. Instead of writing Rust code and recompiling the application, you can write standalone scripts (in Python, Bash, Node.js, etc.) that convert your logs into the standard **Open DroneLog CSV** format. 
+Skydra supports plugins for parsing custom and proprietary drone log formats. Instead of writing Rust code and recompiling the application, you can write standalone scripts (in Python, Bash, Node.js, etc.) that convert your logs into the standard **Skydra CSV** format. 
 
-Open-DroneLog will execute your scripts automatically during the import process when it detects a matching file extension.
+Skydra will execute your scripts automatically during the import process when it detects a matching file extension.
 
 The same custom parser engine is used by:
 - Desktop (Tauri)
@@ -13,10 +13,10 @@ The same custom parser engine is used by:
 ## 1. How the Plugin System Works
 
 1. **Configuration (`parsers.json`)**: You define which file extensions should be handled by your custom scripts.
-2. **Startup discovery + logging**: At startup, Open-DroneLog reads `parsers.json`, logs each discovered mapping, and logs the final allowed extension list.
-3. **Execution**: During import, Open-DroneLog first tries built-in parsers. If they fail (or are incompatible), it checks custom mappings by file extension and runs the mapped command.
+2. **Startup discovery + logging**: At startup, Skydra reads `parsers.json`, logs each discovered mapping, and logs the final allowed extension list.
+3. **Execution**: During import, Skydra first tries built-in parsers. If they fail (or are incompatible), it checks custom mappings by file extension and runs the mapped command.
 4. **Arguments**: The app replaces `$INPUT` and `$OUTPUT` in `args` before spawning your command.
-5. **Ingestion**: Your script must write a valid Open DroneLog CSV to `$OUTPUT`. If the process exits `0` and the output file exists, Open-DroneLog imports it.
+5. **Ingestion**: Your script must write a valid Skydra CSV to `$OUTPUT`. If the process exits `0` and the output file exists, Skydra imports it.
 
 ### Extension matching notes
 - Mapping keys are case-insensitive and normalized.
@@ -56,8 +56,8 @@ Create a `parsers.json` file in the location used by your runtime mode.
 }
 ```
 
-* `$INPUT`: Will be replaced by Open-DroneLog with the absolute path of the uploaded file.
-* `$OUTPUT`: Will be replaced by Open-DroneLog with the absolute path where your script must save the CSV for the import.
+* `$INPUT`: Will be replaced by Skydra with the absolute path of the uploaded file.
+* `$OUTPUT`: Will be replaced by Skydra with the absolute path where your script must save the CSV for the import.
 
 If your mapping uses `"ulg"`, files like `flight_001.ulg` are allowed automatically without editing frontend source code.
 
@@ -65,7 +65,7 @@ If your mapping uses `"ulg"`, files like `flight_001.ulg` are allowed automatica
 
 ## 3. The Target CSV Format
 
-Your script **must** output a CSV file that matches the Open DroneLog CSV specification. 
+Your script **must** output a CSV file that matches the Skydra CSV specification. 
 
 ### Minimal Required Columns
 To successfully trace a flight path and calculate statistics, your CSV must contain a header row with at least these columns (case-insensitive):
@@ -88,7 +88,7 @@ Including these columns enables the matching charts and telemetry panels in the 
 - **Signal**: `satellites`, `rc_signal`
 
 ### Metadata Column (Highly Recommended)
-You can provide flight-level metadata by embedding a JSON string inside the `Metadata` column of your CSV. This string only needs to be present in the **first data row**, and can be left blank for subsequent rows. Open-DroneLog extracts details like the drone model, pilot notes, serial numbers, and tags from this object.
+You can provide flight-level metadata by embedding a JSON string inside the `Metadata` column of your CSV. This string only needs to be present in the **first data row**, and can be left blank for subsequent rows. Skydra extracts details like the drone model, pilot notes, serial numbers, and tags from this object.
 
 Example JSON structure:
 ```json
@@ -119,10 +119,10 @@ Similar to metadata, you can provide warnings or tips (like "Wind Warning") by a
 
 ## 4. Script Execution Guidelines
 
-1. **Exit Codes**: Open-DroneLog only ingests the `$OUTPUT` CSV if your script exits with status code `0`. If your parser encounters an error or an invalid file, it should exit with a non-zero status code (for example `1`) and print details to `stderr`.
-2. **Output path**: Always write the final CSV exactly to `$OUTPUT` (not to an adjacent file). Open-DroneLog validates that this file exists after your process exits.
+1. **Exit Codes**: Skydra only ingests the `$OUTPUT` CSV if your script exits with status code `0`. If your parser encounters an error or an invalid file, it should exit with a non-zero status code (for example `1`) and print details to `stderr`.
+2. **Output path**: Always write the final CSV exactly to `$OUTPUT` (not to an adjacent file). Skydra validates that this file exists after your process exits.
 3. **Performance**: Avoid heavy computations. If parsing takes too long, import can fail.
-4. **Environment**: If running Open-DroneLog via Docker, your scripts run inside the container. 
+4. **Environment**: If running Skydra via Docker, your scripts run inside the container. 
    - **Python 3 and Node.js are bundled natively** in the Docker image. You can invoke them directly in your `parsers.json` `command` and mount your scripts via volumes.
    - For other languages, write a self-contained compiled binary (like Go or Rust) statically linked for Linux, or build a custom image extending the base Dockerfile.
 
@@ -144,7 +144,7 @@ def parse_my_format(input_path, output_path):
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f)
         
-        # Write Open DroneLog headers
+        # Write Skydra headers
         writer.writerow(['time_s', 'lat', 'lng', 'alt_m', 'distance_to_home_m', 'battery_percent', 'Metadata'])
         
         # Write first row with Metadata JSON
@@ -177,12 +177,12 @@ if __name__ == "__main__":
 
 ## 5. Docker Deployment
 
-When deploying Open-DroneLog in Docker, map a plugins folder in your `docker-compose.yml`:
+When deploying Skydra in Docker, map a plugins folder in your `docker-compose.yml`:
 
 ```yaml
 services:
-  open-dronelog:
-    image: arpanghosh8453/open-dronelog:latest
+  skydra:
+    image: ghcr.io/oratilemoagi16-png/skydra:latest
     volumes:
       - ./data:/data/drone-logbook
       - ./plugins:/app/plugins  # Mount your custom scripts here
@@ -206,7 +206,7 @@ If your custom parser script needs extra Python libraries (for example, `pandas`
 
 1. Edit `requirements.txt` and add your packages.
 2. Rebuild the Docker image (for local source builds):
-  - `cd open-dronelog && docker compose -f docker-compose-build.yml build --no-cache open-dronelog`
+  - `cd skydra && docker compose -f docker-compose-build.yml build --no-cache skydra`
 3. Restart the container:
   - `docker compose -f docker-compose-build.yml up -d`
 
@@ -256,7 +256,7 @@ If a custom parser is not being used, check logs in this order:
 
 If you see process success but no import, common causes are:
 - Script wrote CSV to the wrong path (not `$OUTPUT`).
-- CSV does not match Open DroneLog format.
+- CSV does not match Skydra format.
 - Command is invalid in current runtime (`python3` not found, wrong executable path, missing script file).
 
 For web mode, extension allowing and parser mapping are also dynamic at startup and exposed via API, so the web file picker/drop and sync flows follow the same extension map from `parsers.json`.

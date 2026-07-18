@@ -1,6 +1,6 @@
 # API Reference
 
-This document lists all API endpoints available in the Open DroneLog application. The application supports two modes:
+This document lists all API endpoints available in the Skydra application. The application supports two modes:
 
 - **Desktop (Tauri)**: Uses Tauri IPC commands via `@tauri-apps/api`
 - **Web/Docker (Axum)**: Uses REST API endpoints via HTTP
@@ -492,7 +492,7 @@ The DJI API key (for log decryption) is stored in `config.json` and never sent a
 ### Security Limitations
 
 > [!WARNING]
-> Open DroneLog does **not** include built-in TLS. For internet-facing deployments, always use a reverse proxy with TLS termination.
+> Skydra does **not** include built-in TLS. For internet-facing deployments, always use a reverse proxy with TLS termination.
 
 | Area | Limitation |
 |------|------------|

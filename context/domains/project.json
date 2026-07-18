@@ -3,14 +3,14 @@
   "version": 1,
   "title": "Project Baseline",
   "status": "active",
-  "owners": ["Arpan Ghosh"],
+  "owners": ["Skydra Team"],
   "updated_at": "2026-03-24T00:00:00Z",
   "verified_from": [
     { "path": "package.json", "note": "Source of npm package metadata and frontend dependencies" },
     { "path": "src-tauri/Cargo.toml", "note": "Source of Rust crate dependencies and feature flags" }
   ],
   "content": {
-    "name": "open-dronelog",
+    "name": "skydra",
     "version": "2.32.0",
     "license": "AGPL-3.0-only",
     "frontend": {
