@@ -86,8 +86,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     loadFlights,
     loadOverview,
     clearSelection,
-    donationAcknowledged,
-    setDonationAcknowledged,
     smartTagsEnabled,
     setSmartTagsEnabled,
     loadSmartTagsEnabled,
@@ -96,8 +94,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     isRegenerating,
     isRemovingAutoTags,
     regenerationProgress,
-    supporterBadgeActive,
-    setSupporterBadge,
     updateStatus,
     latestVersion,
     loadApiKeyType,
@@ -112,9 +108,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [localTimeFormat, setLocalTimeFormat] = useState<'12h' | '24h'>(timeFormat);
   const [isTimeFormatPending, startTimeFormatTransition] = useTransition();
 
-  const [showBadgeModal, setShowBadgeModal] = useState(false);
-  const [badgeCode, setBadgeCode] = useState('');
-  const [badgeMessage, setBadgeMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [unitsDropdownOpen, setUnitsDropdownOpen] = useState(false);
   const canEditApiKey = activeProfile === 'default';
 
@@ -168,38 +161,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   // Derive light/dark for theme-aware styling
   const isLight = themeMode === 'light' || (themeMode === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches);
-
-  const handleActivateBadge = async () => {
-    setBadgeMessage(null);
-    const trimmed = badgeCode.trim();
-    if (!trimmed) {
-      setBadgeMessage({ type: 'error', text: t('settings.enterCodeValidation') });
-      return;
-    }
-    try {
-      const valid = await api.verifySupporterCode(trimmed);
-      if (valid) {
-        setSupporterBadge(true);
-        setBadgeMessage({ type: 'success', text: '🎉 Supporter badge activated! Thank you for your support!' });
-        setBadgeCode('');
-      } else {
-        setBadgeMessage({ type: 'error', text: 'Error: Invalid code. Please check and try again.' });
-      }
-    } catch {
-      setBadgeMessage({ type: 'error', text: 'Error: Could not verify code.' });
-    }
-  };
-
-  const handleRemoveBadge = async () => {
-    try {
-      await api.removeSupporterBadge();
-    } catch (err) {
-      console.warn('Failed to remove supporter badge on backend:', err);
-    }
-    setSupporterBadge(false);
-    setBadgeMessage(null);
-    setShowBadgeModal(false);
-  };
 
   // True when any long-running destructive/IO operation is in progress
   const isBusy = isBackingUp || isRestoring || isDeleting || isRegenerating || isRemovingAutoTags;
@@ -1439,69 +1400,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             {/* Horizontal Divider for mobile */}
             <div className="lg:hidden h-px w-full bg-gray-700 shrink-0" />
 
-            {/* Right Column: Donation, Support, Info & Data */}
+            {/* Right Column: Info & Data */}
             <div className="lg:w-1/2 space-y-4 lg:pl-5">
-              {/* Donation Status */}
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  {t('settings.donationStatus')}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!supporterBadgeActive) {
-                      setDonationAcknowledged(!donationAcknowledged);
-                    }
-                  }}
-                  className={`mt-2 flex items-center justify-between gap-3 w-full text-[0.85rem] text-gray-300 ${supporterBadgeActive ? 'opacity-60 cursor-not-allowed' : ''}`}
-                  aria-pressed={donationAcknowledged}
-                  disabled={supporterBadgeActive}
-                >
-                  <span>{t('settings.removeBanner')}</span>
-                  <span
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${donationAcknowledged
-                      ? 'bg-drone-primary/90 border-drone-primary'
-                      : 'bg-drone-surface border-gray-600 toggle-track-off'
-                      }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${donationAcknowledged ? 'translate-x-4' : 'translate-x-1'
-                        }`}
-                    />
-                  </span>
-                </button>
-                {supporterBadgeActive && (
-                  <p className="text-xs text-amber-400/80 mt-1">{t('settings.badgeLocked')}</p>
-                )}
-
-                {/* Supporter Badge and Shop Buttons (Side-by-side) */}
-
-                <p className="mt-3 text-xs text-gray-500 leading-relaxed">
-                  {t('settings.supporterDescription', 'Show your love by supporting this project - your donation keeps development running and new features coming.')}
-                </p>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setShowBadgeModal(true); setBadgeMessage(null); setBadgeCode(''); }}
-                    className={`flex-1 py-2 px-3 rounded-lg border text-sm transition-colors ${supporterBadgeActive
-                      ? 'border-amber-500/50 text-amber-400 hover:bg-amber-500/10'
-                      : 'border-violet-500/50 text-violet-400 hover:bg-violet-500/10'
-                      }`}
-                  >
-                    <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">
-                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                      </svg>
-                      {supporterBadgeActive ? t('settings.manageBadge', 'Manage badge') : t('settings.getBadge', 'Get badge')}
-                    </span>
-                  </button>
-
-
-                </div>
-
-
-              </div>
-
               {/* Info Section */}
               <div className="pt-4 border-t border-gray-700">
                 <p className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
@@ -1865,97 +1765,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
       )}
 
-      {/* Supporter Badge Activation Modal */}
-      {showBadgeModal && (
-        <div className="fixed inset-0 z-[60] flex flex-col items-center p-4 overflow-y-auto">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowBadgeModal(false)}
-          />
-          <div className="relative bg-drone-secondary rounded-xl border border-gray-700 shadow-2xl w-full max-w-sm mx-4 overflow-hidden my-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                {t('settings.supporterBadge')}
-              </h3>
-              <button
-                onClick={() => setShowBadgeModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-4 space-y-4">
-              {supporterBadgeActive ? (
-                <>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                    <svg className="w-5 h-5 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                    <p className="text-sm text-amber-300">Your supporter badge is active. Thank you for supporting this project!</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveBadge}
-                    className="w-full py-2 px-3 rounded-lg border border-red-600 text-red-500 hover:bg-red-500/10 transition-colors text-sm"
-                  >
-                    {t('settings.removeBadge')}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-2 text-sm text-gray-300">
-                    <p className="flex gap-2">
-                      <span className="text-drone-primary font-semibold shrink-0">1.</span>
-                      <span>
-                        Visit{' '}
-                        <span className="text-drone-primary font-medium">
-                          this page
-                        </span>
-                        {' '}to get your supporter code.
-                      </span>
-                    </p>
-                    <p className="flex gap-2">
-                      <span className="text-drone-primary font-semibold shrink-0">2.</span>
-                      <span>Enter the code below to activate your Supporter Badge.</span>
-                    </p>
-                  </div>
-                  <div>
-                    <input
-                      type="text"
-                      value={badgeCode}
-                      onChange={(e) => setBadgeCode(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleActivateBadge(); }}
-                      placeholder={t('settings.enterSupporterCode')}
-                      className="input w-full"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleActivateBadge}
-                      disabled={!badgeCode.trim()}
-                      className="btn-primary w-full mt-3"
-                    >
-                      {t('settings.activateBadge')}
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {badgeMessage && (
-                <p className={`text-sm text-center ${badgeMessage.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
-                  {badgeMessage.text}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -540,7 +540,6 @@ export function Overview({ stats, flights, unitPrefs, onSelectFlight }: Overview
         performMaintenance={performMaintenance}
       />
 
-      {/* Donation Note */}
       {/* Email Signature Modal */}
       {showSignatureModal && (
         <EmailSignatureModal
