@@ -495,7 +495,28 @@
     "removingDuplicates": "Removing duplicate flights…",
     "removingAutoTags": "Removing auto-generated tags…",
     "regeneratingSmartTags": "Regenerating smart tags…",
-    "processedFlights": "Processed {{x}} of {{y}} flights"
+    "processedFlights": "Processed {{x}} of {{y}} flights",
+    "aboutSkydra": "About Skydra"
+  },
+  "about": {
+    "title": "About Skydra",
+    "tabAbout": "About",
+    "tabLicenses": "Licenses",
+    "tabSource": "Source",
+    "tagline": "Drone flight operations and log analysis.",
+    "attribution": "Skydra is based on Open DroneLog (AGPL-3.0). Copyright © 2026 Arpan Ghosh and contributors; Skydra modifications © 2026 Oratile Moagi.",
+    "trademarks": "DJI, Litchi, Airdata, and other product names are trademarks of their respective owners and are not affiliated with Skydra.",
+    "productLicense": "Skydra is licensed AGPL-3.0-only.",
+    "viewLicenseText": "View license text",
+    "hideLicenseText": "Hide license text",
+    "loadingLicense": "Loading…",
+    "thirdParty": "Third-party dependencies",
+    "filterPlaceholder": "Filter packages…",
+    "inventoryCount": "{{count}} packages",
+    "noMatches": "No matching packages.",
+    "sourceIntro": "Skydra is free software under the GNU Affero General Public License v3.0 (AGPL-3.0-only). The complete corresponding source code for this version is publicly available:",
+    "sourceRepo": "Source code repository",
+    "agplSection13": "Under AGPL §13, users interacting with Skydra over a network are entitled to the Corresponding Source of this modified version. The repository above satisfies that offer while it remains publicly accessible."
   },
   "flyCard": {
     "title": "Generate FlyCard",
