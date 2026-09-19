@@ -211,6 +211,19 @@ pub struct OverviewStats {
     pub top_flights: Vec<TopFlight>,
     pub top_distance_flights: Vec<TopDistanceFlight>,
     pub battery_health_points: Vec<BatteryHealthPoint>,
+    /// Recent flights that logged warning/caution app messages (most recent first)
+    pub warning_flights: Vec<WarningFlight>,
+}
+
+/// Per-flight summary of warning/caution flight_messages
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WarningFlight {
+    pub flight_id: i64,
+    pub display_name: String,
+    pub start_time: Option<String>,
+    pub warn_count: i64,
+    pub caution_count: i64,
 }
 
 /// Battery usage summary

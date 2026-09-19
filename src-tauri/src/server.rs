@@ -634,6 +634,28 @@ async fn get_battery_full_capacity_history(
     Ok(Json(history))
 }
 
+/// GET /api/battery_capacity_history_batch — capacity history for many batteries in one call
+#[derive(Deserialize)]
+struct BatteryCapacityHistoryBatchQuery {
+    serials: String, // comma-separated battery serials
+}
+
+async fn get_battery_capacity_history_batch(
+    pdb: ProfileDb,
+    Query(params): Query<BatteryCapacityHistoryBatchQuery>,
+) -> Result<Json<std::collections::HashMap<String, Vec<(i64, String, f64)>>>, (StatusCode, Json<ErrorResponse>)> {
+    let serials: Vec<String> = params
+        .serials
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+    let history = pdb.db
+        .get_battery_full_capacity_history_multi(&serials)
+        .map_err(|e| err_response(StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to get battery capacity history: {}", e)))?;
+    Ok(Json(history))
+}
+
 /// DELETE /api/flights/:id — Delete a flight
 #[derive(Deserialize)]
 struct DeleteFlightQuery {
@@ -2195,6 +2217,7 @@ pub fn build_router(state: WebAppState) -> Router {
         .route("/api/flight_data", get(get_flight_data))
         .route("/api/overview", get(get_overview_stats))
         .route("/api/battery_capacity_history", get(get_battery_full_capacity_history))
+        .route("/api/battery_capacity_history_batch", get(get_battery_capacity_history_batch))
         .route("/api/flights/delete", delete(delete_flight))
         .route("/api/flights/delete_all", delete(delete_all_flights))
         .route("/api/flights/deduplicate", post(deduplicate_flights))

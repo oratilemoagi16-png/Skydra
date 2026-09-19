@@ -680,6 +680,17 @@
     }
 
     #[tauri::command]
+    pub async fn get_battery_capacity_history_batch(
+        battery_serials: Vec<String>,
+        state: State<'_, AppState>,
+    ) -> Result<std::collections::HashMap<String, Vec<(i64, String, f64)>>, String> {
+        state
+            .db_authenticated()?
+            .get_battery_full_capacity_history_multi(&battery_serials)
+            .map_err(|e| format!("Failed to get battery capacity history: {}", e))
+    }
+
+    #[tauri::command]
     pub async fn delete_flight(flight_id: i64, state: State<'_, AppState>) -> Result<bool, String> {
         log::info!("Deleting flight: {}", flight_id);
         state
@@ -1603,6 +1614,7 @@
                 get_flight_data,
                 get_overview_stats,
                 get_battery_full_capacity_history,
+                get_battery_capacity_history_batch,
                 delete_flight,
                 delete_all_flights,
                 deduplicate_flights,

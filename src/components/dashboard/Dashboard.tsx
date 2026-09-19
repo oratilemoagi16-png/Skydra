@@ -409,6 +409,7 @@ export function Dashboard() {
                     setIsSidebarHidden(true);
                   }
                 }}
+                onOpenFlights={() => goToView('flights')}
               />
             ) : (
               <div className="flex-1 flex items-center justify-center h-full">

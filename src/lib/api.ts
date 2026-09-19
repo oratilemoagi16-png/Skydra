@@ -154,6 +154,23 @@ export async function getBatteryFullCapacityHistory(
   return invoke('get_battery_full_capacity_history', { batterySerial }) as Promise<[number, string, number][]>;
 }
 
+/** Capacity history for many batteries in one call — avoids the per-serial N+1. */
+export async function getBatteryCapacityHistoryBatch(
+  batterySerials: string[],
+): Promise<Record<string, [number, string, number][]>> {
+  if (batterySerials.length === 0) return {};
+  if (isWeb) {
+    const params = new URLSearchParams({ serials: batterySerials.join(',') });
+    return fetchJson<Record<string, [number, string, number][]>>(
+      `/battery_capacity_history_batch?${params}`,
+    );
+  }
+  const invoke = await getTauriInvoke();
+  return invoke('get_battery_capacity_history_batch', { batterySerials }) as Promise<
+    Record<string, [number, string, number][]>
+  >;
+}
+
 export async function getFlightData(
   flightId: number,
   maxPoints?: number,

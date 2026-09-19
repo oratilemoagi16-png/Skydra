@@ -142,6 +142,15 @@ export interface BatteryHealthPoint {
   ratePerMin: number;
 }
 
+/** Per-flight summary of warning/caution app messages */
+export interface WarningFlight {
+  flightId: number;
+  displayName: string;
+  startTime: string | null;
+  warnCount: number;
+  cautionCount: number;
+}
+
 export interface OverviewStats {
   totalFlights: number;
   totalDistanceM: number;
@@ -157,6 +166,7 @@ export interface OverviewStats {
   topFlights: TopFlight[];
   topDistanceFlights: TopDistanceFlight[];
   batteryHealthPoints: BatteryHealthPoint[];
+  warningFlights: WarningFlight[];
 }
 
 /** Result from import_log command */
