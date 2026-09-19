@@ -11,6 +11,7 @@ import { useFlightStore } from '@/stores/flightStore';
 import { Select } from '@/components/ui/Select';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { getBlacklist, getSyncFolderPath, removeFromBlacklist } from './FlightImporter';
+import { AboutDialog } from '@/components/about/AboutDialog';
 import { SMART_TAG_TYPES, getEnabledSmartTagTypes, setEnabledSmartTagTypes, SmartTagTypeId } from '@/lib/api';
 
 import { useIsMobileRuntime } from '@/hooks/platform/useIsMobileRuntime';
@@ -61,6 +62,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [tagTypeSearch, setTagTypeSearch] = useState('');
   const tagTypeDropdownRef = useRef<HTMLDivElement>(null);
   const [keepUploadSettings, setKeepUploadSettingsState] = useState<KeepUploadSettings | null>(null);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   // Profile password management state
   const [pwCurrent, setPwCurrent] = useState('');
@@ -1600,8 +1602,22 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer — legal/attribution entry point (About / Licenses / Source) */}
+        <div className={`shrink-0 flex items-center justify-between px-4 py-2.5 border-t ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+          <span className={`text-[11px] ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+            {appVersion && <>v{appVersion} · </>}AGPL-3.0-only
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsAboutOpen(true)}
+            className={`text-xs font-medium transition-colors ${isLight ? 'text-sky-700 hover:text-sky-800' : 'text-sky-400 hover:text-sky-300'}`}
+          >
+            {t('settings.aboutSkydra', 'About Skydra')}
+          </button>
+        </div>
       </div>
+
+      <AboutDialog isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
 
       {/* Manage Sync Blacklist Modal */}
       {isBlacklistModalOpen && (

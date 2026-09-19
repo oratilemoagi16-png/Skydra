@@ -1,0 +1,100 @@
+{
+  "comment": "Curated attribution overlay merged into src/generated/licenses.json by scripts/licenses/collect.mjs. Covers what manifests cannot: upstream attribution, font licenses, map data providers, and license corrections.",
+  "dependencyOverrides": {
+    "@mapbox/jsonlint-lines-primitives": {
+      "license": "MIT",
+      "note": "License per npm registry; package ships no license field."
+    },
+    "echarts": {
+      "note": "Apache-2.0 with NOTICE file (Apache Software Foundation)."
+    },
+    "maplibre-gl": {
+      "note": "BSD-3-Clause. Fork of Mapbox GL JS v1 (Mapbox, OSS contributors)."
+    },
+    "duckdb": {
+      "note": "DuckDB MIT license; bundled engine compiled into the binary."
+    },
+    "@deck.gl/layers": {
+      "note": "MIT. vis.gl / OpenJS Foundation."
+    },
+    "@deck.gl/mapbox": {
+      "note": "MIT. vis.gl / OpenJS Foundation."
+    },
+    "dji-log-parser": {
+      "note": "Parses DJI proprietary log formats; DJI is a third-party trademark, unaffiliated."
+    }
+  },
+  "groups": [
+    {
+      "id": "upstream",
+      "title": "Upstream project",
+      "entries": [
+        {
+          "name": "Open DroneLog",
+          "license": "AGPL-3.0-only",
+          "url": "https://github.com/arpanghosh8453/open-dronelog",
+          "copyright": "Copyright © 2026 Arpan Ghosh and contributors",
+          "note": "Skydra is a modified version of Open DroneLog. Modifications © 2026 Oratile Moagi, licensed AGPL-3.0-only."
+        }
+      ]
+    },
+    {
+      "id": "fonts",
+      "title": "Fonts",
+      "entries": [
+        {
+          "name": "Geist Sans",
+          "version": "1.3",
+          "license": "OFL-1.1",
+          "url": "https://vercel.com/font",
+          "copyright": "Copyright © 2023 Vercel",
+          "note": "Self-hosted via @fontsource/geist; SIL Open Font License 1.1."
+        },
+        {
+          "name": "Geist Mono",
+          "version": "1.3",
+          "license": "OFL-1.1",
+          "url": "https://vercel.com/font",
+          "copyright": "Copyright © 2023 Vercel",
+          "note": "Self-hosted via @fontsource/geist-mono; SIL Open Font License 1.1."
+        }
+      ]
+    },
+    {
+      "id": "map-data",
+      "title": "Map data & imagery",
+      "entries": [
+        {
+          "name": "CARTO basemaps",
+          "license": "CC-BY-4.0 (styles) / ODbL (data)",
+          "url": "https://carto.com/basemaps/",
+          "note": "Dark Matter & Positron basemap styles and glyph tiles. Basemap data © OpenStreetMap contributors. Rendered attribution shown on-map."
+        },
+        {
+          "name": "Esri World Imagery",
+          "license": "Esri terms of use",
+          "url": "https://www.esri.com/en-us/arcgis/products/arcgis-online/basemaps",
+          "note": "Satellite basemap tiles. © Esri and contributors; on-map attribution required and rendered."
+        },
+        {
+          "name": "OpenTopoMap",
+          "license": "CC-BY-SA (style) / ODbL (data)",
+          "url": "https://opentopomap.org/about",
+          "note": "Topographic raster tiles. Map data © OpenStreetMap contributors, SRTM; style CC-BY-SA."
+        },
+        {
+          "name": "OpenStreetMap",
+          "license": "ODbL",
+          "url": "https://www.openstreetmap.org/copyright",
+          "note": "Standard tile layer. © OpenStreetMap contributors under the Open Database License."
+        },
+        {
+          "name": "MapLibre terrain demo tiles",
+          "license": "Demo tiles",
+          "url": "https://demotiles.maplibre.org/",
+          "note": "Raster-DEM terrain tiles served from MapLibre demo infrastructure for 3D terrain mode."
+        }
+      ]
+    }
+  ]
+}
