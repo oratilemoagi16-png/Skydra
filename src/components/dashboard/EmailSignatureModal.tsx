@@ -92,7 +92,7 @@ function generateSignatureHtml(
 ): string {
   const darkAccent = darkenHex(accentColor, 25);
 
-  return `<a href="https://skydra.app" target="_blank" style="text-decoration:none;color:inherit;display:inline-block;">
+  return `<a href="https://github.com/oratilemoagi16-png/Skydra" target="_blank" style="text-decoration:none;color:inherit;display:inline-block;">
 <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;border-radius:8px;overflow:hidden;">
   <tr>
     <td style="background:#ffffff;padding:8px 16px;vertical-align:middle;text-align:center;">
@@ -120,7 +120,7 @@ function generateSignatureHtml(
   <tr>
     <td colspan="3" style="background:#f8fafc;padding:5px 12px 7px;text-align:center;border-top:1px solid #e2e8f0;">
       <span style="color:#94a3b8;font-size:8px;letter-spacing:0.3px;">Powered by </span>
-      <span style="color:${accentColor};font-size:8px;font-weight:600;letter-spacing:0.3px;">skydra.app</span>
+      <span style="color:${accentColor};font-size:8px;font-weight:600;letter-spacing:0.3px;">Skydra</span>
     </td>
   </tr>
 </table>
@@ -318,9 +318,9 @@ export function EmailSignatureModal({
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(0, topH, totalW, botH);
 
-      // "Powered by " + "skydra.app"
+      // "Powered by " + "Skydra"
       const pb = 'Powered by ';
-      const site = 'skydra.app';
+      const site = 'Skydra';
       ctx.font = '400 8px Arial, Helvetica, sans-serif';
       const pbW = ctx.measureText(pb).width;
       ctx.font = '600 8px Arial, Helvetica, sans-serif';
@@ -446,7 +446,7 @@ export function EmailSignatureModal({
           >
             {/* The actual badge to capture for PNG — inline-block for tight fit */}
             <div ref={previewRef} style={{ display: 'inline-block', lineHeight: 0 }}>
-              <a href="https://skydra.app" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }}>
+              <a href="https://github.com/oratilemoagi16-png/Skydra" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }}>
                 <table cellPadding={0} cellSpacing={0} style={{ borderCollapse: 'collapse', fontFamily: 'Arial, Helvetica, sans-serif', borderRadius: 8, overflow: 'hidden' }}>
                   <tbody>
                     <tr>
@@ -496,7 +496,7 @@ export function EmailSignatureModal({
                           {t('signature.poweredBy')}{' '}
                         </span>
                         <span style={{ color: accentColor, fontSize: 8, fontWeight: 600, letterSpacing: 0.3 }}>
-                          skydra.app
+                          Skydra
                         </span>
                       </td>
                     </tr>
