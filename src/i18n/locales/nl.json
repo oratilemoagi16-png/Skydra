@@ -79,10 +79,6 @@
     "allTags": "Alle tags",
     "searchDrones": "Drones zoeken…",
     "searchBatteries": "Batterijen zoeken…",
-    "searchAircraft": "Zoek luchtvaartuigen…",
-    "noSearchResults": "Geen resultaten",
-    "maintenanceOverdue": "{{days}}d achterstallig",
-    "maintenanceOk": "Niet achterstallig",
     "searchTags": "Tags zoeken…",
     "noMatchingDrones": "Geen overeenkomende drones",
     "noMatchingBatteries": "Geen overeenkomende batterijen",
@@ -305,7 +301,11 @@
     "never": "Nooit",
     "maintenanceDone": "✓ Onderhoud Uitgevoerd",
     "save": "Opslaan",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "searchAircraft": "Zoek luchtvaartuigen…",
+    "noSearchResults": "Geen resultaten",
+    "maintenanceOverdue": "{{days}}d achterstallig",
+    "maintenanceOk": "Niet achterstallig"
   },
   "importer": {
     "importFlightLog": "Importeer een dronevluchtlog",
@@ -500,7 +500,7 @@
     "clear": "(wissen)",
     "usingFlightMap": "Vluchtkaart als achtergrond gebruiken",
     "generatingPreview": "Kaartvoorbeeld genereren...",
-    "generatedWith": "Gegenereerd met skydra.app",
+    "generatedWith": "Gegenereerd met Skydra",
     "flightTime": "Vluchttijd",
     "distance": "Afstand",
     "maxHeight": "Maximale Hoogte",

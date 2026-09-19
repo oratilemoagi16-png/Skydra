@@ -79,10 +79,6 @@
     "allTags": "Todas as tags",
     "searchDrones": "Buscar drones…",
     "searchBatteries": "Buscar baterias…",
-    "searchAircraft": "Pesquisar aeronaves…",
-    "noSearchResults": "Sem resultados",
-    "maintenanceOverdue": "{{days}}d atrasado",
-    "maintenanceOk": "Em dia",
     "searchTags": "Buscar tags…",
     "noMatchingDrones": "Nenhum drone encontrado",
     "noMatchingBatteries": "Nenhuma bateria encontrada",
@@ -298,7 +294,11 @@
     "never": "Nunca",
     "maintenanceDone": "✓ Manutenção Realizada",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "searchAircraft": "Pesquisar aeronaves…",
+    "noSearchResults": "Sem resultados",
+    "maintenanceOverdue": "{{days}}d atrasado",
+    "maintenanceOk": "Em dia"
   },
   "importer": {
     "importFlightLog": "Importar um registro de voo de drone",
@@ -493,7 +493,7 @@
     "clear": "(limpar)",
     "usingFlightMap": "Usando mapa de voo como fundo",
     "generatingPreview": "Gerando prévia do mapa...",
-    "generatedWith": "Gerado com skydra.app",
+    "generatedWith": "Gerado com Skydra",
     "flightTime": "Tempo de Voo",
     "distance": "Distância",
     "maxHeight": "Altura Máxima",

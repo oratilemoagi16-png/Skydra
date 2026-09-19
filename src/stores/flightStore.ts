@@ -89,10 +89,6 @@ interface FlightState {
   // API key type for cooldown bypass (personal keys skip cooldown)
   apiKeyType: 'none' | 'default' | 'personal';
 
-  // Update check
-  updateStatus: 'idle' | 'checking' | 'latest' | 'outdated' | 'failed';
-  latestVersion: string | null;
-
   // Flight data cache (keyed by flight ID)
   _flightDataCache: Map<number, FlightDataResponse>;
 
@@ -124,7 +120,6 @@ interface FlightState {
   setTimeFormat: (format: '12h' | '24h') => void;
   setUnitPref: (key: keyof UnitPreferences, value: UnitSystem | SpeedUnit) => void;
   setThemeMode: (themeMode: 'system' | 'dark' | 'light') => void;
-  checkForUpdates: () => Promise<void>;
   clearSelection: () => void;
   clearError: () => void;
   clearFlightDataCache: () => void;
@@ -286,8 +281,6 @@ export const useFlightStore = create<FlightState>((set, get) => ({
   allTags: [],
   smartTagsEnabled: true,
   apiKeyType: 'none',
-  updateStatus: 'idle',
-  latestVersion: null,
   batteryNameMap: (() => {
     if (typeof localStorage === 'undefined') return {};
     try {
@@ -1039,11 +1032,6 @@ export const useFlightStore = create<FlightState>((set, get) => ({
   mapVisibleBounds: null,
   setMapAreaFilterEnabled: (enabled) => set({ mapAreaFilterEnabled: enabled }),
   setMapVisibleBounds: (bounds) => set({ mapVisibleBounds: bounds }),
-
-  checkForUpdates: async () => {
-    // Disabled while Skydra release infrastructure is set up.
-    set({ updateStatus: 'latest', latestVersion: null });
-  },
 
   clearSelection: () =>
     set({

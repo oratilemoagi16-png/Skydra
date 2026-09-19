@@ -79,10 +79,6 @@
     "allTags": "全部标签",
     "searchDrones": "搜索无人机…",
     "searchBatteries": "搜索电池…",
-    "searchAircraft": "搜索飞行器…",
-    "noSearchResults": "无匹配结果",
-    "maintenanceOverdue": "超期{{days}}天",
-    "maintenanceOk": "未超期",
     "searchTags": "搜索标签…",
     "noMatchingDrones": "没有匹配的无人机",
     "noMatchingBatteries": "没有匹配的电池",
@@ -305,7 +301,11 @@
     "never": "从未",
     "maintenanceDone": "✓ 维护已完成",
     "save": "保存",
-    "cancel": "取消"
+    "cancel": "取消",
+    "searchAircraft": "搜索飞行器…",
+    "noSearchResults": "无匹配结果",
+    "maintenanceOverdue": "超期{{days}}天",
+    "maintenanceOk": "未超期"
   },
   "importer": {
     "importFlightLog": "导入无人机飞行日志",
@@ -500,7 +500,7 @@
     "clear": "（清除）",
     "usingFlightMap": "使用飞行地图作为背景",
     "generatingPreview": "正在生成地图预览...",
-    "generatedWith": "由 skydra.app 生成",
+    "generatedWith": "由 Skydra 生成",
     "flightTime": "飞行时间",
     "distance": "距离",
     "maxHeight": "最大高度",
