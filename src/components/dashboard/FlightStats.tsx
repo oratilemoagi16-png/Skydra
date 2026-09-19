@@ -26,12 +26,26 @@ import { fetchFlightWeather } from '@/lib/weather';
 
 interface FlightStatsProps {
   data: FlightDataResponse;
+  /** Rendered inside the workspace detail rail — tighter chrome. */
+  compact?: boolean;
+  /** Workspace Weather tab switcher; when absent the standalone modal opens. */
+  onOpenWeather?: () => void;
 }
 
-export function FlightStats({ data }: FlightStatsProps) {
+export function FlightStats({ data, compact = false, onOpenWeather }: FlightStatsProps) {
   const { t } = useTranslation();
   const { flight, telemetry } = data;
-  const { unitPrefs, locale, dateLocale, appLanguage, getBatteryDisplayName, getDroneDisplayName, addTag, removeTag, allTags, getDisplaySerial, timeFormat } = useFlightStore();
+  const unitPrefs = useFlightStore((s) => s.unitPrefs);
+  const locale = useFlightStore((s) => s.locale);
+  const dateLocale = useFlightStore((s) => s.dateLocale);
+  const appLanguage = useFlightStore((s) => s.appLanguage);
+  const getBatteryDisplayName = useFlightStore((s) => s.getBatteryDisplayName);
+  const getDroneDisplayName = useFlightStore((s) => s.getDroneDisplayName);
+  const addTag = useFlightStore((s) => s.addTag);
+  const removeTag = useFlightStore((s) => s.removeTag);
+  const allTags = useFlightStore((s) => s.allTags);
+  const getDisplaySerial = useFlightStore((s) => s.getDisplaySerial);
+  const timeFormat = useFlightStore((s) => s.timeFormat);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showHtmlReportModal, setShowHtmlReportModal] = useState(false);
@@ -247,13 +261,15 @@ export function FlightStats({ data }: FlightStatsProps) {
   const batteryCapsuleIsDecommissioned = batteryCapsuleLabel ? isDecommissioned(batteryCapsuleLabel) : false;
 
   return (
-    <div className="bg-surface border-b border-line px-4 py-3">
+    <div className={compact ? 'px-3 py-3' : 'bg-surface border-b border-line px-4 py-3'}>
       {/* Flight Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
+      <div className="flex flex-col justify-between mb-3 gap-2">
         <div>
-          <h2 className="text-lg font-semibold text-ink">
-            {flight.displayName || flight.fileName}
-          </h2>
+          {!compact && (
+            <h2 className="text-lg font-semibold text-ink">
+              {flight.displayName || flight.fileName}
+            </h2>
+          )}
           {flight.notes && (
             <p className="text-sm text-muted mt-1 flex items-start gap-1.5">
               <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -375,15 +391,18 @@ export function FlightStats({ data }: FlightStatsProps) {
           </div>
         </div>
 
-        <div className="text-left md:text-right self-start md:self-auto">
-          <p className="text-xs text-muted">
+        <div className="text-left">
+          <p className="text-xs text-muted font-mono tabular-nums">
             {flight.pointCount?.toLocaleString(locale) || 0} {t('flightStats.dataPoints')}
           </p>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="flex flex-wrap xl:grid xl:grid-cols-[repeat(5,minmax(0,1fr))_0.8fr_0.8fr_auto_auto] gap-2">
+      {/* Stats Grid — compact rail gets a plain 2-col grid */}
+      <div className={compact
+        ? 'grid grid-cols-2 gap-2'
+        : 'flex flex-wrap xl:grid xl:grid-cols-[repeat(5,minmax(0,1fr))_0.8fr_0.8fr_auto_auto] gap-2'
+      }>
         <div className="flex-1 min-w-[120px] xl:min-w-0">
           <StatCard
             label={t('flightStats.duration')}
@@ -443,13 +462,14 @@ export function FlightStats({ data }: FlightStatsProps) {
             icon={<VideoIcon />}
           />
         </div>
-        {/* Weather button */}
+        {/* Weather button — switches to the rail's Weather tab (or modal fallback) */}
         <div className="flex justify-center xl:block">
           <button
             type="button"
-            onClick={() => setIsWeatherOpen(true)}
+            onClick={() => (onOpenWeather ? onOpenWeather() : setIsWeatherOpen(true))}
             disabled={!flight.homeLat || !flight.homeLon || !flight.startTime}
             title={t('flightStats.flightWeather')}
+            aria-label={t('flightStats.flightWeather')}
             className="h-full min-h-[52px] w-[62px] flex items-center justify-center rounded-lg border-2 border-line-strong text-muted transition-all duration-200 hover:bg-elevated hover:text-accent hover:border-accent hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted"
           >
             <WeatherBtnIcon />
@@ -459,6 +479,8 @@ export function FlightStats({ data }: FlightStatsProps) {
           <button
             type="button"
             onClick={() => setIsExportOpen((open) => !open)}
+            aria-haspopup="menu"
+            aria-expanded={isExportOpen}
             className="w-full xl:w-[126px] h-full min-h-[52px] flex items-center justify-center gap-2 rounded-lg border-2 border-accent/70 text-accent text-sm font-semibold px-2 transition-all duration-200 hover:bg-accent hover:text-accent-ink hover:shadow-md"
           >
             <ExportIcon />
@@ -495,8 +517,8 @@ export function FlightStats({ data }: FlightStatsProps) {
         </div>
       </div>
 
-      {/* Weather Modal */}
-      {flight.homeLat != null && flight.homeLon != null && flight.startTime && (
+      {/* Weather Modal — only when the workspace has no weather tab to switch to */}
+      {!onOpenWeather && flight.homeLat != null && flight.homeLon != null && flight.startTime && (
         <WeatherModal
           isOpen={isWeatherOpen}
           onClose={() => setIsWeatherOpen(false)}
@@ -535,7 +557,7 @@ function StatCard({ label, value, icon, alert }: StatCardProps) {
             {icon}
           </div>
           <p
-            className={`text-lg font-semibold ${alert ? 'text-danger' : 'text-ink'
+            className={`text-lg font-semibold font-mono tabular-nums ${alert ? 'text-danger' : 'text-ink'
               }`}
           >
             {value}
