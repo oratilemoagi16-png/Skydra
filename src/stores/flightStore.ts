@@ -1078,38 +1078,8 @@ export const useFlightStore = create<FlightState>((set, get) => ({
   setMapVisibleBounds: (bounds) => set({ mapVisibleBounds: bounds }),
 
   checkForUpdates: async () => {
-    set({ updateStatus: 'checking' });
-    try {
-      const res = await fetch(
-        'https://api.github.com/repos/arpanghosh8453/dji-logbook/releases/latest',
-        { headers: { Accept: 'application/vnd.github.v3+json' } }
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const tagName: string = data.tag_name ?? '';
-      // Strip leading 'v' for comparison (e.g. "v2.1.0" → "2.1.0")
-      const latest = tagName.replace(/^v/i, '');
-
-      // Get current app version
-      let current = '';
-      try {
-        const { getVersion } = await import('@tauri-apps/api/app');
-        current = await getVersion();
-      } catch {
-        current = (typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '').replace(/^v/i, '');
-      }
-
-      if (!latest || !current) {
-        set({ updateStatus: 'failed', latestVersion: null });
-        return;
-      }
-
-      const isLatest = latest === current;
-      set({ updateStatus: isLatest ? 'latest' : 'outdated', latestVersion: latest });
-    } catch (err) {
-      console.warn('[UpdateCheck] Failed:', err);
-      set({ updateStatus: 'failed', latestVersion: null });
-    }
+    // Disabled while Skydra release infrastructure is set up.
+    set({ updateStatus: 'latest', latestVersion: null });
   },
 
   clearSelection: () =>

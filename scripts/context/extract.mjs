@@ -148,7 +148,7 @@ function buildOpenApi(routes) {
   return {
     openapi: '3.1.0',
     info: {
-      title: 'Open DroneLog Generated API Surface',
+      title: 'Skydra Generated API Surface',
       version: 'generated',
       description: 'Generated from src-tauri/src/server.rs router declarations.',
     },
@@ -244,7 +244,7 @@ function run() {
 
   const rustDeps = {
     sourceFingerprint: fingerprints.cargoToml,
-    crate: 'open-dronelog',
+    crate: 'skydra',
     dependencies: parseCargoDependencies(cargoToml),
   };
 

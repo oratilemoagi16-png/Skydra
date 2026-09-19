@@ -1,8 +1,8 @@
 {
   "app": {
-    "title": "Open DroneLog",
+    "title": "Skydra",
     "subtitle": "Repülés Elemzési Műszerfal",
-    "initializing": "Open DroneLog Inicializálása",
+    "initializing": "Skydra Inicializálása",
     "initProgress": "Inicializálás folyamatban - Kérjük, várjon...",
     "errorTitle": "Valami hiba történt",
     "errorDescription": "Az alkalmazás váratlan hibába ütközött. Kérjük, indítsa újra az alkalmazást. Ha ez többször is megtörténik, értesítsen bennünket.",
@@ -12,7 +12,7 @@
     "errorCopied": "Másolva!",
     "errorRestart": "Alkalmazás Újraindítása",
     "bannerText": "Ez egy ingyenes, nyílt forráskódú projekt:",
-    "bannerBy": "készítette: Arpan Ghosh",
+    "bannerBy": "készítette: Skydra Team",
     "bannerSupport": "Ha hasznosnak találod, kérjük, támogasd a fejlesztőt egy kávéval itt:",
     "dismiss": "Elvetés",
     "dismissBanner": "Adománycsomó elvetése",
@@ -316,7 +316,7 @@
     "lastMaintenance": "Utolsó karbantartás: {{date}}",
     "never": "Soha",
     "maintenanceDone": "✓ Karbantartás Kész",
-    "donationNote": "Az adatvédelemnek nemkéne, hogy ára legyen. Azért készítettem ezta nyílt forráskódú eszközt, hogy megtakarítsd az előfizetési költségeket és megőrizd az adataidat. Ha az Open DroneLog időt vagy kellemetlenséget takarított meg, fontolj meg egy kis adományt ezen keresztül:",
+    "donationNote": "Az adatvédelemnek nemkéne, hogy ára legyen. Azért készítettem ezta nyílt forráskódú eszközt, hogy megtakarítsd az előfizetési költségeket és megőrizd az adataidat. Ha az Skydra időt vagy kellemetlenséget takarított meg, fontolj meg egy kis adományt ezen keresztül:",
     "donationNoteSuffix": "- ez az eszköz beáldozott éjszakák és sok kávé segítségével jött létre. Egy kisebb támogatás sokat jelent."
   },
   "importer": {
@@ -493,7 +493,7 @@
     "exporting": "Exportálás…",
     "restoring": "Visszaállítás…",
     "deleteAllLogs": "Projekt Adatbázis Törlése",
-    "deleteAllWarning": "Ez a művelet nem vonható vissza. Törli az összes importált naplóbejegyzést a jelenlegi felhasználó OpenDroneLog adatbázisából. Az eredeti naplófájlok a szinkronizálási mappában/lemezen/SD kártyán nem törlődnek.",
+    "deleteAllWarning": "Ez a művelet nem vonható vissza. Törli az összes importált naplóbejegyzést a jelenlegi felhasználó Skydra adatbázisából. Az eredeti naplófájlok a szinkronizálási mappában/lemezen/SD kártyán nem törlődnek.",
     "deleteAllPreserveNote": "Az egyéni repülés nevek, megjegyzések, színek és kézi címkék megőrzésre kerülnek és automatikusan visszaállításra kerülnek, amikor az azonos naplófájlok újra importálódnak.",
     "removeDuplicates": "Duplikált Repülések Eltávolítása",
     "scanningDuplicates": "Duplikátumok szkenneléséL...",
@@ -526,7 +526,7 @@
     "clear": "(törlés)",
     "usingFlightMap": "Háttérként a repülési térkép használata",
     "generatingPreview": "Térképelőnézet generálása...",
-    "generatedWith": "Generálta opendronelog.com",
+    "generatedWith": "Generálta skydra.app",
     "flightTime": "Repülési Idő",
     "distance": "Távolság",
     "maxHeight": "Max Magasság",

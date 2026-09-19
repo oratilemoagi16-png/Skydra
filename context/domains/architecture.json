@@ -3,7 +3,7 @@
   "version": 1,
   "title": "Architecture Overview",
   "status": "active",
-  "owners": ["Arpan Ghosh"],
+  "owners": ["Skydra Team"],
   "updated_at": "2026-03-29T00:00:00Z",
   "verified_from": [
     { "path": "src/lib/api.ts", "note": "Unified adapter between Tauri invoke and web fetch" },

@@ -928,7 +928,7 @@ function getBackupFilename(): string {
   const now = new Date();
   const pad = (n: number) => n.toString().padStart(2, '0');
   const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-  return `${timestamp}_Open_Dronelog.db.backup`;
+  return `${timestamp}_Skydra.db.backup`;
 }
 
 function isLikelyMobileTauriRuntime(): boolean {
@@ -1020,7 +1020,7 @@ export async function backupDatabase(): Promise<boolean> {
     const { writeFile } = await import('@tauri-apps/plugin-fs');
     const saveResult = await save({
       defaultPath: getBackupFilename(),
-      filters: [{ name: 'Open DroneLog Backup', extensions: ['backup'] }],
+      filters: [{ name: 'Skydra Backup', extensions: ['backup'] }],
     });
     const destPath = resolveDialogPath(saveResult);
     if (!destPath) return false;
@@ -1036,7 +1036,7 @@ export async function backupDatabase(): Promise<boolean> {
   const { save } = await import('@tauri-apps/plugin-dialog');
   const saveResult = await save({
     defaultPath: getBackupFilename(),
-    filters: [{ name: 'Open DroneLog Backup', extensions: ['backup'] }],
+    filters: [{ name: 'Skydra Backup', extensions: ['backup'] }],
   });
   const destPath = resolveDialogPath(saveResult);
   if (!destPath) return false; // user cancelled
@@ -1073,7 +1073,7 @@ export async function restoreDatabase(file?: File): Promise<string> {
     const { readFile } = await import('@tauri-apps/plugin-fs');
     const openResult = await open({
       multiple: false,
-      filters: [{ name: 'Open DroneLog Backup', extensions: ['backup'] }],
+      filters: [{ name: 'Skydra Backup', extensions: ['backup'] }],
     });
     const srcPath = resolveDialogPath(openResult);
     if (!srcPath) return '';
@@ -1087,7 +1087,7 @@ export async function restoreDatabase(file?: File): Promise<string> {
   const { open } = await import('@tauri-apps/plugin-dialog');
   const openResult = await open({
     multiple: false,
-    filters: [{ name: 'Open DroneLog Backup', extensions: ['backup'] }],
+    filters: [{ name: 'Skydra Backup', extensions: ['backup'] }],
   });
   const srcPath = resolveDialogPath(openResult);
   if (!srcPath) return ''; // user cancelled

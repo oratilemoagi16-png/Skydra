@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-printf '%s\n' 'Running Android toolchain checks for Open DroneLog...'
+printf '%s\n' 'Running Android toolchain checks for Skydra...'
 
 has_cmd() {
   command -v "$1" >/dev/null 2>&1

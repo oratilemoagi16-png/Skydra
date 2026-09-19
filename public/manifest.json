@@ -1,6 +1,6 @@
 {
-    "name": "Open Drone Log",
-    "short_name": "DroneLog",
+    "name": "Skydra",
+    "short_name": "Skydra",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0f0f1a",

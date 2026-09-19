@@ -1,8 +1,8 @@
 {
   "app": {
-    "title": "Open DroneLog",
+    "title": "Skydra",
     "subtitle": "Flight Analysis Dashboard",
-    "initializing": "Initializing Open DroneLog",
+    "initializing": "Initializing Skydra",
     "initProgress": "Initialization in progress - Please wait...",
     "errorTitle": "Something went wrong",
     "errorDescription": "The app hit an unexpected error. Please restart the app. If this keeps happening, let us know.",
@@ -12,7 +12,7 @@
     "errorCopied": "Copied!",
     "errorRestart": "Restart App",
     "bannerText": "This is a free, open-source project on",
-    "bannerBy": "by Arpan Ghosh",
+    "bannerBy": "by Skydra Team",
     "bannerSupport": "If you find this useful, please consider supporting the developer with a coffee on",
     "dismiss": "Dismiss",
     "dismissBanner": "Dismiss donation banner",
@@ -316,7 +316,7 @@
     "lastMaintenance": "Last maintenance: {{date}}",
     "never": "Never",
     "maintenanceDone": "✓ Maintenance Done",
-    "donationNote": "Privacy shouldn't have a price tag. I built this open-source tool to save you subscription costs and keep your data private. If Open DroneLog has saved you time or headaches, consider a small donation via",
+    "donationNote": "Privacy shouldn't have a price tag. I built this open-source tool to save you subscription costs and keep your data private. If Skydra has saved you time or headaches, consider a small donation via",
     "donationNoteSuffix": "- it's built on late nights and a lot of coffee, and a small tip goes a long way."
   },
   "importer": {
@@ -493,7 +493,7 @@
     "exporting": "Exporting…",
     "restoring": "Restoring…",
     "deleteAllLogs": "Clear Project Database",
-    "deleteAllWarning": "This action cannot be undone. Deletes all imported log entries from the current user's OpenDroneLog database. The original log files on the sync folder/hard drive/SD card are not deleted.",
+    "deleteAllWarning": "This action cannot be undone. Deletes all imported log entries from the current user's Skydra database. The original log files on the sync folder/hard drive/SD card are not deleted.",
     "deleteAllPreserveNote": "Custom flight names, notes, colors, and manual tags will be preserved and automatically restored when the same log files are re-imported.",
     "removeDuplicates": "Remove duplicate flights",
     "scanningDuplicates": "Scanning for duplicates…",
@@ -526,7 +526,7 @@
     "clear": "(clear)",
     "usingFlightMap": "Using flight map as background",
     "generatingPreview": "Generating map preview...",
-    "generatedWith": "Generated with opendronelog.com",
+    "generatedWith": "Generated with skydra.app",
     "flightTime": "Flight Time",
     "distance": "Distance",
     "maxHeight": "Max Height",

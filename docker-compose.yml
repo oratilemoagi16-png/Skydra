@@ -1,8 +1,8 @@
 services:
-  open-dronelog:
-    image: ghcr.io/arpanghosh8453/open-dronelog:latest
-    container_name: open-dronelog
-    hostname: open-dronelog
+  skydra:
+    image: ghcr.io/oratilemoagi16-png/skydra:latest
+    container_name: skydra
+    hostname: skydra
     ports:
       - "8080:80"
     volumes:

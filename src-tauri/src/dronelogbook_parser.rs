@@ -1,4 +1,4 @@
-//! Parser module for Open DroneLog CSV export files.
+//! Parser module for Skydra CSV export files.
 //!
 //! Re-imports CSV files previously exported from this application.
 //! Detects the format by checking for characteristic headers like
@@ -70,7 +70,7 @@ fn parse_timestamp_flexible(s: &str) -> Option<DateTime<Utc>> {
     None
 }
 
-/// Column mapping for Open DroneLog CSV
+/// Column mapping for Skydra CSV
 struct ColumnMap {
     /// Column name -> index
     indices: HashMap<String, usize>,
@@ -140,7 +140,7 @@ impl ColumnMap {
     }
 }
 
-/// Open DroneLog CSV Parser
+/// Skydra CSV Parser
 pub struct DroneLogbookParser<'a> {
     db: &'a Database,
 }
@@ -150,7 +150,7 @@ impl<'a> DroneLogbookParser<'a> {
         Self { db }
     }
 
-    /// Check if a file is a valid Open DroneLog CSV export format
+    /// Check if a file is a valid Skydra CSV export format
     pub fn is_dronelogbook_csv(path: &Path) -> bool {
         // Must be a CSV file
         let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
@@ -158,7 +158,7 @@ impl<'a> DroneLogbookParser<'a> {
             return false;
         }
 
-        // Check header line for Open DroneLog-specific columns
+        // Check header line for Skydra-specific columns
         if let Ok(file) = File::open(path) {
             let reader = BufReader::new(file);
             for line in reader.lines() {
@@ -224,10 +224,10 @@ impl<'a> DroneLogbookParser<'a> {
         fields
     }
 
-    /// Parse an Open DroneLog CSV file
+    /// Parse an Skydra CSV file
     pub fn parse(&self, file_path: &Path, file_hash: &str) -> Result<ParseResult, ParserError> {
         let parse_start = std::time::Instant::now();
-        log::info!("Parsing Open DroneLog CSV file: {:?}", file_path);
+        log::info!("Parsing Skydra CSV file: {:?}", file_path);
 
         let file = File::open(file_path)?;
         let reader = BufReader::new(file);
@@ -743,7 +743,7 @@ impl<'a> DroneLogbookParser<'a> {
         };
 
         log::info!(
-            "Open DroneLog CSV parse complete in {:.1}s: duration={:.1}s, distance={:.0}m, max_alt={:.1}m, points={}",
+            "Skydra CSV parse complete in {:.1}s: duration={:.1}s, distance={:.0}m, max_alt={:.1}m, points={}",
             parse_start.elapsed().as_secs_f64(),
             metadata.duration_secs.unwrap_or(0.0),
             metadata.total_distance.unwrap_or(0.0),
