@@ -869,9 +869,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       const allMetric = unitPrefs.distance === 'metric' && unitPrefs.altitude === 'metric' && unitPrefs.temperature === 'metric' && unitPrefs.speed === 'kmh';
                       const allImperial = unitPrefs.distance === 'imperial' && unitPrefs.altitude === 'imperial' && unitPrefs.temperature === 'imperial' && unitPrefs.speed === 'mph';
                       const summaryLabel = allMetric
-                        ? `${t('settings.metric')} (m, km/h)`
+                        ? t('settings.metric')
                         : allImperial
-                          ? `${t('settings.imperial')} (ft, mph)`
+                          ? t('settings.imperial')
                           : t('settings.mixed', 'Mixed');
                       const unitRows: { key: 'distance' | 'altitude' | 'temperature'; label: string; metricLabel: string; imperialLabel: string }[] = [
                         { key: 'distance', label: t('settings.unitDistance', 'Distance'), metricLabel: 'km', imperialLabel: 'mi' },

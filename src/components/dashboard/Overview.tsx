@@ -1131,7 +1131,7 @@ function EquipmentRow({
       {item.tracked ? (
         <span className="hidden sm:flex flex-shrink-0 items-center gap-2">
           <span className="w-24">
-            <span className="block h-1.5 overflow-hidden rounded-full bg-canvas">
+            <span className="block h-1.5 overflow-hidden rounded-full bg-line/60">
               <span
                 className={cn(
                   'block h-full rounded-full transition-all',
@@ -1332,7 +1332,7 @@ function ProgressDim({
           {used}/{limit}
         </span>
       </div>
-      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface">
+      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line/60">
         <div
           className={cn('h-full rounded-full', over ? 'bg-danger' : pct >= 75 ? 'bg-warning' : 'bg-success')}
           style={{ width: `${pct}%` }}
@@ -1976,12 +1976,13 @@ function ActivityHeatmap({
     scrollRef.current.scrollLeft = 0;
   }, [weekCount, dateRange?.from?.getTime(), dateRange?.to?.getTime()]);
 
-  // Token-derived cell fill: empty = grid token, filled = track ramp by intensity.
+  // Token-derived cell fill: empty = grid token, filled = accent ramp by
+  // intensity (activity, not status — never use the green `track` token here).
   const cellColor = (count: number): string => {
     if (count < 0) return 'transparent';
     if (count === 0) return 'rgb(var(--skydra-grid))';
     const intensity = Math.min(count / Math.max(maxCount, 1), 1);
-    return `rgb(var(--skydra-track) / ${(0.25 + 0.75 * intensity).toFixed(2)})`;
+    return `rgb(var(--skydra-accent) / ${(0.22 + 0.78 * intensity).toFixed(2)})`;
   };
 
   const focusCell = (idx: number) => {
@@ -2126,7 +2127,7 @@ function ActivityHeatmap({
                   backgroundColor:
                     i === 0
                       ? 'rgb(var(--skydra-grid))'
-                      : `rgb(var(--skydra-track) / ${(0.25 + 0.75 * intensity).toFixed(2)})`,
+                      : `rgb(var(--skydra-accent) / ${(0.22 + 0.78 * intensity).toFixed(2)})`,
                 }}
               />
             ))}
