@@ -4498,7 +4498,7 @@ export function FlightList({
                   tabIndex={-1}
                   aria-haspopup="menu"
                   aria-label={t('flightList.moreActions', 'More actions for {{name}}').replace('{{name}}', flight.displayName || flight.fileName)}
-                  title={t('flightList.moreActions', 'More actions')}
+                  title={t('flightList.moreActions', 'More actions for {{name}}').replace('{{name}}', flight.displayName || flight.fileName)}
                   onClick={(e) => {
                     e.stopPropagation();
                     const rect = e.currentTarget.getBoundingClientRect();
