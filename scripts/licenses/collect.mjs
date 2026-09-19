@@ -180,8 +180,18 @@ const document_ = {
   groups,
 };
 
+// Skip rewriting when only the timestamp would change — keeps the checked-in
+// snapshot stable across builds.
+const contentOf = (doc) => JSON.stringify({ appVersion: doc.appVersion, groups: doc.groups });
+let existing = null;
+try {
+  existing = readJson(outJson);
+} catch { /* first run */ }
+
 fs.mkdirSync(path.dirname(outJson), { recursive: true });
-fs.writeFileSync(outJson, `${JSON.stringify(document_, null, 2)}\n`);
+if (!existing || contentOf(existing) !== contentOf(document_)) {
+  fs.writeFileSync(outJson, `${JSON.stringify(document_, null, 2)}\n`);
+}
 
 // Bundle the product license so it is reachable without network (AGPL §5/§13).
 const licenseSrc = path.join(root, 'LICENSE');
