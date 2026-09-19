@@ -139,7 +139,7 @@ export function AboutDialog({ isOpen, onClose }: AboutDialogProps) {
             <button
               onClick={onClose}
               className="text-faint hover:text-ink transition-colors"
-              aria-label={t('flightList.close', 'Close')}
+              aria-label={t('nav.close', 'Close')}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -153,11 +153,8 @@ export function AboutDialog({ isOpen, onClose }: AboutDialogProps) {
           {tab === 'about' && (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <img src="skydra-wordmark.png" alt="" className="h-8 w-auto" />
-                <div>
-                  <div className="text-lg font-semibold text-ink leading-tight">Skydra</div>
-                  <div className="text-xs text-muted font-mono">v{version}</div>
-                </div>
+                <img src={`${import.meta.env.BASE_URL}skydra-wordmark.png`} alt="Skydra" className="h-7 w-auto wordmark-img" />
+                <div className="text-xs text-muted font-mono">v{version}</div>
                 <span className="ml-auto text-[11px] font-medium px-2 py-1 rounded-md border border-line text-muted">
                   AGPL-3.0-only
                 </span>

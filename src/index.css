@@ -128,6 +128,11 @@ body.theme-light .text-white {
   color: #0f172a !important;
 }
 
+/* Wordmark asset is white-on-transparent — invert for the light theme */
+body.theme-light .wordmark-img {
+  filter: invert(0.88);
+}
+
 /* FlyCard content: always white text regardless of theme (has image background) */
 body.theme-light .flycard-content .text-white,
 .flycard-content .text-white {
