@@ -272,8 +272,8 @@ export function FlightWorkspace({ data, stale = false, onBackToList, isMobileVie
         type="button"
         onClick={openActionsMenu}
         aria-haspopup="menu"
-        aria-label={t('flightList.moreActions', 'More actions')}
-        title={t('flightList.moreActions', 'More actions')}
+        aria-label={t('flightList.moreActions', 'More actions for {{name}}').replace('{{name}}', flight.displayName || flight.fileName)}
+        title={t('flightList.moreActions', 'More actions for {{name}}').replace('{{name}}', flight.displayName || flight.fileName)}
         className="p-1.5 rounded-lg text-muted hover:text-ink hover:bg-elevated transition-colors"
       >
         <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
