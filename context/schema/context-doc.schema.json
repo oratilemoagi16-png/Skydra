@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://opendronelog.dev/context/schema/context-doc.schema.json",
+  "$id": "https://skydra.app/context/schema/context-doc.schema.json",
   "title": "Context Domain Document",
   "type": "object",
   "required": [

@@ -2,8 +2,8 @@
 set -e
 
 # Start the Axum backend in the background
-echo "Starting Open DroneLog API server on port 3001..."
-/app/open-dronelog &
+echo "Starting Skydra API server on port 3001..."
+/app/skydra &
 
 # Start nginx in the foreground
 echo "Starting nginx on port 80..."

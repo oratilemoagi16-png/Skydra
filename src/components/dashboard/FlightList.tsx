@@ -1809,9 +1809,9 @@ export function FlightList({
 
   const validateDesktopExportDirectoryWritable = async (dirPath: string) => {
     const { writeTextFile, readTextFile, remove } = await import('@tauri-apps/plugin-fs');
-    const marker = `open-dronelog-export-write-check-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
+    const marker = `skydra-export-write-check-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
     const tempPath = `${dirPath}/${marker}`;
-    const payload = 'open-dronelog-export-write-check';
+    const payload = 'skydra-export-write-check';
 
     await writeTextFile(tempPath, payload);
     const readBack = await readTextFile(tempPath);
@@ -1823,8 +1823,8 @@ export function FlightList({
   };
 
   const validateWebExportDirectoryWritable = async (dirHandle: any) => {
-    const marker = `open-dronelog-export-write-check-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
-    const payload = 'open-dronelog-export-write-check';
+    const marker = `skydra-export-write-check-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
+    const payload = 'skydra-export-write-check';
     const fileHandle = await dirHandle.getFileHandle(marker, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(payload);
@@ -1843,8 +1843,8 @@ export function FlightList({
   };
 
   const validateMobileExportDirectoryWritable = async (androidFs: any, dirUri: any) => {
-    const marker = `open-dronelog-export-write-check-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
-    const payload = 'open-dronelog-export-write-check';
+    const marker = `skydra-export-write-check-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
+    const payload = 'skydra-export-write-check';
     const fileUri = await androidFs.AndroidFs.createNewFile(dirUri, marker, 'text/plain');
     await androidFs.AndroidFs.writeTextFile(fileUri, payload);
     const readBack = await androidFs.AndroidFs.readTextFile(fileUri);

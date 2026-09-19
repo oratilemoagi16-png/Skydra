@@ -850,7 +850,7 @@ async fn export_backup(
 
     // Generate timestamped filename
     let now = chrono::Local::now();
-    let filename = format!("{}_Open_Dronelog.db.backup", now.format("%Y-%m-%d_%H-%M-%S"));
+    let filename = format!("{}_Skydra.db.backup", now.format("%Y-%m-%d_%H-%M-%S"));
 
     Ok((
         [
@@ -2435,7 +2435,7 @@ pub async fn start_server(data_dir: PathBuf) -> Result<(), Box<dyn std::error::E
     let port = std::env::var("PORT").unwrap_or_else(|_| "3001".to_string());
     let addr = format!("{}:{}", host, port);
 
-    log::info!("Starting Open DroneLog web server on {}", addr);
+    log::info!("Starting Skydra web server on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(&addr).await?;
     axum::serve(listener, router).await?;

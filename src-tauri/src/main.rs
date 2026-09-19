@@ -1,4 +1,4 @@
-//! Open DroneLog - Backend
+//! Skydra - Backend
 //!
 //! A high-performance application for analyzing DJI drone flight logs.
 //! Supports two build modes:

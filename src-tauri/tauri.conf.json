@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Open DroneLog",
+  "productName": "Skydra",
   "version": "3.3.0",
   "identifier": "com.drone-logbook",
   "build": {
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Open Drone Log",
+        "title": "Skydra",
         "width": 1600,
         "height": 900,
         "minWidth": 1200,

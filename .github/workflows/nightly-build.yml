@@ -106,7 +106,7 @@ jobs:
           prerelease: true
           includeRelease: true
           uploadPlainBinary: false
-          assetNamePattern: 'open-dronelog_nightly_[platform]_[arch][_setup][ext]'
+          assetNamePattern: 'skydra_nightly_[platform]_[arch][_setup][ext]'
 
   rename-and-checksums:
     needs: build
@@ -143,7 +143,7 @@ jobs:
             --pattern '*.msi' \
             --pattern '*.nsis.zip' \
             --pattern '*.app.tar.gz' \
-            --pattern 'open-dronelog_*'
+            --pattern 'skydra_*'
 
       - name: Rename versioned assets to nightly
         env:
@@ -155,10 +155,10 @@ jobs:
             # RPM uses dash before version (e.g., -2.24.0-1) → -nightly-1
             newname="${newname//-$VERSION/-nightly}"
             # Canonicalize historical naming variants to one release naming scheme.
-            newname="${newname//Open.DroneLog/open-dronelog}"
-            newname="${newname//Open_DroneLog/open-dronelog}"
-            newname="${newname//Open-DroneLog/open-dronelog}"
-            newname="${newname//opendronelog/open-dronelog}"
+            newname="${newname//skydra/skydra}"
+            newname="${newname//skydra/skydra}"
+            newname="${newname//skydra/skydra}"
+            newname="${newname//skydra/skydra}"
             if [ "$newname" != "$f" ]; then
               echo "Renaming: $f → $newname"
               mv "$f" "$newname"

@@ -12,7 +12,7 @@ on:
       package_name:
         description: "Application ID / package name on Google Play"
         required: true
-        default: "com.opendronelog"
+        default: "com.skydra"
       track:
         description: "Google Play track"
         required: true
@@ -155,7 +155,7 @@ jobs:
             echo "No *-unsigned.aab found; using $INPUT_AAB"
           fi
 
-          OUTPUT_AAB="$SIGNED_DIR/open-dronelog-play-release.aab"
+          OUTPUT_AAB="$SIGNED_DIR/skydra-play-release.aab"
           cp "$INPUT_AAB" "$OUTPUT_AAB"
 
           jarsigner \
@@ -182,7 +182,7 @@ jobs:
 
           if [ "${{ github.event_name }}" = "release" ]; then
             # Default automatic release behavior: full production rollout.
-            PACKAGE_NAME="com.opendronelog"
+            PACKAGE_NAME="com.skydra"
             TRACK="production"
             RELEASE_STATUS="completed"
             CHANGES_NOT_SENT_FOR_REVIEW="false"
@@ -204,7 +204,7 @@ jobs:
       - name: Prepare release notes
         run: |
           mkdir -p /tmp/whatsnew
-          echo "Release Notes: https://github.com/arpanghosh8453/open-dronelog/releases" > /tmp/whatsnew/whatsnew-en-US
+          echo "Release Notes: https://github.com/oratilemoagi16-png/Skydra/releases" > /tmp/whatsnew/whatsnew-en-US
 
       - name: Upload AAB to Google Play
         uses: r0adkll/upload-google-play@v1

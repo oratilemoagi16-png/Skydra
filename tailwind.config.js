@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Open DroneLog color scheme
+        // Skydra color scheme
         drone: {
           primary: 'rgb(var(--drone-primary) / <alpha-value>)',
           secondary: 'rgb(var(--drone-secondary) / <alpha-value>)',

@@ -136,7 +136,7 @@ pub enum ParserError {
     #[error("Parsing timed out after {0} seconds — file may be corrupt or unsupported")]
     Timeout(u64),
 
-    #[error("Incompatible file format — only DJI flight logs (.txt), Litchi CSV exports, Airdata CSV exports, and Open DroneLog CSV exports are supported")]
+    #[error("Incompatible file format — only DJI flight logs (.txt), Litchi CSV exports, Airdata CSV exports, and Skydra CSV exports are supported")]
     IncompatibleFile,
 }
 
@@ -215,7 +215,7 @@ impl<'a> LogParser<'a> {
 
         // Try built-in CSV parsers first
         if DroneLogbookParser::is_dronelogbook_csv(file_path) {
-            log::info!("Detected Open DroneLog CSV format, using DroneLogbookParser");
+            log::info!("Detected Skydra CSV format, using DroneLogbookParser");
             match DroneLogbookParser::new(self.db).parse(file_path, &file_hash) {
                 Ok(res) => return Ok(res),
                 Err(e) => builtin_err = e,
