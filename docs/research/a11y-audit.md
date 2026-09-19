@@ -186,3 +186,14 @@ python3 scripts/dev/seed_demo_data.py
 # then: playwright connectOverCDP(http://localhost:29229) + axe-core injection,
 # or npx @axe-core/cli http://localhost:1420
 ```
+
+---
+
+## Addendum — audited pre-design-foundation (orchestrator note)
+
+This audit ran against `skydra/main` @ `b84e1b9`, **before** PR #13 (design tokens + Geist + dock) merged. Re-read findings accordingly:
+
+- **S4 contrast measurements** cite the legacy palette (`#94A3B8`, `#6B7280`, `#1A1A2E`, `#F4F7FA`). The new semantic tokens (`--skydra-muted` `#9A9A94`/`#6B6963`, `--skydra-bg` `#191A1C`/`#F3F2EE`) change every one of those ratios — re-measure against the merged tokens before treating S4's numbers as current. The *finding class* (muted-text contrast floors per surface per theme) still stands as a checklist item for the token sweep.
+- **B6 collapse/resize affordances** — the sidebar/dock structure changed in #13; the specific line refs may have moved. The *pattern* finding (mouse-only resizers/chevrons) still applies wherever those controls survive.
+- All keyboard-model, focus-trap, dialog-semantics, live-region, and labeling findings (B1–B5, S1–S3, S5+) are structural and unaffected by the token/dock merge — treat as current.
+
