@@ -321,6 +321,14 @@ export function FlightClusterMap({
     return false;
   });
 
+  // Layer panel starts collapsed (matches FlightMap's Map Settings pill);
+  // sessionStorage remembers the last state.
+  const [layersCollapsed, setLayersCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    const stored = window.sessionStorage.getItem('clusterMap:layersCollapsed');
+    return stored !== null ? stored === 'true' : true;
+  });
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem('clusterMap:showClusters', String(showClusters));
@@ -770,47 +778,69 @@ export function FlightClusterMap({
           <NavigationControl position="top-right" />
           <AttributionControl position="bottom-left" compact={true} />
 
-          {/* Map Controls */}
-          <div className="absolute top-2 left-2 z-10 flex flex-col gap-2 w-44">
-            <Select
-              className="map-layer-select shadow-md"
-              value={mapType}
-              onChange={(val) => setMapType(val as MapType)}
-              options={MAP_TYPE_OPTIONS.map((opt) => ({
-                value: opt.value,
-                label: t(opt.labelKey as any),
-              }))}
-            />
+          {/* Map Controls — collapsed to a quiet pill; expands over the canvas */}
+          <div className="map-overlay absolute top-2 left-2 z-10">
+            <button
+              type="button"
+              onClick={() => setLayersCollapsed((v) => {
+                const next = !v;
+                window.sessionStorage.setItem('clusterMap:layersCollapsed', String(next));
+                return next;
+              })}
+              className="w-full flex items-center justify-between gap-3 px-3 py-2 text-xs text-muted hover:text-ink transition-colors"
+            >
+              <span className="font-semibold">{t('map.mapSettings', 'Map Settings')}</span>
+              <span
+                className={`w-5 h-5 rounded-full border border-line flex items-center justify-center transition-transform duration-200 ${layersCollapsed ? 'rotate-180' : ''
+                  }`}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
+              </span>
+            </button>
 
-            {/* Layer Toggles */}
-            <div className="map-overlay shadow-lg p-3 flex flex-col gap-3 w-full">
-              <span className="text-[10px] font-semibold text-muted uppercase tracking-widest leading-none">{t('clusterMap.layers', 'Layers')}</span>
+            <div
+              className={`transition-all duration-200 ease-in-out ${layersCollapsed ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[calc(100%-2.5rem)] overflow-y-auto opacity-100'
+                }`}
+            >
+              <div className="px-3 pb-3 flex flex-col gap-3 w-44">
+                <Select
+                  className="map-layer-select"
+                  value={mapType}
+                  onChange={(val) => setMapType(val as MapType)}
+                  options={MAP_TYPE_OPTIONS.map((opt) => ({
+                    value: opt.value,
+                    label: t(opt.labelKey as any),
+                  }))}
+                />
 
-              <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-[13px] text-ink group-hover:text-accent transition-colors">{t('clusterMap.showClusters', 'Clusters')}</span>
-                <div className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={showClusters}
-                    onChange={() => handleToggleLayer('clusters')}
-                  />
-                  <div className="w-8 h-[18px] bg-line outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-accent shadow-inner"></div>
-                </div>
-              </label>
+                <span className="text-[10px] font-semibold text-muted uppercase tracking-widest leading-none">{t('clusterMap.layers', 'Layers')}</span>
 
-              <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-[13px] text-ink group-hover:text-accent transition-colors">{t('clusterMap.showHeatmap', 'Heatmap')}</span>
-                <div className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={showHeatmap}
-                    onChange={() => handleToggleLayer('heatmap')}
-                  />
-                  <div className="w-8 h-[18px] bg-line outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-accent shadow-inner"></div>
-                </div>
-              </label>
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-[13px] text-ink group-hover:text-accent transition-colors">{t('clusterMap.showClusters', 'Clusters')}</span>
+                  <div className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={showClusters}
+                      onChange={() => handleToggleLayer('clusters')}
+                    />
+                    <div className="w-8 h-[18px] bg-line outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-accent shadow-inner"></div>
+                  </div>
+                </label>
+
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-[13px] text-ink group-hover:text-accent transition-colors">{t('clusterMap.showHeatmap', 'Heatmap')}</span>
+                  <div className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={showHeatmap}
+                      onChange={() => handleToggleLayer('heatmap')}
+                    />
+                    <div className="w-8 h-[18px] bg-line outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-accent shadow-inner"></div>
+                  </div>
+                </label>
+              </div>
             </div>
           </div>
 

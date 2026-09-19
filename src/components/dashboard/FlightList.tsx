@@ -4449,9 +4449,10 @@ export function FlightList({
                     </p>
                   )}
 
-                  {/* Subtitle: mono scan metrics (date · duration · distance · max alt) */}
+                  {/* Subtitle: mono scan metrics (date · duration · distance · max alt) —
+                      wraps whole tokens, never cuts a value in half */}
                   {editingId !== flight.id && (
-                    <p className="text-[11px] leading-4 text-muted mt-0.5 truncate font-mono tabular-nums">
+                    <p className="text-[11px] leading-4 text-muted mt-0.5 font-mono tabular-nums break-words">
                       {formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}
                       {flight.durationSecs ? ` · ${formatDuration(flight.durationSecs)}` : ''}
                       {flight.totalDistance ? ` · ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}` : ''}

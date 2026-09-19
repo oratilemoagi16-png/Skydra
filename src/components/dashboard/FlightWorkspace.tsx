@@ -23,7 +23,9 @@ type RailTab = 'stats' | 'messages' | 'weather' | 'notes';
 // 340px flights rail alongside (1280 − 340 − 300 = 640).
 const RAIL_WIDTH = 300;
 const RAIL_COLLAPSED_WIDTH = 46;
-const TELEMETRY_DEFAULT_HEIGHT = 300;
+// Map must stay the dominant zone: at ~800px-tall workspaces 208px keeps
+// telemetry under ~40% of the vertical split (was 300px → map letterboxed).
+const TELEMETRY_DEFAULT_HEIGHT = 208;
 const TELEMETRY_MIN_HEIGHT = 140;
 const TELEMETRY_MAX_RATIO = 0.72;
 
@@ -490,7 +492,7 @@ export function FlightWorkspace({ data, stale = false, onBackToList, isMobileVie
         aria-busy={stale || undefined}
       >
         {header}
-        <div className="h-[44dvh] min-h-[260px] shrink-0 border-b border-line">
+        <div className="h-[44dvh] min-h-[260px] shrink-0 border-b border-line flex">
           {mapSection}
         </div>
         <div className="shrink-0 bg-surface">

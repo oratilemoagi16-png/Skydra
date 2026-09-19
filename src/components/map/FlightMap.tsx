@@ -1693,7 +1693,7 @@ export function FlightMap({ track, homeLat, homeLon, durationSecs, telemetry, th
 
           {/* Collapsible body */}
           <div
-            className={`transition-all duration-200 ease-in-out ${mapSettingsCollapsed ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[500px] overflow-visible opacity-100'
+            className={`transition-all duration-200 ease-in-out ${mapSettingsCollapsed ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[calc(100%-2.5rem)] overflow-y-auto opacity-100'
               }`}
           >
             <div className="px-3 pb-3 space-y-2">
