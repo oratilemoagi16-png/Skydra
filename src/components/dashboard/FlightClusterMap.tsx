@@ -70,7 +70,7 @@ const clusterCountLayer = () => ({
     'text-allow-overlap': true,
   },
   paint: {
-    'text-color': 'rgb(var(--skydra-accent-ink))',
+    'text-color': themeColor('--skydra-accent-ink'),
   },
 });
 
@@ -84,7 +84,7 @@ const unclusteredPointLayer = () => ({
     'circle-color': themeColor('--skydra-accent'),
     'circle-radius': 7,
     'circle-stroke-width': 2,
-    'circle-stroke-color': 'rgb(var(--skydra-accent-ink))',
+    'circle-stroke-color': themeColor('--skydra-accent-ink'),
   },
 });
 
