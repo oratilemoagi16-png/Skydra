@@ -2,7 +2,7 @@
  * Settings modal for API key configuration
  */
 
-import { useState, useEffect, useRef, useTransition } from 'react';
+import { useState, useEffect, useRef, useCallback, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { sha256 } from 'js-sha256';
 import * as api from '@/lib/api';
@@ -231,6 +231,31 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const timer = setTimeout(() => setMessage(null), 5000);
     return () => clearTimeout(timer);
   }, [message]);
+
+  // Keep dismissal props stable for the shared Modal: its open-effect depends on
+  // `onClose`/`dismissable`, and Dashboard passes an inline onClose — every app
+  // re-render would otherwise re-run the primitive's focus restore and steal
+  // focus out of the dialog. Dismissal scoping (nested dialogs, busy ops, open
+  // dropdowns) lives in the guarded handler instead of the `dismissable` flag.
+  const onCloseRef = useRef(onClose);
+  const dismissGuardRef = useRef(false);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+  useEffect(() => {
+    dismissGuardRef.current = isBusy || isAboutOpen || isBlacklistModalOpen;
+  }, [isBusy, isAboutOpen, isBlacklistModalOpen]);
+  const handleModalClose = useCallback(() => {
+    if (!dismissGuardRef.current) onCloseRef.current();
+  }, []);
+
+  // Collapse open dropdowns when the dialog closes.
+  useEffect(() => {
+    if (isOpen) return;
+    setUnitsDropdownOpen(false);
+    setIsTagTypeDropdownOpen(false);
+    setTagTypeSearch('');
+  }, [isOpen]);
 
   // Move focus into the blacklist manager when it opens (it lives inside the
   // settings dialog panel, so the parent focus trap covers its controls).
@@ -664,9 +689,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleModalClose}
       labelledBy="settings-modal-title"
-      dismissable={!isBusy && !nestedDialogOpen}
       className={`w-full max-w-[920px] max-h-[calc(100vh-2rem)] modal-mobile-max flex flex-col ${
         nestedDialogOpen
           ? ''
@@ -765,7 +789,19 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
 
           {/* Body — section nav + active section panel */}
-          <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+          <div
+            className="flex-1 flex flex-col lg:flex-row min-h-0"
+            onKeyDown={(e) => {
+              // Esc peels an open dropdown before it reaches the dialog
+              if (e.key !== 'Escape') return;
+              if (!unitsDropdownOpen && !isTagTypeDropdownOpen) return;
+              e.preventDefault();
+              e.stopPropagation();
+              setUnitsDropdownOpen(false);
+              setIsTagTypeDropdownOpen(false);
+              setTagTypeSearch('');
+            }}
+          >
             <div
               role="tablist"
               aria-orientation={isDesktopNav ? 'vertical' : 'horizontal'}
@@ -865,13 +901,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                               <div className="fixed inset-0 z-40" onClick={() => setUnitsDropdownOpen(false)} />
                               <div
                                 className={`absolute left-0 top-full mt-1 z-50 w-56 rounded-lg border shadow-xl overflow-hidden bg-elevated border-line`}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Escape') {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setUnitsDropdownOpen(false);
-                                  }
-                                }}
                               >
                                 {/* Bulk set buttons */}
                                 <div className={`flex gap-1 p-2 border-b border-line`}>
