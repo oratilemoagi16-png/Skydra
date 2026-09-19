@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "3fc57c6f19c770e806d8481417b67bf848ec36ca8e488d207102be2c6de9cd01",
+  "sourceFingerprint": "78e9e097a156e5bc1388e4d0ec0eb4c5afd677b3bd629f10a5f4e695eaeb0a7b",
   "packageName": "skydra",
   "projectVersion": "3.3.0",
   "dependencies": [
@@ -7,7 +7,6 @@
     "@deck.gl/mapbox",
     "@fontsource/geist",
     "@fontsource/geist-mono",
-    "@fontsource/inter",
     "@tauri-apps/api",
     "@tauri-apps/plugin-dialog",
     "@tauri-apps/plugin-fs",

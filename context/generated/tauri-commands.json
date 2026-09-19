@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "6bd04a20fb9305022d4c4e19bf41031832a41434bd0fb00a670cf262be66f645",
+  "sourceFingerprint": "c943ccab5eca2f8426805e682baa07da959cab8df84db92fa78749c9621ea44d",
   "sourceFile": "src/lib/api.ts",
   "commands": [
     "add_flight_tag",
@@ -22,7 +22,6 @@
     "get_auto_logout",
     "get_battery_full_capacity_history",
     "get_battery_pairs",
-    "get_donation_acknowledged",
     "get_enabled_tag_types",
     "get_equipment_names",
     "get_flight_data",
@@ -31,7 +30,6 @@
     "get_overview_stats",
     "get_setting_value",
     "get_smart_tags_enabled",
-    "get_supporter_status",
     "get_sync_blacklist",
     "has_api_key",
     "import_backup",
@@ -48,10 +46,8 @@
     "remove_flight_tag",
     "remove_from_sync_blacklist",
     "remove_profile_password",
-    "remove_supporter_badge",
     "set_api_key",
     "set_auto_logout",
-    "set_donation_acknowledged",
     "set_enabled_tag_types",
     "set_equipment_name",
     "set_keep_upload_settings",
@@ -62,7 +58,6 @@
     "unlock_profile",
     "update_flight_color",
     "update_flight_name",
-    "update_flight_notes",
-    "verify_supporter_code"
+    "update_flight_notes"
   ]
 }
