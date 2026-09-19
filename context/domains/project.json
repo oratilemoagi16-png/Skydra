@@ -4,14 +4,15 @@
   "title": "Project Baseline",
   "status": "active",
   "owners": ["Skydra Team"],
-  "updated_at": "2026-03-24T00:00:00Z",
+  "updated_at": "2026-09-19T00:00:00Z",
   "verified_from": [
     { "path": "package.json", "note": "Source of npm package metadata and frontend dependencies" },
     { "path": "src-tauri/Cargo.toml", "note": "Source of Rust crate dependencies and feature flags" }
   ],
   "content": {
     "name": "skydra",
-    "version": "2.32.0",
+    "upstream": "open-dronelog (github.com/arpanghosh8453/open-dronelog)",
+    "version": "3.3.0",
     "license": "AGPL-3.0-only",
     "frontend": {
       "framework": "React 18 + TypeScript",
