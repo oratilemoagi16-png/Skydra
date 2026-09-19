@@ -16,9 +16,13 @@ interface SelectProps {
   options: SelectOption[];
   className?: string;
   listMaxHeight?: string;
+  /** Accessible name for the trigger button */
+  ariaLabel?: string;
+  /** id of an element labelling the trigger (takes precedence over ariaLabel) */
+  ariaLabelledBy?: string;
 }
 
-export function Select({ value, onChange, options, className = '', listMaxHeight = 'max-h-48' }: SelectProps) {
+export function Select({ value, onChange, options, className = '', listMaxHeight = 'max-h-48', ariaLabel, ariaLabelledBy }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -132,6 +136,10 @@ export function Select({ value, onChange, options, className = '', listMaxHeight
         type="button"
         onClick={() => setIsOpen((o) => !o)}
         className="themed-select-trigger w-full text-left flex items-center justify-between"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-label={ariaLabelledBy ? undefined : ariaLabel}
+        aria-labelledby={ariaLabelledBy}
       >
         <span className="truncate">{selectedLabel}</span>
         <svg
@@ -156,11 +164,12 @@ export function Select({ value, onChange, options, className = '', listMaxHeight
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type to filter…"
+              aria-label="Filter options"
               className="w-full bg-transparent text-sm text-ink placeholder:text-faint outline-none"
             />
           </div>
           {/* Options list */}
-          <div ref={listRef} className={`${listMaxHeight} overflow-y-scroll`}>
+          <div ref={listRef} role="listbox" className={`${listMaxHeight} overflow-y-scroll`}>
             {filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-xs text-muted italic">No matches</div>
             ) : (
@@ -169,6 +178,8 @@ export function Select({ value, onChange, options, className = '', listMaxHeight
                   key={opt.value}
                   data-option
                   data-active={opt.value === value}
+                  role="option"
+                  aria-selected={opt.value === value}
                   onClick={() => {
                     onChange(opt.value);
                     close();
