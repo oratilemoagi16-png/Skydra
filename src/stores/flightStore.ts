@@ -83,8 +83,6 @@ interface FlightState {
   error: string | null;
   unitPrefs: UnitPreferences;
   themeMode: 'system' | 'dark' | 'light';
-  donationAcknowledged: boolean;
-  supporterBadgeActive: boolean;
   allTags: string[];
   smartTagsEnabled: boolean;
 
@@ -126,9 +124,6 @@ interface FlightState {
   setTimeFormat: (format: '12h' | '24h') => void;
   setUnitPref: (key: keyof UnitPreferences, value: UnitSystem | SpeedUnit) => void;
   setThemeMode: (themeMode: 'system' | 'dark' | 'light') => void;
-  setDonationAcknowledged: (value: boolean) => void;
-  setSupporterBadge: (active: boolean) => void;
-  loadSupporterStatus: () => Promise<void>;
   checkForUpdates: () => Promise<void>;
   clearSelection: () => void;
   clearError: () => void;
@@ -287,8 +282,6 @@ export const useFlightStore = create<FlightState>((set, get) => ({
       ? stored
       : 'system';
   })(),
-  donationAcknowledged: false,
-  supporterBadgeActive: false,
   _flightDataCache: new Map(),
   allTags: [],
   smartTagsEnabled: true,
@@ -928,36 +921,6 @@ export const useFlightStore = create<FlightState>((set, get) => ({
       document.body.classList.add(resolved === 'dark' ? 'theme-dark' : 'theme-light');
     }
     set({ themeMode });
-  },
-
-  setDonationAcknowledged: (value) => {
-    set({ donationAcknowledged: value });
-    // Persist to backend (fire-and-forget)
-    api.setDonationAcknowledgedApi(value).catch((err) =>
-      console.warn('Failed to persist donation acknowledged state:', err),
-    );
-  },
-
-  setSupporterBadge: (active) => {
-    set({ supporterBadgeActive: active });
-    if (active) {
-      // Activating badge also acknowledges donation
-      get().setDonationAcknowledged(true);
-    }
-    // Note: activation is done via verifySupporterCode; removal via removeSupporterBadge.
-    // This setter is kept for local state updates after the API call succeeds.
-  },
-
-  loadSupporterStatus: async () => {
-    try {
-      const [badgeActive, donationAck] = await Promise.all([
-        api.getSupporterStatus(),
-        api.getDonationAcknowledged(),
-      ]);
-      set({ supporterBadgeActive: badgeActive, donationAcknowledged: donationAck });
-    } catch (err) {
-      console.warn('Failed to load supporter status from backend:', err);
-    }
   },
 
   renameBattery: async (serial: string, displayName: string) => {

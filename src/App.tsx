@@ -355,18 +355,13 @@ class AppErrorBoundary extends React.Component<
 }
 
 function App() {
-  const { loadFlights, error, clearError, isFlightsInitialized, needsAuth, loadSupporterStatus } = useFlightStore();
+  const { loadFlights, error, clearError, isFlightsInitialized, needsAuth } = useFlightStore();
   const isMobileRuntime = useIsMobileRuntime();
 
   // Load flights on mount
   useEffect(() => {
     loadFlights();
   }, [loadFlights]);
-
-  // Load supporter/donation status from backend on mount
-  useEffect(() => {
-    loadSupporterStatus();
-  }, [loadSupporterStatus]);
 
   // Ctrl+Q to close window (Tauri desktop only)
   useEffect(() => {
