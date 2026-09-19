@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "c943ccab5eca2f8426805e682baa07da959cab8df84db92fa78749c9621ea44d",
+  "sourceFingerprint": "de4c2efd9711d9d93f724ffd46a78e0b53a70b3487be840788b8d034214a1561",
   "sourceFile": "src/lib/api.ts",
   "commands": [
     "add_flight_tag",
@@ -20,6 +20,7 @@
     "get_app_data_dir",
     "get_app_log_dir",
     "get_auto_logout",
+    "get_battery_capacity_history_batch",
     "get_battery_full_capacity_history",
     "get_battery_pairs",
     "get_enabled_tag_types",

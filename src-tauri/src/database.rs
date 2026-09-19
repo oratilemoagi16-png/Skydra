@@ -15,7 +15,7 @@ use chrono::{Duration, NaiveDate, Utc};
 use duckdb::{params, Connection, OptionalExt, Result as DuckResult};
 use thiserror::Error;
 
-use crate::models::{BatteryHealthPoint, BatteryUsage, DroneUsage, Flight, FlightDateCount, FlightMessage, FlightMetadata, FlightTag, OverviewStats, TelemetryPoint, TelemetryRecord, TopDistanceFlight, TopFlight};
+use crate::models::{BatteryHealthPoint, BatteryUsage, DroneUsage, Flight, FlightDateCount, FlightMessage, FlightMetadata, FlightTag, OverviewStats, TelemetryPoint, TelemetryRecord, TopDistanceFlight, TopFlight, WarningFlight};
 
 #[derive(Error, Debug)]
 pub enum DatabaseError {
@@ -1611,6 +1611,56 @@ impl Database {
         Ok(rows)
     }
 
+    /// Get battery full capacity history for many batteries in one query.
+    /// Returns a map of battery_serial -> [(flight_id, start_time, max_full_capacity)].
+    pub fn get_battery_full_capacity_history_multi(
+        &self,
+        battery_serials: &[String],
+    ) -> Result<std::collections::HashMap<String, Vec<(i64, String, f64)>>, DatabaseError> {
+        let conn = self.conn.lock().unwrap();
+        if battery_serials.is_empty() {
+            return Ok(std::collections::HashMap::new());
+        }
+        let placeholders = std::iter::repeat("?")
+            .take(battery_serials.len())
+            .collect::<Vec<_>>()
+            .join(", ");
+        let sql = format!(
+            r#"
+            SELECT f.battery_serial, f.id, CAST(f.start_time AS VARCHAR), MAX(t.battery_full_capacity)
+            FROM flights f
+            JOIN telemetry t ON t.flight_id = f.id
+            WHERE f.battery_serial IN ({placeholders})
+              AND t.battery_full_capacity IS NOT NULL
+              AND t.battery_full_capacity > 0
+            GROUP BY f.battery_serial, f.id, f.start_time
+            ORDER BY f.battery_serial, f.start_time ASC
+            "#
+        );
+        let mut stmt = conn.prepare(&sql)?;
+        let params: Vec<&dyn duckdb::ToSql> = battery_serials
+            .iter()
+            .map(|s| s as &dyn duckdb::ToSql)
+            .collect();
+        let rows = stmt.query_map(params.as_slice(), |row| {
+            Ok((
+                row.get::<_, String>(0)?,
+                row.get::<_, i64>(1)?,
+                row.get::<_, String>(2)?,
+                row.get::<_, f64>(3)?,
+            ))
+        })?;
+        let mut map: std::collections::HashMap<String, Vec<(i64, String, f64)>> =
+            std::collections::HashMap::new();
+        for row in rows {
+            let (serial, flight_id, start_time, capacity) = row?;
+            map.entry(serial)
+                .or_default()
+                .push((flight_id, start_time, capacity));
+        }
+        Ok(map)
+    }
+
     /// Get overview stats across all flights
     pub fn get_overview_stats(&self) -> Result<OverviewStats, DatabaseError> {
         let start = std::time::Instant::now();
@@ -1830,6 +1880,36 @@ impl Database {
             })?
             .collect::<Result<Vec<_>, _>>()?;
 
+        // Flights that logged warning/caution app messages (most recent first, bounded)
+        let mut stmt = conn.prepare(
+            r#"
+            SELECT
+                f.id,
+                COALESCE(f.display_name, f.file_name) AS display_name,
+                CAST(f.start_time AS VARCHAR) AS start_time,
+                SUM(CASE WHEN m.message_type = 'warn' THEN 1 ELSE 0 END)::BIGINT AS warn_count,
+                SUM(CASE WHEN m.message_type = 'caution' THEN 1 ELSE 0 END)::BIGINT AS caution_count
+            FROM flight_messages m
+            JOIN flights f ON f.id = m.flight_id
+            WHERE m.message_type IN ('warn', 'caution')
+            GROUP BY f.id, f.display_name, f.file_name, f.start_time
+            ORDER BY f.start_time DESC NULLS LAST
+            LIMIT 50
+            "#,
+        )?;
+
+        let warning_flights = stmt
+            .query_map([], |row| {
+                Ok(WarningFlight {
+                    flight_id: row.get(0)?,
+                    display_name: row.get(1)?,
+                    start_time: row.get(2)?,
+                    warn_count: row.get(3)?,
+                    caution_count: row.get(4)?,
+                })
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+
         // Derive global max distance from the per-flight results (no extra query needed)
         let max_distance_from_home = top_distance_flights
             .first()
@@ -1857,6 +1937,7 @@ impl Database {
             top_flights,
             top_distance_flights,
             battery_health_points,
+            warning_flights,
         })
     }
 

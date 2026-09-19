@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "e5074471956473e15b158c049d8d428a5f003b6a34faafcc2ec1271373e6a03a",
+  "sourceFingerprint": "844f4a732f58aec2191f20d6e536410c462b0ee8490a7aa3c63a588fe39b0c30",
   "sourceFile": "src-tauri/src/server.rs",
   "routes": [
     {
@@ -31,6 +31,11 @@
       "path": "/api/battery_capacity_history",
       "method": "GET",
       "handler": "get_battery_full_capacity_history"
+    },
+    {
+      "path": "/api/battery_capacity_history_batch",
+      "method": "GET",
+      "handler": "get_battery_capacity_history_batch"
     },
     {
       "path": "/api/flights/delete",

@@ -715,14 +715,14 @@ export function FlightClusterMap({
 
   if (geojson.features.length === 0) {
     return (
-      <div className={`card p-4 transition-all duration-300 ${mapAreaFilterEnabled ? 'ring-2 ring-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : ''}`}>
+      <div className={`rounded-[var(--skydra-radius-lg)] border border-line bg-surface p-4 transition-all duration-300 ${mapAreaFilterEnabled ? 'ring-2 ring-success/40' : ''}`}>
         <h3 className="text-sm font-semibold mb-3">
-          <span className="text-white">{t('clusterMap.flightLocations')}</span>
+          <span className="text-ink">{t('clusterMap.flightLocations')}</span>
           {mapAreaFilterEnabled && (
-            <span className="text-emerald-400 ml-1">{t('clusterMap.globalFilterActive')}</span>
+            <span className="text-success ml-1">{t('clusterMap.globalFilterActive')}</span>
           )}
         </h3>
-        <p className="text-sm text-gray-400 text-center py-10">
+        <p className="text-sm text-muted text-center py-10">
           {t('clusterMap.noFlightsWithLocation')}
         </p>
       </div>
@@ -731,13 +731,13 @@ export function FlightClusterMap({
 
   return (
     <div
-      className={`card p-4 transition-all duration-300 resize-y overflow-hidden ${mapAreaFilterEnabled ? 'ring-2 ring-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : ''}`}
-      style={{ height: 480, minHeight: 480, maxHeight: 850 }}
+      className={`rounded-[var(--skydra-radius-lg)] border border-line bg-surface p-4 transition-all duration-300 resize-y overflow-hidden ${mapAreaFilterEnabled ? 'ring-2 ring-success/40' : ''}`}
+      style={{ height: 'clamp(420px, 56vh, 640px)', minHeight: 420, maxHeight: 850 }}
     >
       <h3 className="text-sm font-semibold mb-3">
-        <span className="text-white">{t('clusterMap.flightLocations')}</span>
+        <span className="text-ink">{t('clusterMap.flightLocations')}</span>
         {mapAreaFilterEnabled && (
-          <span className="text-emerald-400 ml-1">{t('clusterMap.globalFilterActive')}</span>
+          <span className="text-success ml-1">{t('clusterMap.globalFilterActive')}</span>
         )}
       </h3>
       <div
