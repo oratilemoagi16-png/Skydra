@@ -377,17 +377,17 @@ export function EmailSignatureModal({
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center p-4 overflow-y-auto bg-black/70 backdrop-blur-sm mobile-safe-container">
       <div
-        className={`${isLight ? 'bg-white border-gray-200' : 'bg-drone-surface border-gray-700'} border rounded-xl p-6 max-w-lg w-full mx-4 shadow-2xl max-h-[90vh] modal-mobile-max overflow-y-auto my-auto`}
+        className={`${isLight ? 'bg-white border-line' : 'bg-elevated border-line'} border rounded-xl p-6 max-w-lg w-full mx-4 shadow-2xl max-h-[90vh] modal-mobile-max overflow-y-auto my-auto`}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h2 className={`text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+          <h2 className={`text-lg font-semibold ${isLight ? 'text-ink' : 'text-ink'}`}>
             {t('signature.title')}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className={`p-1 rounded ${isLight ? 'hover:bg-gray-100 text-gray-500 hover:text-gray-800' : 'hover:bg-gray-700/50 text-gray-400 hover:text-white'} transition-colors`}
+            className={`p-1 rounded ${isLight ? 'hover:bg-surface text-muted hover:text-ink' : 'hover:bg-line/50 text-muted hover:text-ink'} transition-colors`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -397,7 +397,7 @@ export function EmailSignatureModal({
 
         {/* Color Picker */}
         <div className="mb-4">
-          <label className={`block text-sm mb-2 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+          <label className={`block text-sm mb-2 ${isLight ? 'text-muted' : 'text-muted'}`}>
             {t('signature.accentColor')}
           </label>
           <div className="flex flex-wrap gap-2 items-center">
@@ -413,8 +413,8 @@ export function EmailSignatureModal({
                   accentColor === preset.value
                     ? 'border-white scale-110 shadow-lg'
                     : isLight
-                    ? 'border-gray-300 hover:border-gray-400'
-                    : 'border-gray-600 hover:border-gray-400'
+                    ? 'border-line-strong hover:border-faint'
+                    : 'border-line-strong hover:border-faint'
                 }`}
                 style={{ backgroundColor: preset.value }}
                 title={preset.name}
@@ -427,17 +427,17 @@ export function EmailSignatureModal({
               placeholder="#06b6d4"
               className={`w-20 text-xs px-2 py-1.5 rounded-lg border ${
                 isLight
-                  ? 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
-                  : 'bg-drone-dark border-gray-600 text-gray-100 placeholder-gray-500'
+                  ? 'bg-surface border-line-strong text-ink placeholder:text-faint'
+                  : 'bg-canvas border-line-strong text-ink placeholder:text-faint'
               }`}
             />
           </div>
         </div>
 
         {/* Signature Preview */}
-        <div className={`mb-4 rounded-lg overflow-hidden border ${isLight ? 'border-gray-200' : 'border-gray-600'}`}>
+        <div className={`mb-4 rounded-lg overflow-hidden border ${isLight ? 'border-line' : 'border-line-strong'}`}>
           <div
-            className={`p-6 flex items-center justify-center ${isLight ? 'bg-gray-50' : 'bg-gray-900/50'}`}
+            className={`p-6 flex items-center justify-center ${isLight ? 'bg-surface' : 'bg-canvas/50'}`}
             style={{
               backgroundImage: `linear-gradient(45deg, ${isLight ? '#e5e7eb' : '#1e293b'} 25%, transparent 25%), linear-gradient(-45deg, ${isLight ? '#e5e7eb' : '#1e293b'} 25%, transparent 25%), linear-gradient(45deg, transparent 75%, ${isLight ? '#e5e7eb' : '#1e293b'} 75%), linear-gradient(-45deg, transparent 75%, ${isLight ? '#e5e7eb' : '#1e293b'} 75%)`,
               backgroundSize: '16px 16px',
@@ -514,8 +514,8 @@ export function EmailSignatureModal({
             onClick={onClose}
             className={`px-4 py-2 text-sm rounded-lg transition-colors ${
               isLight
-                ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                ? 'text-muted hover:text-ink hover:bg-surface'
+                : 'text-ink hover:text-ink hover:bg-line/50'
             }`}
           >
             {t('signature.cancel')}
@@ -525,8 +525,8 @@ export function EmailSignatureModal({
             onClick={handleCopyHtml}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 border ${
               isLight
-                ? 'border-gray-300 text-gray-700 hover:bg-gray-100'
-                : 'border-gray-600 text-gray-200 hover:bg-gray-700/50'
+                ? 'border-gray-300 text-gray-700 hover:bg-surface'
+                : 'border-line-strong text-ink hover:bg-line/50'
             }`}
           >
             {copied ? (
@@ -549,7 +549,7 @@ export function EmailSignatureModal({
             type="button"
             onClick={handleDownloadPng}
             disabled={isExporting}
-            className="px-4 py-2 text-sm font-medium text-white bg-drone-primary hover:bg-drone-primary/80 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-ink bg-accent hover:bg-accent-hover rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {isExporting ? (
               <>

@@ -10,7 +10,7 @@ import type { EChartsOption, ECharts, LineSeriesOption } from 'echarts';
 import type { TelemetryData } from '@/types';
 import type { UnitSystem, UnitPreferences, SpeedUnit } from '@/lib/utils';
 import { ensureAmPmUpperCase, speedMultiplierFromMs, speedUnitLabel } from '@/lib/utils';
-import { chartFontFamily } from '@/lib/chartFont';
+import { chartFontFamily, chartColor, chartSeries, themeColor } from '@/lib/chartFont';
 import { useFlightStore } from '@/stores/flightStore';
 import { useTranslation } from 'react-i18next';
 import ColorPickerModal from '@/components/dashboard/ColorPickerModal';
@@ -47,46 +47,46 @@ const MAX_DISPLAY_JOIN_GAP_SECONDS = 5.0;
 /** All available telemetry fields that can be plotted */
 const TELEMETRY_FIELDS: TelemetryFieldDef[] = [
   // Altitude group
-  { id: 'height', label: 'telemetry.height', color: '#00A0DC', dataKey: 'height', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'altitude' },
-  { id: 'vpsHeight', label: 'telemetry.vpsHeight', color: '#f97316', dataKey: 'vpsHeight', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'altitude' },
-  { id: 'altitude', label: 'telemetry.altitudeGps', color: '#22d3ee', dataKey: 'altitude', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'altitude' },
+  { id: 'height', label: 'telemetry.height', color: 'var:--skydra-accent', dataKey: 'height', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'altitude' },
+  { id: 'vpsHeight', label: 'telemetry.vpsHeight', color: 'series:11', dataKey: 'vpsHeight', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'altitude' },
+  { id: 'altitude', label: 'telemetry.altitudeGps', color: 'series:3', dataKey: 'altitude', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'altitude' },
 
   // Speed group
-  { id: 'speed', label: 'telemetry.speed', color: '#00D4AA', dataKey: 'speed', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'speed' },
-  { id: 'velocityX', label: 'telemetry.xSpeed', color: '#ef4444', dataKey: 'velocityX', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'velocity' },
-  { id: 'velocityY', label: 'telemetry.ySpeed', color: '#a855f7', dataKey: 'velocityY', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'velocity' },
-  { id: 'velocityZ', label: 'telemetry.zSpeed', color: '#7c3aed', dataKey: 'velocityZ', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'velocity' },
+  { id: 'speed', label: 'telemetry.speed', color: 'var:--skydra-track', dataKey: 'speed', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'speed' },
+  { id: 'velocityX', label: 'telemetry.xSpeed', color: 'series:7', dataKey: 'velocityX', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'velocity' },
+  { id: 'velocityY', label: 'telemetry.ySpeed', color: 'series:4', dataKey: 'velocityY', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'velocity' },
+  { id: 'velocityZ', label: 'telemetry.zSpeed', color: 'series:5', dataKey: 'velocityZ', unit: 'km/h', unitImperial: 'mph', metricFactor: 3.6, imperialFactor: 2.236936, group: 'velocity' },
 
   // Battery group
-  { id: 'battery', label: 'telemetry.batteryPercent', color: '#f59e0b', dataKey: 'battery', unit: '%', group: 'battery' },
-  { id: 'batteryVoltage', label: 'telemetry.voltage', color: '#3b82f6', dataKey: 'batteryVoltage', unit: 'V', group: 'battery' },
-  { id: 'batteryTemp', label: 'telemetry.temperature', color: '#e11d48', dataKey: 'batteryTemp', unit: '°C', unitImperial: '°F', group: 'battery' },
+  { id: 'battery', label: 'telemetry.batteryPercent', color: 'series:8', dataKey: 'battery', unit: '%', group: 'battery' },
+  { id: 'batteryVoltage', label: 'telemetry.voltage', color: 'series:10', dataKey: 'batteryVoltage', unit: 'V', group: 'battery' },
+  { id: 'batteryTemp', label: 'telemetry.temperature', color: 'series:5', dataKey: 'batteryTemp', unit: '°C', unitImperial: '°F', group: 'battery' },
 
   // Attitude group
-  { id: 'pitch', label: 'telemetry.pitch', color: '#8b5cf6', dataKey: 'pitch', unit: '°', group: 'attitude' },
-  { id: 'roll', label: 'telemetry.roll', color: '#ec4899', dataKey: 'roll', unit: '°', group: 'attitude' },
-  { id: 'yaw', label: 'telemetry.yaw', color: '#14b8a6', dataKey: 'yaw', unit: '°', group: 'attitude' },
+  { id: 'pitch', label: 'telemetry.pitch', color: 'series:4', dataKey: 'pitch', unit: '°', group: 'attitude' },
+  { id: 'roll', label: 'telemetry.roll', color: 'series:5', dataKey: 'roll', unit: '°', group: 'attitude' },
+  { id: 'yaw', label: 'telemetry.yaw', color: 'series:10', dataKey: 'yaw', unit: '°', group: 'attitude' },
 
   // Gimbal group
-  { id: 'gimbalPitch', label: 'telemetry.gimbalPitch', color: '#f97316', dataKey: 'gimbalPitch', unit: '°', group: 'gimbal' },
-  { id: 'gimbalRoll', label: 'telemetry.gimbalRoll', color: '#10b981', dataKey: 'gimbalRoll', unit: '°', group: 'gimbal' },
-  { id: 'gimbalYaw', label: 'telemetry.gimbalYaw', color: '#06b6d4', dataKey: 'gimbalYaw', unit: '°', group: 'gimbal' },
+  { id: 'gimbalPitch', label: 'telemetry.gimbalPitch', color: 'series:11', dataKey: 'gimbalPitch', unit: '°', group: 'gimbal' },
+  { id: 'gimbalRoll', label: 'telemetry.gimbalRoll', color: 'series:6', dataKey: 'gimbalRoll', unit: '°', group: 'gimbal' },
+  { id: 'gimbalYaw', label: 'telemetry.gimbalYaw', color: 'series:9', dataKey: 'gimbalYaw', unit: '°', group: 'gimbal' },
 
   // RC group
-  { id: 'rcSignal', label: 'telemetry.rcSignal', color: '#22c55e', dataKey: 'rcSignal', unit: '%', group: 'rc' },
-  { id: 'rcUplink', label: 'telemetry.rcUplink', color: '#84cc16', dataKey: 'rcUplink', unit: '%', group: 'rc' },
-  { id: 'rcDownlink', label: 'telemetry.rcDownlink', color: '#0369a1', dataKey: 'rcDownlink', unit: '%', group: 'rc' },
+  { id: 'rcSignal', label: 'telemetry.rcSignal', color: 'series:6', dataKey: 'rcSignal', unit: '%', group: 'rc' },
+  { id: 'rcUplink', label: 'telemetry.rcUplink', color: 'series:8', dataKey: 'rcUplink', unit: '%', group: 'rc' },
+  { id: 'rcDownlink', label: 'telemetry.rcDownlink', color: 'series:9', dataKey: 'rcDownlink', unit: '%', group: 'rc' },
 
   // GPS group
-  { id: 'satellites', label: 'telemetry.gpsSatellites', color: '#0ea5e9', dataKey: 'satellites', unit: '', group: 'gps' },
-  { id: 'distanceToHome', label: 'telemetry.distToHome', color: '#10b981', dataKey: 'distanceToHome', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'gps' },
+  { id: 'satellites', label: 'telemetry.gpsSatellites', color: 'series:3', dataKey: 'satellites', unit: '', group: 'gps' },
+  { id: 'distanceToHome', label: 'telemetry.distToHome', color: 'series:6', dataKey: 'distanceToHome', unit: 'm', unitImperial: 'ft', metricFactor: 1, imperialFactor: 3.28084, group: 'gps' },
 
   // Cell Voltages (virtual field that expands to all available cells)
-  { id: 'allCellVoltages', label: 'telemetry.cellVoltages', color: '#fbbf24', dataKey: 'cellVoltages', unit: 'V', group: 'battery' },
+  { id: 'allCellVoltages', label: 'telemetry.cellVoltages', color: 'series:8', dataKey: 'cellVoltages', unit: 'V', group: 'battery' },
 
   // Battery capacity group
-  { id: 'batteryFullCapacity', label: 'telemetry.fullCapacity', color: '#06b6d4', dataKey: 'batteryFullCapacity', unit: 'mAh', group: 'battery' },
-  { id: 'batteryRemainedCapacity', label: 'telemetry.remainedCapacity', color: '#f43f5e', dataKey: 'batteryRemainedCapacity', unit: 'mAh', group: 'battery' },
+  { id: 'batteryFullCapacity', label: 'telemetry.fullCapacity', color: 'series:9', dataKey: 'batteryFullCapacity', unit: 'mAh', group: 'battery' },
+  { id: 'batteryRemainedCapacity', label: 'telemetry.remainedCapacity', color: 'series:7', dataKey: 'batteryRemainedCapacity', unit: 'mAh', group: 'battery' },
 ];
 
 /** Get field definition by id */
@@ -294,7 +294,7 @@ function createDynamicChart(
     .filter((f): f is TelemetryFieldDef => f !== undefined);
 
   // Build cell voltage series if selected
-  const cellVoltageColors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#a855f7'];
+  const cellVoltageColors = chartSeries();
   let cellVoltageSeries: { label: string; data: (number | null)[]; color: string; unit: string }[] = [];
 
   if (hasAllCellVoltages) {
@@ -336,7 +336,7 @@ function createDynamicChart(
 
   // Combine all series
   const allSeriesData: { label: string; data: (number | null)[]; color: string; unit: string; fieldId: string | null }[] = [
-    ...regularSeriesData.map(s => ({ label: t(s.field.label), data: s.data, color: colorOverrides?.[s.field.id] || s.field.color, unit: s.unit, fieldId: s.field.id })),
+    ...regularSeriesData.map(s => ({ label: t(s.field.label), data: s.data, color: chartColor(colorOverrides?.[s.field.id] || s.field.color), unit: s.unit, fieldId: s.field.id })),
     ...cellVoltageSeries.map(s => ({ ...s, fieldId: null })),
   ];
 
@@ -394,8 +394,8 @@ function createDynamicChart(
             type: 'linear',
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: `${s.color}4d` },
-              { offset: 1, color: `${s.color}0d` },
+              { offset: 0, color: `${chartColor(s.color, 0.3)}` },
+              { offset: 1, color: `${chartColor(s.color, 0.05)}` },
             ],
           },
         },
@@ -424,7 +424,7 @@ function createDynamicChart(
       max: range.max,
       nameTextStyle: { color: s.color },
       axisLine: { lineStyle: { color: s.color } },
-      axisLabel: { color: '#9ca3af' },
+      axisLabel: { color: themeColor('--skydra-muted') },
       splitLine: { lineStyle: { color: splitLineColor }, show: axisIndex === 0 },
     });
   });
@@ -549,7 +549,6 @@ interface ChartHeaderProps {
   availableFields: TelemetryFieldDef[];
   onFieldsChange: (fields: string[]) => void;
   unitPrefs: UnitPreferences;
-  theme: 'dark' | 'light';
   getFieldColor: (fieldId: string) => string;
   onFieldColorChange: (fieldId: string, color: string) => void;
   onFieldColorReset: (fieldId: string) => void;
@@ -560,7 +559,6 @@ function ChartHeader({
   availableFields,
   onFieldsChange,
   unitPrefs,
-  theme,
   getFieldColor,
   onFieldColorChange,
   onFieldColorReset,
@@ -610,8 +608,6 @@ function ChartHeader({
     return field.unit;
   }, [unitPrefs]);
 
-  const isLight = theme === 'light';
-
   // Don't render if no fields available
   if (availableFields.length === 0) return null;
 
@@ -622,10 +618,7 @@ function ChartHeader({
         <button
           type="button"
           onClick={() => setIsDropdownOpen(v => !v)}
-          className={`text-[11px] h-6 px-2.5 py-1 flex items-center gap-1.5 rounded-md border-2 transition-colors ${isLight
-            ? 'bg-gray-100 border-sky-400 text-gray-700 hover:bg-gray-200 hover:border-sky-500'
-            : 'bg-drone-surface border-sky-500/60 text-gray-300 hover:bg-gray-700 hover:border-sky-400'
-            }`}
+          className={`text-[11px] h-6 px-2.5 py-1 flex items-center gap-1.5 rounded-md border-2 transition-colors bg-elevated border-accent/60 text-ink hover:bg-surface hover:border-accent`}
           title={t('telemetry.selectData')}
         >
           <span className="font-medium">{config.selectedFields.length}/4</span>
@@ -642,13 +635,10 @@ function ChartHeader({
             />
             <div
               ref={dropdownRef}
-              className={`absolute left-0 top-full mt-1 z-50 w-52 max-h-64 rounded-lg border-2 shadow-xl flex flex-col overflow-hidden ${isLight
-                ? 'bg-white border-sky-400'
-                : 'bg-drone-surface border-sky-500/60'
-                }`}
+              className={`absolute left-0 top-full mt-1 z-50 w-52 max-h-64 rounded-lg border-2 shadow-xl flex flex-col overflow-hidden bg-elevated border-accent/60`}
             >
               {/* Search input */}
-              <div className={`px-2 pt-2 pb-1 border-b flex-shrink-0 ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+              <div className={`px-2 pt-2 pb-1 border-b border-line flex-shrink-0`}>
                 <input
                   type="text"
                   value={searchQuery}
@@ -672,17 +662,14 @@ function ChartHeader({
                   }}
                   placeholder={t('telemetry.searchFields')}
                   autoFocus
-                  className={`w-full text-[11px] rounded px-2 py-1 border focus:outline-none ${isLight
-                    ? 'bg-gray-50 text-gray-800 border-gray-300 focus:border-sky-500 placeholder-gray-400'
-                    : 'bg-drone-dark text-gray-200 border-gray-600 focus:border-drone-primary placeholder-gray-500'
-                    }`}
+                  className={`w-full text-[11px] rounded px-2 py-1 border focus:outline-none bg-canvas text-ink border-line focus:border-accent placeholder:text-faint`}
                 />
               </div>
 
               {/* Field list */}
               <div className="overflow-auto flex-1">
                 {sortedFields.length === 0 ? (
-                  <p className={`text-[11px] px-3 py-2 ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+                  <p className={`text-[11px] px-3 py-2 text-muted`}>
                     {t('telemetry.noMatchingFields')}
                   </p>
                 ) : (
@@ -699,21 +686,21 @@ function ChartHeader({
                         onMouseEnter={() => setHighlightedIndex(index)}
                         disabled={isDisabled}
                         className={`w-full text-left px-2.5 py-1.5 text-[11px] flex items-center gap-2 transition-colors ${isDisabled && isLastSelected
-                          ? isLight ? 'bg-sky-100/50 text-sky-600 cursor-not-allowed' : 'bg-sky-500/10 text-sky-300 cursor-not-allowed'
+                          ? 'bg-accent/10 text-accent cursor-not-allowed'
                           : isDisabled
-                            ? isLight ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 cursor-not-allowed'
+                            ? 'text-faint cursor-not-allowed'
                             : isSelected
-                              ? isLight ? 'bg-sky-100 text-sky-800' : 'bg-sky-500/20 text-sky-200'
+                              ? 'bg-accent/15 text-accent'
                               : index === highlightedIndex
-                                ? isLight ? 'bg-gray-100' : 'bg-gray-700/50'
-                                : isLight ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 hover:bg-gray-700/50'
+                                ? 'bg-line/60 text-ink'
+                                : 'text-ink hover:bg-line/40'
                           }`}
                         title={isLastSelected ? t('telemetry.cannotDeselect') : undefined}
                       >
                         <span
                           className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected
-                            ? 'border-sky-500 bg-sky-500'
-                            : isLight ? 'border-gray-400' : 'border-gray-600'
+                            ? 'border-accent bg-accent'
+                            : 'border-line-strong'
                             }`}
                         >
                           {isSelected && (
@@ -723,7 +710,7 @@ function ChartHeader({
                           )}
                         </span>
                         <span
-                          className="w-2.5 h-2.5 rounded-full flex-shrink-0 cursor-pointer ring-1 ring-transparent hover:ring-gray-400 transition-shadow"
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0 cursor-pointer ring-1 ring-transparent hover:ring-muted transition-shadow"
                           style={{ backgroundColor: getFieldColor(field.id) }}
                           title={t('telemetry.changeColor', 'Click to change color, right-click to reset')}
                           onClick={(e) => {
@@ -739,7 +726,7 @@ function ChartHeader({
                           }}
                         />
                         <span className="truncate flex-1">{t(field.label)}</span>
-                        <span className={`flex-shrink-0 ${isLight ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span className={`flex-shrink-0 text-faint`}>
                           {getFieldUnitForHeader(field)}
                         </span>
                       </button>
@@ -793,29 +780,23 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
   const setTelemetryColor = useFlightStore((state) => state.setTelemetryColor);
   const resetTelemetryColor = useFlightStore((state) => state.resetTelemetryColor);
 
-  /** Get the effective color for a field (user override or default) */
+  /** Get the effective color for a field (user override or default spec), resolved */
   const getFieldColor = useCallback((fieldId: string): string => {
-    return telemetryColors[fieldId] || getFieldDef(fieldId)?.color || '#888888';
+    return chartColor(telemetryColors[fieldId] || getFieldDef(fieldId)?.color || 'var:--skydra-muted');
   }, [telemetryColors]);
   const resolvedTheme = useMemo(() => resolveThemeMode(themeMode), [themeMode]);
-  const splitLineColor = resolvedTheme === 'light' ? '#e2e8f0' : '#2a2a4e';
+  const splitLineColor = themeColor('--skydra-grid');
   const tooltipFormatter = useMemo(
     () => createTooltipFormatter(startTime ?? null, resolvedTheme, locale, timeFormat !== '24h'),
     [resolvedTheme, startTime, locale, timeFormat]
   );
   const tooltipColors = useMemo(
     () =>
-      resolvedTheme === 'light'
-        ? {
-          background: '#ffffff',
-          border: '#e2e8f0',
-          text: '#0f172a',
-        }
-        : {
-          background: '#16213e',
-          border: '#4a4e69',
-          text: '#ffffff',
-        },
+      ({
+        background: themeColor('--skydra-elevated'),
+        border: themeColor('--skydra-border'),
+        text: themeColor('--skydra-text'),
+      }),
     [resolvedTheme]
   );
 
@@ -1187,8 +1168,8 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
         <button
           onClick={() => setMapSyncEnabled(!mapSyncEnabled)}
           className={`text-xs border rounded px-2 py-1 transition-colors ${mapSyncEnabled
-            ? 'text-drone-accent border-drone-accent/50 bg-drone-accent/10'
-            : 'text-gray-400 hover:text-white border-gray-700'
+            ? 'text-track border-track/50 bg-track/10'
+            : 'text-muted hover:text-ink border-line'
             }`}
           title={mapSyncEnabled ? 'Disable map sync' : 'Enable map sync'}
         >
@@ -1200,8 +1181,8 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
         <button
           onClick={toggleDragZoom}
           className={`${dragZoomAllowed ? 'inline-block' : 'hidden'} text-xs border rounded px-2 py-1 transition-colors ${dragZoomActive
-            ? 'text-drone-primary border-drone-primary/50 bg-drone-primary/10'
-            : 'text-gray-400 hover:text-white border-gray-700'
+            ? 'text-accent border-accent/50 bg-accent/10'
+            : 'text-muted hover:text-ink border-line'
             }`}
           title={dragZoomActive ? 'Disable drag to zoom' : 'Enable drag to zoom'}
         >
@@ -1212,14 +1193,14 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
         </button>
         <button
           onClick={resetZoom}
-          className="hidden md:inline-block text-xs text-gray-400 hover:text-white border border-gray-700 rounded px-2 py-1"
+          className="hidden md:inline-block text-xs text-muted hover:text-ink border border-line rounded px-2 py-1"
           title="Reset zoom on all charts"
         >
           {t('telemetry.resetZoom')}
         </button>
         <button
           onClick={resetSelections}
-          className="text-xs text-gray-400 hover:text-white border border-gray-700 rounded px-2 py-1"
+          className="text-xs text-muted hover:text-ink border border-line rounded px-2 py-1"
           title="Reset all chart selections to default"
         >
           {t('telemetry.resetSelection')}
@@ -1233,7 +1214,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('altitudeSpeed', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1256,7 +1236,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('battery', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1280,7 +1259,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
             availableFields={TELEMETRY_FIELDS}
             onFieldsChange={(fields) => updateChartConfig('cellVoltage', { selectedFields: fields })}
             unitPrefs={unitPrefs}
-            theme={resolvedTheme}
             getFieldColor={getFieldColor}
             onFieldColorChange={setTelemetryColor}
             onFieldColorReset={resetTelemetryColor}
@@ -1305,7 +1283,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
             availableFields={TELEMETRY_FIELDS}
             onFieldsChange={(fields) => updateChartConfig('batteryCapacity', { selectedFields: fields })}
             unitPrefs={unitPrefs}
-            theme={resolvedTheme}
             getFieldColor={getFieldColor}
             onFieldColorChange={setTelemetryColor}
             onFieldColorReset={resetTelemetryColor}
@@ -1329,7 +1306,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('attitude', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1352,7 +1328,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('gimbal', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1375,7 +1350,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('rcSignal', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1398,7 +1372,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('distanceToHome', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1421,7 +1394,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('velocity', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1444,7 +1416,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
           availableFields={TELEMETRY_FIELDS}
           onFieldsChange={(fields) => updateChartConfig('gps', { selectedFields: fields })}
           unitPrefs={unitPrefs}
-          theme={resolvedTheme}
           getFieldColor={getFieldColor}
           onFieldColorChange={setTelemetryColor}
           onFieldColorReset={resetTelemetryColor}
@@ -1463,15 +1434,14 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
   );
 }
 
-/** Shared chart configuration - theme-aware */
-function createBaseChartConfig(theme: 'dark' | 'light'): Partial<EChartsOption> {
-  const isLight = theme === 'light';
-  const axisColor = isLight ? '#cbd5e1' : '#4a4e69';
-  const labelColor = isLight ? '#64748b' : '#9ca3af';
-  const zoomBg = isLight ? '#f1f5f9' : '#16213e';
-  const zoomBorder = isLight ? '#cbd5e1' : '#2a2a4e';
-  const zoomFiller = isLight ? 'rgba(0, 122, 204, 0.15)' : 'rgba(0, 160, 220, 0.2)';
-  const handleColor = isLight ? '#007acc' : '#00A0DC';
+/** Shared chart configuration — colors resolve from live tokens per theme */
+function createBaseChartConfig(_theme: 'dark' | 'light'): Partial<EChartsOption> {
+  const axisColor = themeColor('--skydra-border-strong');
+  const labelColor = themeColor('--skydra-muted');
+  const zoomBg = themeColor('--skydra-elevated');
+  const zoomBorder = themeColor('--skydra-border');
+  const zoomFiller = themeColor('--skydra-accent', 0.18);
+  const handleColor = themeColor('--skydra-accent');
   const chartFont = chartFontFamily();
 
   return {
@@ -1502,10 +1472,10 @@ function createBaseChartConfig(theme: 'dark' | 'light'): Partial<EChartsOption> 
       trigger: 'axis',
       renderMode: 'html',
       confine: true,
-      backgroundColor: isLight ? '#ffffff' : '#16213e',
-      borderColor: isLight ? '#e2e8f0' : '#4a4e69',
+      backgroundColor: themeColor('--skydra-elevated'),
+      borderColor: themeColor('--skydra-border'),
       textStyle: {
-        color: isLight ? '#0f172a' : '#fff',
+        color: themeColor('--skydra-text'),
       },
       axisPointer: {
         type: 'line',
@@ -1568,12 +1538,12 @@ function createBaseChartConfig(theme: 'dark' | 'light'): Partial<EChartsOption> 
           color: labelColor,
         },
         dataBackground: {
-          lineStyle: { color: isLight ? '#94a3b8' : '#4a4e69' },
-          areaStyle: { color: isLight ? '#cbd5e1' : '#2a2a4e' },
+          lineStyle: { color: themeColor('--skydra-border-strong') },
+          areaStyle: { color: themeColor('--skydra-grid') },
         },
         selectedDataBackground: {
           lineStyle: { color: handleColor },
-          areaStyle: { color: isLight ? 'rgba(0, 122, 204, 0.1)' : 'rgba(0, 160, 220, 0.15)' },
+          areaStyle: { color: themeColor('--skydra-accent', 0.12) },
         },
       },
     ],
@@ -1633,15 +1603,15 @@ function createAltitudeSpeedChart(
         min: heightRange.min,
         max: heightRange.max,
         nameTextStyle: {
-          color: '#00A0DC',
+          color: chartColor('var:--skydra-accent'),
         },
         axisLine: {
           lineStyle: {
-            color: '#00A0DC',
+            color: chartColor('var:--skydra-accent'),
           },
         },
         axisLabel: {
-          color: '#9ca3af',
+          color: themeColor('--skydra-muted'),
         },
         splitLine: {
           lineStyle: {
@@ -1660,15 +1630,15 @@ function createAltitudeSpeedChart(
         min: speedRange.min,
         max: speedRange.max,
         nameTextStyle: {
-          color: '#00D4AA',
+          color: chartColor('var:--skydra-track'),
         },
         axisLine: {
           lineStyle: {
-            color: '#00D4AA',
+            color: chartColor('var:--skydra-track'),
           },
         },
         axisLabel: {
-          color: '#9ca3af',
+          color: themeColor('--skydra-muted'),
         },
         splitLine: {
           show: false,
@@ -1684,10 +1654,10 @@ function createAltitudeSpeedChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#00A0DC',
+          color: chartColor('var:--skydra-accent'),
         },
         lineStyle: {
-          color: '#00A0DC',
+          color: chartColor('var:--skydra-accent'),
           width: 2,
         },
         areaStyle: {
@@ -1698,8 +1668,8 @@ function createAltitudeSpeedChart(
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(0, 160, 220, 0.3)' },
-              { offset: 1, color: 'rgba(0, 160, 220, 0.05)' },
+              { offset: 0, color: themeColor('--skydra-accent', 0.3) },
+              { offset: 1, color: themeColor('--skydra-accent', 0.05) },
             ],
           },
         },
@@ -1712,10 +1682,10 @@ function createAltitudeSpeedChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#f97316',
+          color: chartColor('series:11'),
         },
         lineStyle: {
-          color: '#f97316',
+          color: chartColor('series:11'),
           width: 1.5,
         },
       },
@@ -1727,10 +1697,10 @@ function createAltitudeSpeedChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#00D4AA',
+          color: chartColor('var:--skydra-track'),
         },
         lineStyle: {
-          color: '#00D4AA',
+          color: chartColor('var:--skydra-track'),
           width: 2,
         },
       },
@@ -1776,11 +1746,11 @@ function createBatteryChart(
         max: batteryRange.max,
         axisLine: {
           lineStyle: {
-            color: '#f59e0b',
+            color: chartColor('series:8'),
           },
         },
         axisLabel: {
-          color: '#9ca3af',
+          color: themeColor('--skydra-muted'),
         },
         splitLine: {
           lineStyle: {
@@ -1796,11 +1766,11 @@ function createBatteryChart(
         max: tempRange.max,
         axisLine: {
           lineStyle: {
-            color: '#a855f7',
+            color: chartColor('series:4'),
           },
         },
         axisLabel: {
-          color: '#9ca3af',
+          color: themeColor('--skydra-muted'),
         },
         splitLine: {
           show: false,
@@ -1834,10 +1804,10 @@ function createBatteryChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#f59e0b',
+          color: chartColor('series:8'),
         },
         lineStyle: {
-          color: '#f59e0b',
+          color: chartColor('series:8'),
           width: 2,
         },
         areaStyle: {
@@ -1848,15 +1818,15 @@ function createBatteryChart(
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(245, 158, 11, 0.3)' },
-              { offset: 1, color: 'rgba(245, 158, 11, 0.05)' },
+              { offset: 0, color: chartColor('series:8', 0.3) },
+              { offset: 1, color: chartColor('series:8', 0.05) },
             ],
           },
         },
         markArea: {
           silent: true,
           itemStyle: {
-            color: 'rgba(239, 68, 68, 0.18)',
+            color: themeColor('--skydra-danger', 0.18),
           },
           data: [[{ yAxis: 0 }, { yAxis: 20 }]],
         },
@@ -1869,10 +1839,10 @@ function createBatteryChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#38bdf8',
+          color: chartColor('series:3'),
         },
         lineStyle: {
-          color: '#38bdf8',
+          color: chartColor('series:3'),
           width: 1.5,
         },
       },
@@ -1884,32 +1854,16 @@ function createBatteryChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#a855f7',
+          color: chartColor('series:4'),
         },
         lineStyle: {
-          color: '#a855f7',
+          color: chartColor('series:4'),
           width: 1.5,
         },
       },
     ],
   };
 }
-
-// Colors for cell voltage series (up to 12 cells)
-const cellVoltageColors = [
-  '#10b981', // emerald-500
-  '#3b82f6', // blue-500
-  '#f59e0b', // amber-500
-  '#ef4444', // red-500
-  '#8b5cf6', // violet-500
-  '#ec4899', // pink-500
-  '#14b8a6', // teal-500
-  '#f97316', // orange-500
-  '#6366f1', // indigo-500
-  '#84cc16', // lime-500
-  '#06b6d4', // cyan-500
-  '#a855f7', // purple-500
-];
 
 function createCellVoltageChart(
   data: TelemetryData,
@@ -1918,6 +1872,8 @@ function createCellVoltageChart(
   tooltipColors: TooltipColors,
   t: TFn
 ): EChartsOption | null {
+  // Categorical palette for up to 12 cells — theme-aware, resolved at render.
+  const cellVoltageColors = chartSeries();
   // Determine the number of cells from the first non-null entry
   const cellVoltages = data.cellVoltages;
   if (!cellVoltages || cellVoltages.length === 0) {
@@ -1969,6 +1925,7 @@ function createCellVoltageChart(
     },
   }));
 
+
   return {
     ...baseChartConfig,
     tooltip: {
@@ -1992,11 +1949,11 @@ function createCellVoltageChart(
       max: voltageRange.max,
       axisLine: {
         lineStyle: {
-          color: '#10b981',
+          color: chartColor('series:6'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
         formatter: '{value}',
       },
       splitLine: {
@@ -2041,17 +1998,17 @@ function createAttitudeChart(
       type: 'value',
       name: t('telemetry.rotations'),
       nameTextStyle: {
-        color: '#8b5cf6',
+        color: chartColor('series:4'),
       },
       min: attitudeRange.min,
       max: attitudeRange.max,
       axisLine: {
         lineStyle: {
-          color: '#8b5cf6',
+          color: chartColor('series:4'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
       },
       splitLine: {
         lineStyle: {
@@ -2067,10 +2024,10 @@ function createAttitudeChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#8b5cf6',
+          color: chartColor('series:4'),
         },
         lineStyle: {
-          color: '#8b5cf6',
+          color: chartColor('series:4'),
           width: 1.5,
         },
       },
@@ -2081,10 +2038,10 @@ function createAttitudeChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#ec4899',
+          color: chartColor('series:5'),
         },
         lineStyle: {
-          color: '#ec4899',
+          color: chartColor('series:5'),
           width: 1.5,
         },
       },
@@ -2095,10 +2052,10 @@ function createAttitudeChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#14b8a6',
+          color: chartColor('series:10'),
         },
         lineStyle: {
-          color: '#14b8a6',
+          color: chartColor('series:10'),
           width: 1.5,
         },
       },
@@ -2142,17 +2099,17 @@ function createGimbalChart(
       type: 'value',
       name: t('telemetry.gimbalRotations'),
       nameTextStyle: {
-        color: '#f97316',
+        color: chartColor('series:11'),
       },
       min: gimbalRange.min,
       max: gimbalRange.max,
       axisLine: {
         lineStyle: {
-          color: '#f97316',
+          color: chartColor('series:11'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
       },
       splitLine: {
         lineStyle: {
@@ -2168,10 +2125,10 @@ function createGimbalChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#f97316',
+          color: chartColor('series:11'),
         },
         lineStyle: {
-          color: '#f97316',
+          color: chartColor('series:11'),
           width: 1.5,
         },
       },
@@ -2182,10 +2139,10 @@ function createGimbalChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#10b981',
+          color: chartColor('series:6'),
         },
         lineStyle: {
-          color: '#10b981',
+          color: chartColor('series:6'),
           width: 1.5,
         },
       },
@@ -2196,10 +2153,10 @@ function createGimbalChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#06b6d4',
+          color: chartColor('series:9'),
         },
         lineStyle: {
-          color: '#06b6d4',
+          color: chartColor('series:9'),
           width: 1.5,
         },
       },
@@ -2234,10 +2191,10 @@ function createRcSignalChart(
           connectNulls: false,
           symbol: 'none',
           itemStyle: {
-            color: '#22c55e',
+            color: chartColor('series:6'),
           },
           lineStyle: {
-            color: '#22c55e',
+            color: chartColor('series:6'),
             width: 1.5,
           },
         },
@@ -2251,10 +2208,10 @@ function createRcSignalChart(
           connectNulls: false,
           symbol: 'none',
           itemStyle: {
-            color: '#22c55e',
+            color: chartColor('series:6'),
           },
           lineStyle: {
-            color: '#22c55e',
+            color: chartColor('series:6'),
             width: 1.5,
           },
         },
@@ -2266,10 +2223,10 @@ function createRcSignalChart(
           connectNulls: false,
           symbol: 'none',
           itemStyle: {
-            color: '#38bdf8',
+            color: chartColor('series:3'),
           },
           lineStyle: {
-            color: '#38bdf8',
+            color: chartColor('series:3'),
             width: 1.5,
           },
         },
@@ -2299,11 +2256,11 @@ function createRcSignalChart(
       interval: 50,
       axisLine: {
         lineStyle: {
-          color: '#22c55e',
+          color: chartColor('series:6'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
         formatter: (value: number) => (value % 50 === 0 ? String(value) : ''),
       },
       splitLine: {
@@ -2354,11 +2311,11 @@ function createDistanceToHomeChart(
       max: distanceRange.max,
       axisLine: {
         lineStyle: {
-          color: '#22c55e',
+          color: chartColor('series:6'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
       },
       splitLine: {
         lineStyle: {
@@ -2374,10 +2331,10 @@ function createDistanceToHomeChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#22c55e',
+          color: chartColor('series:6'),
         },
         lineStyle: {
-          color: '#22c55e',
+          color: chartColor('series:6'),
           width: 1.5,
         },
       },
@@ -2431,11 +2388,11 @@ function createVelocityChart(
       max: speedRange.max,
       axisLine: {
         lineStyle: {
-          color: '#f59e0b',
+          color: chartColor('series:8'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
       },
       splitLine: {
         lineStyle: {
@@ -2451,10 +2408,10 @@ function createVelocityChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#f59e0b',
+          color: chartColor('series:8'),
         },
         lineStyle: {
-          color: '#f59e0b',
+          color: chartColor('series:8'),
           width: 1.5,
         },
       },
@@ -2465,10 +2422,10 @@ function createVelocityChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#ec4899',
+          color: chartColor('series:5'),
         },
         lineStyle: {
-          color: '#ec4899',
+          color: chartColor('series:5'),
           width: 1.5,
         },
       },
@@ -2479,10 +2436,10 @@ function createVelocityChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#38bdf8',
+          color: chartColor('series:3'),
         },
         lineStyle: {
-          color: '#38bdf8',
+          color: chartColor('series:3'),
           width: 1.5,
         },
       },
@@ -2560,11 +2517,11 @@ function createGpsChart(
       max: gpsRange.max,
       axisLine: {
         lineStyle: {
-          color: '#0ea5e9',
+          color: chartColor('series:3'),
         },
       },
       axisLabel: {
-        color: '#9ca3af',
+        color: themeColor('--skydra-muted'),
       },
       splitLine: {
         lineStyle: {
@@ -2580,10 +2537,10 @@ function createGpsChart(
         smooth: true,
         symbol: 'none',
         itemStyle: {
-          color: '#0ea5e9',
+          color: chartColor('series:3'),
         },
         lineStyle: {
-          color: '#0ea5e9',
+          color: chartColor('series:3'),
           width: 1.5,
         },
       },
@@ -2711,9 +2668,9 @@ function formatTooltipHeader(
     minute: '2-digit',
     hour12,
   }).format(timestamp));
-  const durationBg = theme === 'light' ? 'rgba(15, 23, 42, 0.08)' : 'rgba(0,212,170,0.2)';
-  const timeBg = theme === 'light' ? 'rgba(2, 132, 199, 0.12)' : 'rgba(0,160,220,0.22)';
-  const textColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
+  const durationBg = themeColor('--skydra-track', theme === 'light' ? 0.12 : 0.2);
+  const timeBg = themeColor('--skydra-accent', theme === 'light' ? 0.14 : 0.22);
+  const textColor = themeColor('--skydra-text');
   return `<div style="margin-bottom:0px;display:flex;gap:6px;align-items:center;">
     <span class="tooltip-duration-tag" style="display:inline-block;padding:2px 8px;border-radius:999px;background:${durationBg};color:${textColor};font-size:11px;line-height:1.2;">${durationLabel}</span>
     <span class="tooltip-time-tag" style="display:inline-block;padding:2px 8px;border-radius:999px;background:${timeBg};color:${textColor};font-size:11px;line-height:1.2;">${timeLabel}</span>
@@ -2744,14 +2701,14 @@ function createTimeAxis(time: number[]): EChartsOption['xAxis'] {
     data: values,
     axisLine: {
       lineStyle: {
-        color: '#4a4e69',
+        color: themeColor('--skydra-border-strong'),
       },
     },
     axisTick: {
       alignWithLabel: true,
     } as any,
     axisLabel: {
-      color: '#9ca3af',
+      color: themeColor('--skydra-muted'),
       showMinLabel: false,
       showMaxLabel: false,
       hideOverlap: true,

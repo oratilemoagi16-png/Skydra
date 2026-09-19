@@ -155,15 +155,15 @@ export default function ColorPickerModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="fixed z-[10001] rounded-xl border border-gray-700 bg-drone-surface shadow-2xl"
+        className="fixed z-[10001] rounded-xl border border-line bg-elevated shadow-2xl"
         style={style}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
-          <h3 className="text-sm font-medium text-gray-200">{t('flightList.editColor', 'Edit Color')}</h3>
+          <h3 className="text-sm font-medium text-ink">{t('flightList.editColor', 'Edit Color')}</h3>
           <button
             onClick={onClose}
-            className="p-0.5 text-gray-400 hover:text-gray-200 transition-colors"
+            className="p-0.5 text-muted hover:text-ink transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -174,18 +174,18 @@ export default function ColorPickerModal({
         {/* Preview */}
         <div className="px-4 pb-2 flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-lg border border-gray-600 shadow-inner flex-shrink-0"
+            className="w-10 h-10 rounded-lg border border-line-strong shadow-inner flex-shrink-0"
             style={{ backgroundColor: selectedColor }}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-400">{t('flightList.selectedColor', 'Selected')}</p>
-            <p className="text-sm text-gray-200 font-mono">{selectedColor.toUpperCase()}</p>
+            <p className="text-xs text-muted">{t('flightList.selectedColor', 'Selected')}</p>
+            <p className="text-sm text-ink font-mono">{selectedColor.toUpperCase()}</p>
           </div>
         </div>
 
         {/* Quick preset colors */}
         <div className="px-4 pb-2">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">{t('flightList.presets', 'Quick Presets')}</p>
+          <p className="text-[10px] text-muted uppercase tracking-wider mb-1.5">{t('flightList.presets', 'Quick Presets')}</p>
           <div className="flex gap-1.5 flex-wrap">
             {PRESET_COLORS.map((color) => (
               <button
@@ -193,7 +193,7 @@ export default function ColorPickerModal({
                 onClick={() => { setSelectedColor(color); setCustomHex(color); }}
                 className={`w-7 h-7 rounded-md border-2 transition-all hover:scale-110 ${selectedColor === color
                   ? 'border-white shadow-lg shadow-white/20 scale-110'
-                  : 'border-gray-600 hover:border-gray-400'
+                  : 'border-line-strong hover:border-gray-400'
                   }`}
                 style={{ backgroundColor: color }}
                 title={color.toUpperCase()}
@@ -204,7 +204,7 @@ export default function ColorPickerModal({
 
         {/* Color grid */}
         <div className="px-4 pb-2">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">{t('flightList.colorGrid', 'Color Grid')}</p>
+          <p className="text-[10px] text-muted uppercase tracking-wider mb-1.5">{t('flightList.colorGrid', 'Color Grid')}</p>
           <div className="grid grid-cols-9 gap-1">
             {COLOR_GRID.map((color) => (
               <button
@@ -212,7 +212,7 @@ export default function ColorPickerModal({
                 onClick={() => { setSelectedColor(color); setCustomHex(color); }}
                 className={`w-full aspect-square rounded border transition-all hover:scale-110 ${selectedColor === color
                   ? 'border-white shadow-lg shadow-white/20 scale-110 ring-1 ring-white'
-                  : 'border-gray-700 hover:border-gray-500'
+                  : 'border-line hover:border-line-strong'
                   }`}
                 style={{ backgroundColor: color }}
                 title={color.toUpperCase()}
@@ -223,7 +223,7 @@ export default function ColorPickerModal({
 
         {/* Custom hex input */}
         <div className="px-4 pb-3">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">{t('flightList.customColor', 'Custom Hex')}</p>
+          <p className="text-[10px] text-muted uppercase tracking-wider mb-1.5">{t('flightList.customColor', 'Custom Hex')}</p>
           <div className="flex items-stretch gap-2">
             <div className="relative flex-1">
               <input
@@ -240,7 +240,7 @@ export default function ColorPickerModal({
               type="color"
               value={isValidHex(selectedColor) ? selectedColor : '#7dd3fc'}
               onChange={(e) => { setSelectedColor(e.target.value); setCustomHex(e.target.value); }}
-              className="w-8 h-8 rounded border border-gray-600 cursor-pointer bg-transparent p-0"
+              className="w-8 h-8 rounded border border-line-strong cursor-pointer bg-transparent p-0"
               title={t('flightList.colorWheel', 'Color Wheel')}
             />
           </div>
@@ -250,13 +250,13 @@ export default function ColorPickerModal({
         <div className="flex items-center gap-2 px-4 pb-3">
           <button
             onClick={handleConfirm}
-            className="flex-1 h-8 text-xs font-medium rounded-lg bg-drone-primary text-white hover:bg-drone-primary/80 transition-colors"
+            className="flex-1 h-8 text-xs font-medium rounded-lg bg-accent text-accent-ink hover:bg-accent-hover transition-colors"
           >
             {t('flightList.apply', 'Apply')}
           </button>
           <button
             onClick={onClose}
-            className="flex-1 h-8 text-xs font-medium rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700 transition-colors"
+            className="flex-1 h-8 text-xs font-medium rounded-lg border border-line-strong text-ink hover:bg-line transition-colors"
           >
             {t('flightList.cancel')}
           </button>

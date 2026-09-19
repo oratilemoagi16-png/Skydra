@@ -148,7 +148,7 @@ export function Select({ value, onChange, options, className = '', listMaxHeight
       {isOpen && (
         <div className="absolute z-50 mt-1 w-full rounded-lg border shadow-xl themed-select-dropdown">
           {/* Search input */}
-          <div className="px-2 py-1.5 border-b border-gray-700/50">
+          <div className="px-2 py-1.5 border-b border-line">
             <input
               ref={inputRef}
               type="text"
@@ -156,13 +156,13 @@ export function Select({ value, onChange, options, className = '', listMaxHeight
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type to filter…"
-              className="w-full bg-transparent text-sm text-gray-200 placeholder-gray-500 outline-none"
+              className="w-full bg-transparent text-sm text-ink placeholder:text-faint outline-none"
             />
           </div>
           {/* Options list */}
           <div ref={listRef} className={`${listMaxHeight} overflow-y-scroll`}>
             {filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-xs text-gray-500 italic">No matches</div>
+              <div className="px-3 py-2 text-xs text-muted italic">No matches</div>
             ) : (
               filteredOptions.map((opt, index) => (
                 <div
@@ -176,7 +176,7 @@ export function Select({ value, onChange, options, className = '', listMaxHeight
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={`themed-select-option cursor-pointer px-3 py-1.5 text-sm truncate
                     ${opt.value === value ? 'font-medium' : ''}
-                    ${index === highlightedIndex ? 'bg-drone-primary/20' : ''}`}
+                    ${index === highlightedIndex ? 'bg-accent/15' : ''}`}
                 >
                   {opt.label}
                 </div>

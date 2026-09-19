@@ -15,13 +15,14 @@ import { useTranslation } from 'react-i18next';
 import { useFlightStore } from '@/stores/flightStore';
 import { Select } from '@/components/ui/Select';
 import { type MapType, MAP_TYPE_OPTIONS, getMapStyle } from '@/lib/mapStyles';
+import { themeColor } from '@/lib/chartFont';
 
 // ---------------------------------------------------------------------------
 // Layer styles
 // ---------------------------------------------------------------------------
 
-/** Cluster circles — size & color scale with point count */
-const clusterLayer = {
+/** Cluster circles — size & color scale with point count (accent ramp) */
+const clusterLayer = () => ({
   id: 'clusters',
   type: 'circle',
   source: 'flights',
@@ -30,13 +31,13 @@ const clusterLayer = {
     'circle-color': [
       'step',
       ['get', 'point_count'],
-      '#6366f1', // indigo for small clusters
+      themeColor('--skydra-accent', 0.7), // small clusters
       10,
-      '#4f46e5', // deeper indigo
+      themeColor('--skydra-accent'),
       50,
-      '#4338ca', // even deeper
+      themeColor('--skydra-accent-hover'),
       200,
-      '#3730a3', // large clusters
+      themeColor('--skydra-accent-hover'),
     ],
     'circle-radius': [
       'step',
@@ -49,10 +50,10 @@ const clusterLayer = {
     'circle-stroke-width': 2,
     'circle-stroke-color': 'rgba(255,255,255,0.25)',
   },
-};
+});
 
 /** Cluster count labels */
-const clusterCountLayer = {
+const clusterCountLayer = () => ({
   id: 'cluster-count',
   type: 'symbol',
   source: 'flights',
@@ -69,26 +70,26 @@ const clusterCountLayer = {
     'text-allow-overlap': true,
   },
   paint: {
-    'text-color': '#ffffff',
+    'text-color': 'rgb(var(--skydra-accent-ink))',
   },
-};
+});
 
 /** Unclustered single-flight points */
-const unclusteredPointLayer = {
+const unclusteredPointLayer = () => ({
   id: 'unclustered-point',
   type: 'circle',
   source: 'flights',
   filter: ['!', ['has', 'point_count']],
   paint: {
-    'circle-color': '#6366f1',
+    'circle-color': themeColor('--skydra-accent'),
     'circle-radius': 7,
     'circle-stroke-width': 2,
-    'circle-stroke-color': '#ffffff',
+    'circle-stroke-color': 'rgb(var(--skydra-accent-ink))',
   },
-};
+});
 
-/** Heatmap layer rendering flight density */
-const heatmapLayer = {
+/** Heatmap layer rendering flight density — transparent → accent → hot peak */
+const heatmapLayer = () => ({
   id: 'flights-heat',
   type: 'heatmap',
   source: 'flights',
@@ -112,17 +113,16 @@ const heatmapLayer = {
       0, 1,
       14, 3
     ],
-    // Color ramp from transparent to green to yellow to red
+    // Color ramp: transparent → accent steps → hot apricot peak
     'heatmap-color': [
       'interpolate',
       ['linear'],
       ['heatmap-density'],
-      0, 'rgba(49, 172, 33, 0)',
-      0.2, 'rgba(90, 206, 75, 1)',
-      0.4, 'rgba(218, 240, 209, 1)',
-      0.6, 'rgb(253,219,199)',
-      0.8, 'rgb(239,138,98)',
-      1, 'rgb(178,24,43)'
+      0, themeColor('--skydra-accent', 0),
+      0.25, themeColor('--skydra-accent', 0.35),
+      0.55, themeColor('--skydra-accent', 0.7),
+      0.8, themeColor('--skydra-accent'),
+      1, '#FFB25E'
     ],
     // Adjust the heatmap radius by zoom level
     'heatmap-radius': [
@@ -143,16 +143,16 @@ const heatmapLayer = {
       13.8, 0.04,
     ],
   }
-};
+});
 
 /** High-zoom marker glow for heatmap mode when points are no longer clearly visible */
-const heatmapPointGlowLayer = {
+const heatmapPointGlowLayer = () => ({
   id: 'heatmap-point-glow',
   type: 'circle',
   source: 'flights',
   minzoom: 10,
   paint: {
-    'circle-color': '#eaff3b',
+    'circle-color': themeColor('--skydra-accent'),
     'circle-radius': [
       'interpolate',
       ['linear'],
@@ -172,16 +172,16 @@ const heatmapPointGlowLayer = {
     'circle-blur': 0.9,
     'circle-stroke-width': 0,
   },
-};
+});
 
-/** High-zoom neon center dot for heatmap mode */
-const heatmapPointCenterLayer = {
+/** High-zoom center dot for heatmap mode */
+const heatmapPointCenterLayer = () => ({
   id: 'heatmap-point-center',
   type: 'circle',
   source: 'flights',
   minzoom: 10,
   paint: {
-    'circle-color': '#f4ff57',
+    'circle-color': themeColor('--skydra-accent'),
     'circle-radius': [
       'interpolate',
       ['linear'],
@@ -192,19 +192,19 @@ const heatmapPointCenterLayer = {
       18, 4.8,
     ],
     'circle-stroke-width': 0.8,
-    'circle-stroke-color': 'rgba(255, 255, 210, 0.95)',
+    'circle-stroke-color': themeColor('--skydra-accent-ink', 0.95),
     'circle-opacity': 1,
   },
-};
+});
 
 /** Extra bright core so point remains obvious on noisy satellite imagery */
-const heatmapPointCoreLayer = {
+const heatmapPointCoreLayer = () => ({
   id: 'heatmap-point-core',
   type: 'circle',
   source: 'flights',
   minzoom: 10,
   paint: {
-    'circle-color': '#ffffcc',
+    'circle-color': themeColor('--skydra-accent-ink'),
     'circle-radius': [
       'interpolate',
       ['linear'],
@@ -217,10 +217,10 @@ const heatmapPointCoreLayer = {
     'circle-opacity': 0.95,
     'circle-stroke-width': 0,
   },
-};
+});
 
-/** Invisible but larger hit target for heatmap points so yellow dots are easy to click */
-const heatmapPointHitboxLayer = {
+/** Invisible but larger hit target for heatmap points so dots are easy to click */
+const heatmapPointHitboxLayer = () => ({
   id: 'heatmap-point-hitbox',
   type: 'circle',
   source: 'flights',
@@ -236,7 +236,7 @@ const heatmapPointHitboxLayer = {
       18, 13,
     ],
   },
-};
+});
 
 // ---------------------------------------------------------------------------
 // Component
@@ -783,11 +783,11 @@ export function FlightClusterMap({
             />
 
             {/* Layer Toggles */}
-            <div className="bg-drone-dark/80 border border-gray-700/50 backdrop-blur-md rounded-lg p-3 shadow-lg flex flex-col gap-3 w-full">
-              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest leading-none">{t('clusterMap.layers', 'Layers')}</span>
+            <div className="map-overlay shadow-lg p-3 flex flex-col gap-3 w-full">
+              <span className="text-[10px] font-semibold text-muted uppercase tracking-widest leading-none">{t('clusterMap.layers', 'Layers')}</span>
 
               <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-[13px] text-gray-200 group-hover:text-white transition-colors">{t('clusterMap.showClusters', 'Clusters')}</span>
+                <span className="text-[13px] text-ink group-hover:text-accent transition-colors">{t('clusterMap.showClusters', 'Clusters')}</span>
                 <div className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -795,12 +795,12 @@ export function FlightClusterMap({
                     checked={showClusters}
                     onChange={() => handleToggleLayer('clusters')}
                   />
-                  <div className="w-8 h-[18px] bg-gray-600 outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-indigo-500 shadow-inner"></div>
+                  <div className="w-8 h-[18px] bg-line outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-accent shadow-inner"></div>
                 </div>
               </label>
 
               <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-[13px] text-gray-200 group-hover:text-white transition-colors">{t('clusterMap.showHeatmap', 'Heatmap')}</span>
+                <span className="text-[13px] text-ink group-hover:text-accent transition-colors">{t('clusterMap.showHeatmap', 'Heatmap')}</span>
                 <div className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -808,7 +808,7 @@ export function FlightClusterMap({
                     checked={showHeatmap}
                     onChange={() => handleToggleLayer('heatmap')}
                   />
-                  <div className="w-8 h-[18px] bg-gray-600 outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-rose-500 shadow-inner"></div>
+                  <div className="w-8 h-[18px] bg-line outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-[14px] after:w-[14px] after:transition-all peer-checked:bg-accent shadow-inner"></div>
                 </div>
               </label>
             </div>
@@ -818,7 +818,7 @@ export function FlightClusterMap({
           <button
             type="button"
             onClick={handleResetZoom}
-            className="absolute bottom-2 right-2 z-10 bg-drone-dark/80 border border-gray-700 rounded-lg px-2.5 py-1.5 shadow-lg text-xs text-gray-300 hover:text-white hover:bg-drone-dark transition-colors flex items-center gap-1.5"
+            className="absolute bottom-2 right-2 z-10 bg-elevated/95 border border-line rounded-lg px-2.5 py-1.5 shadow-lg text-xs text-muted hover:text-ink hover:bg-surface transition-colors flex items-center gap-1.5"
             title={t('clusterMap.resetZoomToFit')}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -837,14 +837,14 @@ export function FlightClusterMap({
             clusterMaxZoom={14}
             clusterRadius={50}
           >
-            {showHeatmap && <Layer {...(heatmapLayer as any)} />}
-            {showClusters && <Layer {...(clusterLayer as any)} />}
-            {showClusters && <Layer {...(clusterCountLayer as any)} />}
-            {showClusters && <Layer {...(unclusteredPointLayer as any)} />}
-            {showHeatmap && <Layer {...(heatmapPointGlowLayer as any)} />}
-            {showHeatmap && <Layer {...(heatmapPointCenterLayer as any)} />}
-            {showHeatmap && <Layer {...(heatmapPointCoreLayer as any)} />}
-            {showHeatmap && <Layer {...(heatmapPointHitboxLayer as any)} />}
+            {showHeatmap && <Layer {...(heatmapLayer() as any)} />}
+            {showClusters && <Layer {...(clusterLayer() as any)} />}
+            {showClusters && <Layer {...(clusterCountLayer() as any)} />}
+            {showClusters && <Layer {...(unclusteredPointLayer() as any)} />}
+            {showHeatmap && <Layer {...(heatmapPointGlowLayer() as any)} />}
+            {showHeatmap && <Layer {...(heatmapPointCenterLayer() as any)} />}
+            {showHeatmap && <Layer {...(heatmapPointCoreLayer() as any)} />}
+            {showHeatmap && <Layer {...(heatmapPointHitboxLayer() as any)} />}
           </Source>
 
           {/* Highlighted flight marker (shown above other markers) */}
@@ -860,7 +860,7 @@ export function FlightClusterMap({
                 type="circle"
                 source="highlighted-flight"
                 paint={{
-                  'circle-color': '#10b981',
+                  'circle-color': themeColor('--skydra-accent'),
                   'circle-radius': pulseRadius,
                   'circle-stroke-width': 0,
                   'circle-opacity': pulseOpacity,
@@ -872,10 +872,10 @@ export function FlightClusterMap({
                 type="circle"
                 source="highlighted-flight"
                 paint={{
-                  'circle-color': '#10b981',
+                  'circle-color': themeColor('--skydra-accent'),
                   'circle-radius': 10,
                   'circle-stroke-width': 2,
-                  'circle-stroke-color': '#ffffff',
+                  'circle-stroke-color': themeColor('--skydra-accent-ink'),
                   'circle-opacity': 0.95,
                 }}
               />
@@ -884,8 +884,7 @@ export function FlightClusterMap({
 
           {/* Popup for individual flights */}
           {popupInfo && (() => {
-            const isLight = resolvedTheme === 'light';
-            const iconColor = isLight ? '#6366f1' : '#818cf8';
+            const iconColor = themeColor('--skydra-accent');
             return (
               <Popup
                 longitude={popupInfo.longitude}
@@ -908,12 +907,12 @@ export function FlightClusterMap({
                   }}
                 >
                   {/* Header strip */}
-                  <div className="px-3.5 py-2.5" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }}>
-                    <p className="text-[13px] font-semibold truncate leading-tight" style={{ color: '#ffffff' }}>
+                  <div className="popup-header px-3.5 py-2.5">
+                    <p className="text-[13px] font-semibold truncate leading-tight text-ink">
                       {(() => { const name = popupInfo.flight.displayName || popupInfo.flight.fileName; return name.length > 20 ? name.slice(0, 20) + '…' : name; })()}
                     </p>
                     {(popupInfo.flight.aircraftName || popupInfo.flight.droneModel) && (
-                      <p className="text-[11px] truncate mt-0.5" style={{ color: '#c7d2fe' }}>
+                      <p className="text-[11px] truncate mt-0.5 text-muted">
                         {popupInfo.flight.aircraftName || popupInfo.flight.droneModel}
                         {popupInfo.flight.aircraftName && popupInfo.flight.droneModel
                           ? ` · ${popupInfo.flight.droneModel}`
@@ -949,10 +948,7 @@ export function FlightClusterMap({
                   {/* Footer CTA */}
                   {onSelectFlight && (
                     <div className="popup-footer px-3.5 pb-2.5">
-                      <div className={`flex items-center justify-center gap-1 text-[11px] font-medium rounded-md py-1.5 transition-colors ${isLight
-                        ? 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100'
-                        : 'text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/25'
-                        }`}>
+                      <div className={`flex items-center justify-center gap-1 text-[11px] font-medium rounded-md py-1.5 transition-colors text-accent bg-accent/10 hover:bg-accent/20`}>
                         <span>{t('clusterMap.viewDetails')}</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                       </div>

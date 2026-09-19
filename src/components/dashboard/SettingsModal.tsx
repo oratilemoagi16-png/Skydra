@@ -159,9 +159,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     return () => clearInterval(timer);
   }, [isDeleting]);
 
-  // Derive light/dark for theme-aware styling
-  const isLight = themeMode === 'light' || (themeMode === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches);
-
   // True when any long-running destructive/IO operation is in progress
   const isBusy = isBackingUp || isRestoring || isDeleting || isRegenerating || isRemovingAutoTags;
 
@@ -616,15 +613,15 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       />
 
       {/* Modal - use flex-col and my-auto to handle overflow properly */}
-      <div className="relative bg-drone-secondary rounded-xl border border-gray-700 shadow-2xl w-full max-w-[845px] max-h-[calc(100vh-2rem)] modal-mobile-max flex flex-col my-auto">
+      <div className="relative bg-surface rounded-xl border border-line shadow-2xl w-full max-w-[845px] max-h-[calc(100vh-2rem)] modal-mobile-max flex flex-col my-auto">
         {/* Blocking overlay while a long-running operation is in progress */}
         {isBusy && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/90 dark:bg-black/60 backdrop-blur-[2px] rounded-xl">
-            <svg className="w-10 h-10 text-drone-primary animate-spin" viewBox="0 0 24 24" fill="none">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-elevated/90 backdrop-blur-[2px] rounded-xl">
+            <svg className="w-10 h-10 text-accent animate-spin" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
               <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
             </svg>
-            <p className="mt-3 text-sm font-semibold text-gray-800 dark:font-normal dark:text-gray-300">
+            <p className="mt-3 text-sm font-semibold text-ink">
               {isBackingUp && t('settings.exportingBackup')}
               {isRestoring && t('settings.restoringBackup')}
               {isDeleting && t('settings.deletingAllLogs')}
@@ -633,7 +630,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <>
                   {t('settings.regeneratingSmartTags')}
                   {regenerationProgress && (
-                    <span className="block text-xs font-normal text-gray-600 dark:text-gray-400 mt-1">
+                    <span className="block text-xs font-normal text-muted mt-1">
                       {t('settings.processedFlights', { x: regenerationProgress.processed, y: regenerationProgress.total })}
                     </span>
                   )}
@@ -642,26 +639,26 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </p>
             {!webMode && (isBackingUp || isRestoring) && backupProgress && (
               <div className="mt-3 w-72 max-w-[80vw]">
-                <div className="h-2 rounded-full bg-gray-300/70 dark:bg-gray-700/70 overflow-hidden">
+                <div className="h-2 rounded-full bg-line/70 overflow-hidden">
                   <div
-                    className="h-full bg-sky-500 transition-all duration-200"
+                    className="h-full bg-accent transition-all duration-200"
                     style={{ width: `${backupProgress.percent}%` }}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-700 dark:text-gray-400 text-center">
+                <p className="mt-1 text-xs text-ink text-center">
                   {backupProgress.stage || (isBackingUp ? t('settings.exportingBackup') : t('settings.restoringBackup'))} ({backupProgress.percent}%)
                 </p>
               </div>
             )}
             {isDeleting && (
               <div className="mt-3 w-72 max-w-[80vw]">
-                <div className="h-2 rounded-full bg-gray-300/70 dark:bg-gray-700/70 overflow-hidden">
+                <div className="h-2 rounded-full bg-line/70 overflow-hidden">
                   <div
-                    className="h-full bg-sky-500 transition-all duration-300"
+                    className="h-full bg-accent transition-all duration-300"
                     style={{ width: `${fallbackProgress}%` }}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-700 dark:text-gray-400 text-center">
+                <p className="mt-1 text-xs text-ink text-center">
                   {t('settings.deletingAllLogs')} ({fallbackProgress}%)
                 </p>
               </div>
@@ -670,12 +667,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         )}
 
         {/* Header */}
-        <div className="shrink-0 flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold text-white">{t('settings.title')}</h2>
+        <div className="shrink-0 flex items-center justify-between p-4 border-b border-line">
+          <h2 className="text-lg font-semibold text-ink">{t('settings.title')}</h2>
           <button
             onClick={onClose}
             disabled={isBusy}
-            className="text-gray-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-muted hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -706,15 +703,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   ];
                   return (
                     <div className="flex flex-col gap-1 col-span-2 sm:col-span-1 relative">
-                      <label className="text-xs font-medium text-gray-400">{t('settings.units')}</label>
+                      <label className="text-xs font-medium text-muted">{t('settings.units')}</label>
                       {/* Trigger button styled like Select */}
                       <button
                         type="button"
                         onClick={() => setUnitsDropdownOpen(v => !v)}
-                        className={`flex items-center justify-between w-full h-[34px] px-2.5 rounded-lg border text-[13px] transition-colors ${isLight
-                          ? 'bg-white border-gray-300 text-gray-800 hover:border-gray-400'
-                          : 'bg-drone-dark border-gray-600 text-gray-200 hover:border-gray-500'
-                          }`}
+                        className={`flex items-center justify-between w-full h-[34px] px-2.5 rounded-lg border text-[13px] transition-colors bg-canvas border-line text-ink hover:border-line-strong`}
                       >
                         <span className="truncate">{summaryLabel}</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 ml-1 opacity-50">
@@ -725,12 +719,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       {unitsDropdownOpen && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setUnitsDropdownOpen(false)} />
-                          <div className={`absolute left-0 top-full mt-1 z-50 w-56 rounded-lg border shadow-xl overflow-hidden ${isLight
-                            ? 'bg-white border-gray-300'
-                            : 'bg-drone-surface border-gray-600'
-                            }`}>
+                          <div className={`absolute left-0 top-full mt-1 z-50 w-56 rounded-lg border shadow-xl overflow-hidden bg-elevated border-line`}>
                             {/* Bulk set buttons */}
-                            <div className={`flex gap-1 p-2 border-b ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+                            <div className={`flex gap-1 p-2 border-b border-line`}>
                               <button
                                 type="button"
                                 onClick={() => {
@@ -738,8 +729,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                   setUnitPref('speed', 'kmh');
                                 }}
                                 className={`flex-1 text-[11px] font-medium py-1 rounded-md transition-colors ${allMetric
-                                  ? 'bg-drone-primary text-white'
-                                  : isLight ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                                  ? 'bg-accent text-accent-ink'
+                                  : 'bg-surface text-muted hover:bg-line/60'
                                   }`}
                               >{t('settings.allMetric', 'All Metric')}</button>
                               <button
@@ -749,38 +740,38 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                   setUnitPref('speed', 'mph');
                                 }}
                                 className={`flex-1 text-[11px] font-medium py-1 rounded-md transition-colors ${allImperial
-                                  ? 'bg-drone-primary text-white'
-                                  : isLight ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                                  ? 'bg-accent text-accent-ink'
+                                  : 'bg-surface text-muted hover:bg-line/60'
                                   }`}
                               >{t('settings.allImperial', 'All Imperial')}</button>
                             </div>
                             {/* Per-dimension toggles */}
                             {unitRows.map(({ key, label, metricLabel, imperialLabel }) => (
-                              <div key={key} className={`flex items-center justify-between px-3 py-[6px] border-b last:border-b-0 ${isLight ? 'border-gray-100' : 'border-gray-700/40'}`}>
-                                <span className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{label}</span>
-                                <div className={`flex rounded-md overflow-hidden border ${isLight ? 'border-gray-300' : 'border-gray-600'}`}>
+                              <div key={key} className={`flex items-center justify-between px-3 py-[6px] border-b last:border-b-0 border-line/60`}>
+                                <span className={`text-[11px] text-muted`}>{label}</span>
+                                <div className={`flex rounded-md overflow-hidden border border-line`}>
                                   <button
                                     type="button"
                                     onClick={() => setUnitPref(key, 'metric')}
                                     className={`px-2 py-0.5 text-[10px] font-medium transition-colors ${unitPrefs[key] === 'metric'
-                                      ? 'bg-drone-primary text-white'
-                                      : isLight ? 'bg-transparent text-gray-500 hover:text-gray-700' : 'bg-transparent text-gray-400 hover:text-gray-200'
+                                      ? 'bg-accent text-accent-ink'
+                                      : 'bg-transparent text-muted hover:text-ink'
                                       }`}
                                   >{metricLabel}</button>
                                   <button
                                     type="button"
                                     onClick={() => setUnitPref(key, 'imperial')}
-                                    className={`px-2 py-0.5 text-[10px] font-medium transition-colors border-l ${isLight ? 'border-gray-300' : 'border-gray-600'} ${unitPrefs[key] === 'imperial'
-                                      ? 'bg-drone-primary text-white'
-                                      : isLight ? 'bg-transparent text-gray-500 hover:text-gray-700' : 'bg-transparent text-gray-400 hover:text-gray-200'
+                                    className={`px-2 py-0.5 text-[10px] font-medium transition-colors border-l border-line ${unitPrefs[key] === 'imperial'
+                                      ? 'bg-accent text-accent-ink'
+                                      : 'bg-transparent text-muted hover:text-ink'
                                       }`}
                                   >{imperialLabel}</button>
                                 </div>
                               </div>
                             ))}
-                            <div className={`flex items-center justify-between px-3 py-[6px] ${isLight ? 'border-gray-100' : 'border-gray-700/40'}`}>
-                              <span className={`text-[11px] ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{t('settings.unitSpeed', 'Speed')}</span>
-                              <div className={`flex rounded-md overflow-hidden border ${isLight ? 'border-gray-300' : 'border-gray-600'}`}>
+                            <div className={`flex items-center justify-between px-3 py-[6px] border-line/60`}>
+                              <span className={`text-[11px] text-muted`}>{t('settings.unitSpeed', 'Speed')}</span>
+                              <div className={`flex rounded-md overflow-hidden border border-line`}>
                                 {([
                                   { key: 'kmh', label: 'km/h' },
                                   { key: 'mph', label: 'mph' },
@@ -791,9 +782,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     key={option.key}
                                     type="button"
                                     onClick={() => setUnitPref('speed', option.key)}
-                                    className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors ${idx > 0 ? (isLight ? 'border-l border-gray-300' : 'border-l border-gray-600') : ''} ${unitPrefs.speed === option.key
-                                      ? 'bg-drone-primary text-white'
-                                      : isLight ? 'bg-transparent text-gray-500 hover:text-gray-700' : 'bg-transparent text-gray-400 hover:text-gray-200'
+                                    className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors ${idx > 0 ? 'border-l border-line' : ''} ${unitPrefs.speed === option.key
+                                      ? 'bg-accent text-accent-ink'
+                                      : 'bg-transparent text-muted hover:text-ink'
                                       }`}
                                   >{option.label}</button>
                                 ))}
@@ -806,7 +797,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   );
                 })()}
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-medium text-gray-400">
+                  <label className="text-xs font-medium text-muted">
                     {t('settings.theme')}
                   </label>
                   <Select
@@ -820,10 +811,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   />
                 </div>
                 <div className="flex flex-col gap-1 col-span-2 sm:col-span-1">
-                  <label className="text-xs font-medium text-gray-400 flex items-center gap-1.5">
+                  <label className="text-xs font-medium text-muted flex items-center gap-1.5">
                     {t('settings.timeFormat', 'Time Format')}
                     {isTimeFormatPending && (
-                      <svg className="w-3 h-3 animate-spin text-drone-primary" viewBox="0 0 24 24" fill="none">
+                      <svg className="w-3 h-3 animate-spin text-accent" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
                         <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
                       </svg>
@@ -851,7 +842,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {/* App Language */}
                 <div className="flex flex-col gap-1 col-span-2 sm:col-span-1">
-                  <label className="text-xs font-medium text-gray-400">
+                  <label className="text-xs font-medium text-muted">
                     {t('settings.language')}
                   </label>
                   <Select
@@ -877,7 +868,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
                 {/* Number Format */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-medium text-gray-400">
+                  <label className="text-xs font-medium text-muted">
                     {t('settings.numbers')}
                   </label>
                   <Select
@@ -892,7 +883,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
                 {/* Date Format */}
                 <div className="flex flex-col gap-1 col-span-2 sm:col-span-1">
-                  <label className="text-xs font-medium text-gray-400">
+                  <label className="text-xs font-medium text-muted">
                     {t('settings.dates')}
                   </label>
                   <Select
@@ -917,23 +908,23 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <button
                   type="button"
                   onClick={() => setHideSerialNumbers(!hideSerialNumbers)}
-                  className="flex items-center justify-between gap-3 w-full text-[0.85rem] text-gray-300"
+                  className="flex items-center justify-between gap-3 w-full text-[0.85rem] text-ink"
                   aria-pressed={hideSerialNumbers}
                 >
                   <span>{t('settings.hideSerials')}</span>
                   <span
                     className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${hideSerialNumbers
-                      ? 'bg-drone-primary/90 border-drone-primary'
-                      : 'bg-drone-surface border-gray-600 toggle-track-off'
+                      ? 'bg-accent/90 border-accent'
+                      : 'bg-elevated border-line-strong toggle-track-off'
                       }`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${hideSerialNumbers ? 'translate-x-4' : 'translate-x-1'
+                      className={`inline-block h-4 w-4 transform rounded-full bg-elevated shadow transition-transform ${hideSerialNumbers ? 'translate-x-4' : 'translate-x-1'
                         }`}
                     />
                   </span>
                 </button>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted mt-1">
                   {t('settings.hideSerialDesc')}
                 </p>
               </div>
@@ -942,8 +933,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-300">{t('settings.smartTags')}</p>
-                    <p className="text-xs text-gray-500">{t('settings.smartTagsDesc')}</p>
+                    <p className="text-sm font-medium text-ink">{t('settings.smartTags')}</p>
+                    <p className="text-xs text-muted">{t('settings.smartTagsDesc')}</p>
                   </div>
                   <button
                     type="button"
@@ -953,12 +944,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   >
                     <span
                       className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${smartTagsEnabled
-                        ? 'bg-drone-primary/90 border-drone-primary'
-                        : 'bg-drone-surface border-gray-600 toggle-track-off'
+                        ? 'bg-accent/90 border-accent'
+                        : 'bg-elevated border-line-strong toggle-track-off'
                         }`}
                     >
                       <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${smartTagsEnabled ? 'translate-x-4' : 'translate-x-1'
+                        className={`inline-block h-4 w-4 transform rounded-full bg-elevated shadow transition-transform ${smartTagsEnabled ? 'translate-x-4' : 'translate-x-1'
                           }`}
                       />
                     </span>
@@ -972,9 +963,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <button
                         type="button"
                         onClick={() => setIsTagTypeDropdownOpen((v) => !v)}
-                        className="w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2 rounded-lg border border-gray-600 bg-drone-surface hover:border-gray-500 transition-colors"
+                        className="w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2 rounded-lg border border-line-strong bg-elevated hover:border-line-strong transition-colors"
                       >
-                        <span className={`truncate ${enabledTagTypes.length < SMART_TAG_TYPES.length ? 'text-gray-100' : 'text-gray-400'}`}>
+                        <span className={`truncate ${enabledTagTypes.length < SMART_TAG_TYPES.length ? 'text-ink' : 'text-muted'}`}>
                           {enabledTagTypes.length === SMART_TAG_TYPES.length
                             ? t('settings.allTagTypes')
                             : enabledTagTypes.length === 0
@@ -991,10 +982,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                           />
                           <div
                             ref={tagTypeDropdownRef}
-                            className="absolute left-0 right-0 top-full mt-1 z-50 max-h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                            className="absolute left-0 right-0 top-full mt-1 z-50 max-h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                           >
                             {/* Search input */}
-                            <div className="px-2 pt-2 pb-1 border-b border-gray-700 flex-shrink-0">
+                            <div className="px-2 pt-2 pb-1 border-b border-line flex-shrink-0">
                               <input
                                 type="text"
                                 value={tagTypeSearch}
@@ -1008,7 +999,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 }}
                                 placeholder={t('settings.searchTagTypes')}
                                 autoFocus
-                                className="w-full bg-drone-dark text-xs text-gray-200 rounded px-2 py-1 border border-gray-600 focus:border-drone-primary focus:outline-none placeholder-gray-500"
+                                className="w-full bg-canvas text-xs text-ink rounded px-2 py-1 border border-line-strong focus:border-accent focus:outline-none placeholder:text-faint"
                               />
                             </div>
                             <div className="overflow-y-scroll flex-1">
@@ -1018,7 +1009,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                   t.description.toLowerCase().includes(tagTypeSearch.toLowerCase())
                                 );
                                 if (filtered.length === 0) {
-                                  return <p className="text-xs text-gray-500 px-3 py-2">{t('settings.noMatchingTagTypes')}</p>;
+                                  return <p className="text-xs text-muted px-3 py-2">{t('settings.noMatchingTagTypes')}</p>;
                                 }
                                 // Sort: selected first, then unselected
                                 const sorted = [...filtered].sort((a, b) => {
@@ -1042,11 +1033,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         setEnabledSmartTagTypes(newTypes);
                                       }}
                                       className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isSelected
-                                        ? 'bg-teal-500/20 text-gray-800 dark:text-teal-200'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
+                                        ? 'bg-accent/15 text-accent'
+                                        : 'text-ink hover:bg-line/40'
                                         }`}
                                     >
-                                      <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-600'
+                                      <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-accent bg-accent' : 'border-line-strong'
                                         }`}>
                                         {isSelected && (
                                           <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -1073,7 +1064,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       setMessage({ type: 'success', text: msg });
                     }}
                     disabled={isBusy}
-                    className="flex-1 py-[7px] px-3 rounded-lg border border-teal-600 text-teal-400 hover:bg-teal-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                    className="flex-1 py-[7px] px-3 rounded-lg border border-line text-ink hover:bg-elevated transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
                   >
                     <span className="flex items-center justify-center gap-1.5">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1085,8 +1076,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                   {/* Remove Auto Tags */}
                   {confirmRemoveAutoTags ? (
-                    <div className="flex-1 rounded-lg border border-orange-600/60 bg-orange-500/10 p-2.5">
-                      <p className="text-xs text-orange-200">
+                    <div className="flex-1 rounded-lg border border-danger/60 bg-danger/10 p-2.5">
+                      <p className="text-xs text-danger">
                         {t('settings.removeAutoTagsConfirm')}
                       </p>
                       <div className="mt-2 flex items-center gap-3">
@@ -1100,13 +1091,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             }
                             setConfirmRemoveAutoTags(false);
                           }}
-                          className="text-xs text-orange-300 hover:text-orange-200"
+                          className="text-xs text-danger hover:text-danger/80"
                         >
                           {t('flightList.yes')}
                         </button>
                         <button
                           onClick={() => setConfirmRemoveAutoTags(false)}
-                          className="text-xs text-gray-400 hover:text-gray-200"
+                          className="text-xs text-muted hover:text-ink"
                         >
                           {t('flightList.cancel')}
                         </button>
@@ -1117,7 +1108,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       type="button"
                       onClick={() => setConfirmRemoveAutoTags(true)}
                       disabled={isBusy}
-                      className="flex-1 py-[7px] px-3 rounded-lg border border-orange-600 text-orange-400 hover:bg-orange-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                      className="flex-1 py-[7px] px-3 rounded-lg border border-danger text-danger hover:bg-danger/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
                     >
                       <span className="flex items-center justify-center gap-1.5">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1131,25 +1122,25 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
 
               {/* Profile Password Section */}
-              <div className="pt-4 border-t border-gray-700">
+              <div className="pt-4 border-t border-line">
                 <div className="flex items-center gap-2 mb-2">
-                  <label className="text-sm font-medium text-gray-300">
+                  <label className="text-sm font-medium text-ink">
                     {t('settings.profilePassword')}
                   </label>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted">
                     {profilePasswords[activeProfile]
                       ? t('settings.passwordEnabled')
                       : t('settings.passwordDisabled')}
                   </span>
                   {profilePasswords[activeProfile] && (
-                    <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   )}
                 </div>
 
                 {pwMessage && (
-                  <div className={`text-xs mb-2 ${pwMessage.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>
+                  <div className={`text-xs mb-2 ${pwMessage.type === 'error' ? 'text-danger' : 'text-success'}`}>
                     {pwMessage.text}
                   </div>
                 )}
@@ -1163,7 +1154,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         placeholder={t('settings.currentPassword')}
                         value={pwCurrent}
                         onChange={e => setPwCurrent(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                        className="w-full px-3 py-1.5 bg-canvas border border-line rounded-lg text-xs text-ink focus:outline-none focus:ring-1 focus:ring-focus"
                       />
                       <button
                         type="button"
@@ -1180,7 +1171,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             setPwMessage({ type: 'error', text: String(err) });
                           } finally { setPwBusy(false); }
                         }}
-                        className="py-1.5 px-3 rounded-lg border border-red-600 text-red-400 text-xs hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                        className="py-1.5 px-3 rounded-lg border border-danger text-danger text-xs hover:bg-danger/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                       >
                         {t('settings.removePassword')}
                       </button>
@@ -1191,7 +1182,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         placeholder={t('settings.newPasswordOpt')}
                         value={pwNew}
                         onChange={e => setPwNew(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                        className="w-full px-3 py-1.5 bg-canvas border border-line rounded-lg text-xs text-ink focus:outline-none focus:ring-1 focus:ring-focus"
                       />
                       {pwNew && (
                         <PasswordInput
@@ -1199,7 +1190,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                           placeholder={t('settings.confirmPassword')}
                           value={pwConfirm}
                           onChange={e => setPwConfirm(e.target.value)}
-                          className="w-full px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                          className="w-full px-3 py-1.5 bg-canvas border border-line rounded-lg text-xs text-ink focus:outline-none focus:ring-1 focus:ring-focus"
                         />
                       )}
                       {pwNew && (
@@ -1217,7 +1208,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                               setPwMessage({ type: 'error', text: String(err) });
                             } finally { setPwBusy(false); }
                           }}
-                          className="py-1.5 px-3 rounded-lg bg-drone-primary text-white text-xs hover:bg-drone-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                          className="py-1.5 px-3 rounded-lg bg-accent text-accent-ink text-xs hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                         >
                           {t('settings.changePassword')}
                         </button>
@@ -1233,14 +1224,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         placeholder={t('settings.newPasswordLabel')}
                         value={pwNew}
                         onChange={e => setPwNew(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                        className="w-full px-3 py-1.5 bg-canvas border border-line rounded-lg text-xs text-ink focus:outline-none focus:ring-1 focus:ring-focus"
                       />
                       <PasswordInput
                         wrapperClassName="flex-1 min-w-0"
                         placeholder={t('settings.confirmPassword')}
                         value={pwConfirm}
                         onChange={e => setPwConfirm(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                        className="w-full px-3 py-1.5 bg-canvas border border-line rounded-lg text-xs text-ink focus:outline-none focus:ring-1 focus:ring-focus"
                       />
                       <button
                         type="button"
@@ -1257,7 +1248,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             setPwMessage({ type: 'error', text: String(err) });
                           } finally { setPwBusy(false); }
                         }}
-                        className="py-1.5 px-3 rounded-lg bg-drone-primary text-white text-xs hover:bg-drone-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                        className="py-1.5 px-3 rounded-lg bg-accent text-accent-ink text-xs hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                       >
                         {t('settings.setPassword')}
                       </button>
@@ -1267,8 +1258,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                 {/* Auto-logout toggle — Tauri desktop only, visible when profile has a password */}
                 {!isWebMode() && profilePasswords[activeProfile] && (
-                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-700/50">
-                    <label className="text-xs font-medium text-gray-300 cursor-pointer" htmlFor="auto-logout-toggle">
+                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-line">
+                    <label className="text-xs font-medium text-ink cursor-pointer" htmlFor="auto-logout-toggle">
                       {t('settings.autoLogout')}
                     </label>
                     <button
@@ -1285,11 +1276,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                           setAutoLogout(!next); // revert on failure
                         }
                       }}
-                      className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-drone-primary focus:ring-offset-2 focus:ring-offset-gray-900 ${autoLogout ? 'bg-drone-primary' : 'bg-gray-600'
+                      className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2 focus:ring-offset-canvas ${autoLogout ? 'bg-accent' : 'bg-line-strong'
                         }`}
                     >
                       <span
-                        className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transform transition-transform duration-200 ${autoLogout ? 'translate-x-[18px]' : 'translate-x-[3px]'
+                        className={`inline-block h-3.5 w-3.5 rounded-full bg-elevated shadow transform transition-transform duration-200 ${autoLogout ? 'translate-x-[18px]' : 'translate-x-[3px]'
                           }`}
                       />
                     </button>
@@ -1298,20 +1289,20 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
 
               {/* API Key Section */}
-              <div className="pt-4 border-t border-gray-700">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+              <div className="pt-4 border-t border-line">
+                <label className="block text-sm font-medium text-ink mb-2">
                   {t('settings.djiApiKey')}
                 </label>
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-muted mb-3">
                   {t('settings.djiApiKeyDesc')}{' '}
-                  <span className="text-drone-primary font-medium">
+                  <span className="text-accent font-medium">
                     {t('settings.thisGuide')}
                   </span>
                 </p>
 
                 {/* Status indicator */}
                 <div className="flex items-center gap-2 mb-3 flex-wrap">
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-muted">
                     {hasKey ? t('settings.apiKeyConfigured') : t('settings.noApiKey')}
                   </span>
                   {apiKeyType === 'none' && (
@@ -1362,22 +1353,22 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
                       placeholder={hasKey ? '••••••••••••••••' : t('settings.enterYourApiKey')}
-                      className="w-full px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                      className="w-full px-3 py-1.5 bg-canvas border border-line rounded-lg text-xs text-ink focus:outline-none focus:ring-1 focus:ring-focus"
                     />
                     <button
                       onClick={handleSave}
                       disabled={isSaving || !apiKey.trim()}
-                      className="py-1.5 px-3 rounded-lg bg-drone-primary text-white text-xs hover:bg-drone-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                      className="py-1.5 px-3 rounded-lg bg-accent text-accent-ink text-xs hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
                       {isSaving ? t('settings.savingApiKey') : hasKey ? t('settings.updateApiKey') : t('settings.saveApiKey')}
                     </button>
                   </div>
                 ) : (
-                  <div className="rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-3 py-2">
-                    <p className="text-xs font-medium text-yellow-200">
+                  <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2">
+                    <p className="text-xs font-medium text-warning">
                       {t('settings.apiKeyDefaultProfileOnlyTitle')}
                     </p>
-                    <p className="mt-1 text-xs text-yellow-100/85">
+                    <p className="mt-1 text-xs text-warning/85">
                       {t('settings.apiKeyDefaultProfileOnlyDesc', { profile: activeProfile })}
                     </p>
                   </div>
@@ -1386,7 +1377,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 {/* Message (auto-dismisses after 5s) */}
                 {message && (
                   <p
-                    className={`mt-2 text-sm text-center ${message.type === 'success' ? 'text-green-400' : 'text-red-400'
+                    className={`mt-2 text-sm text-center ${message.type === 'success' ? 'text-success' : 'text-danger'
                       }`}
                   >
                     {message.text}
@@ -1396,23 +1387,23 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
 
             {/* Vertical Divider */}
-            <div className="hidden lg:block w-px bg-gray-700 shrink-0" />
+            <div className="hidden lg:block w-px bg-line shrink-0" />
             {/* Horizontal Divider for mobile */}
-            <div className="lg:hidden h-px w-full bg-gray-700 shrink-0" />
+            <div className="lg:hidden h-px w-full bg-line shrink-0" />
 
             {/* Right Column: Info & Data */}
             <div className="lg:w-1/2 space-y-4 lg:pl-5">
               {/* Info Section */}
-              <div className="pt-4 border-t border-gray-700">
-                <p className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
-                  <strong className="text-gray-400">{t('settings.appVersion')}</strong>{' '}
-                  <span className="text-gray-400">{appVersion || '...'}</span>
+              <div className="pt-4 border-t border-line">
+                <p className="text-xs text-muted flex items-center gap-2 flex-wrap">
+                  <strong className="text-muted">{t('settings.appVersion')}</strong>{' '}
+                  <span className="text-muted">{appVersion || '...'}</span>
                 </p>
                 {!webMode && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    <strong className="text-gray-400">{t('settings.logLocation')}</strong>
+                  <p className="text-xs text-muted mt-2">
+                    <strong className="text-muted">{t('settings.logLocation')}</strong>
                     <br />
-                    <code className="text-xs text-gray-400 bg-drone-dark px-1 py-0.5 rounded break-all">
+                    <code className="text-xs text-muted bg-canvas px-1 py-0.5 rounded break-all">
                       {appLogDir || t('settings.loading')}
                     </code>
                   </p>
@@ -1420,7 +1411,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                 {/* Keep Uploaded Files - Only show in Tauri desktop mode */}
                 {!isWebMode() && keepUploadSettings && (
-                  <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="mt-4 pt-4 border-t border-line">
                     <div className="flex items-center justify-between gap-3">
                       <button
                         type="button"
@@ -1437,17 +1428,17 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             });
                           }
                         }}
-                        className="flex items-center gap-3 text-[0.85rem] text-gray-300"
+                        className="flex items-center gap-3 text-[0.85rem] text-ink"
                         aria-pressed={keepUploadSettings.enabled}
                       >
                         <span
                           className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${keepUploadSettings.enabled
-                            ? 'bg-drone-primary/90 border-drone-primary'
-                            : 'bg-drone-surface border-gray-600 toggle-track-off'
+                            ? 'bg-accent/90 border-accent'
+                            : 'bg-elevated border-line-strong toggle-track-off'
                             }`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${keepUploadSettings.enabled ? 'translate-x-4' : 'translate-x-1'
+                            className={`inline-block h-4 w-4 transform rounded-full bg-elevated shadow transition-transform ${keepUploadSettings.enabled ? 'translate-x-4' : 'translate-x-1'
                               }`}
                           />
                         </span>
@@ -1482,8 +1473,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         }}
                         disabled={!keepUploadSettings.enabled}
                         className={`p-1.5 rounded transition-colors ${keepUploadSettings.enabled
-                          ? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                          : 'text-gray-600 cursor-not-allowed'
+                          ? 'text-muted hover:text-ink hover:bg-line/60'
+                          : 'text-muted cursor-not-allowed'
                           }`}
                         title="Select folder"
                       >
@@ -1492,14 +1483,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </svg>
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted mt-1">
                       {t('settings.keepUploadedDesc')}
                     </p>
                     {keepUploadSettings.enabled && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        <strong className="text-gray-400">{t('settings.folder')}</strong>
+                      <p className="text-xs text-muted mt-1">
+                        <strong className="text-muted">{t('settings.folder')}</strong>
                         <br />
-                        <code className="text-xs text-gray-400 bg-drone-dark px-1 py-0.5 rounded break-all">
+                        <code className="text-xs text-muted bg-canvas px-1 py-0.5 rounded break-all">
                           {keepUploadSettings.folder_path}
                         </code>
                       </p>
@@ -1509,12 +1500,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
 
               {/* Backup & Restore */}
-              <div className="pt-4 border-t border-gray-700">
+              <div className="pt-4 border-t border-line">
                 <div className="flex gap-3">
                   <button
                     onClick={handleBackup}
                     disabled={isBusy}
-                    className="flex-1 py-2 px-3 rounded-lg border border-sky-600 text-sky-400 hover:bg-sky-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    className="flex-1 py-2 px-3 rounded-lg border border-accent/60 text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                   >
                     {isBackingUp ? (
                       <span className="flex items-center justify-center gap-2">
@@ -1536,7 +1527,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   <button
                     onClick={handleRestore}
                     disabled={isBusy}
-                    className="flex-1 py-2 px-3 rounded-lg border border-amber-600 text-amber-400 hover:bg-amber-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    className="flex-1 py-2 px-3 rounded-lg border border-line text-ink hover:bg-elevated transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                   >
                     {isRestoring ? (
                       <span className="flex items-center justify-center gap-2">
@@ -1558,23 +1549,23 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
 
                 {confirmDeleteAll ? (
-                  <div className="mt-4 rounded-lg border border-red-600/60 bg-red-500/10 p-3">
-                    <p className="text-xs text-red-200">
+                  <div className="mt-4 rounded-lg border border-danger/60 bg-danger/10 p-3">
+                    <p className="text-xs text-danger">
                       {t('settings.deleteAllWarning')}
                     </p>
-                    <p className="text-xs text-green-300 mt-1.5">
+                    <p className="text-xs text-success mt-1.5">
                       {t('settings.deleteAllPreserveNote')}
                     </p>
                     <div className="mt-2 flex items-center gap-3">
                       <button
                         onClick={handleDeleteAll}
-                        className="text-xs text-red-300 hover:text-red-200"
+                        className="text-xs text-danger hover:text-danger"
                       >
                         {t('flightList.yes')}
                       </button>
                       <button
                         onClick={() => setConfirmDeleteAll(false)}
-                        className="text-xs text-gray-400 hover:text-gray-200"
+                        className="text-xs text-muted hover:text-ink"
                       >
                         {t('flightList.cancel')}
                       </button>
@@ -1584,7 +1575,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   <button
                     onClick={() => setConfirmDeleteAll(true)}
                     disabled={isBusy}
-                    className="mt-4 w-full py-2 px-3 rounded-lg border border-red-600 text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-4 w-full py-2 px-3 rounded-lg border border-danger text-danger hover:bg-danger/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('settings.deleteAllLogs')}
                   </button>
@@ -1593,7 +1584,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <button
                   onClick={openBlacklistModal}
                   disabled={isBusy}
-                  className="mt-3 w-full py-2 px-3 rounded-lg border border-amber-600 text-amber-500 hover:bg-amber-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="mt-3 w-full py-2 px-3 rounded-lg border border-warning/60 text-warning hover:bg-warning/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {t('settings.manageBlacklistedLogs', { count: blacklistCount })}
                 </button>
@@ -1630,23 +1621,23 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               }
             }}
           />
-          <div className={`relative w-full max-w-3xl rounded-xl border shadow-2xl h-[min(88vh,760px)] max-h-[min(88vh,760px)] grid grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden my-auto ${isLight ? 'bg-white border-gray-300' : 'bg-drone-secondary border-gray-700'}`}>
-            <div className={`flex items-center justify-between px-4 py-3 border-b ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
+          <div className={`relative w-full max-w-3xl rounded-xl border shadow-2xl h-[min(88vh,760px)] max-h-[min(88vh,760px)] grid grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden my-auto bg-elevated border-line`}>
+            <div className={`flex items-center justify-between px-4 py-3 border-b border-line`}>
               <div>
-                <h3 className={`text-base font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                <h3 className={`text-base font-semibold text-ink`}>
                   {t('settings.manageBlacklistedLogs', { count: blacklistCount })}
                 </h3>
-                <p className={`text-xs mt-0.5 ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                <p className={`text-xs mt-0.5 text-muted`}>
                   {t('settings.blacklistManagerDescription')}
                 </p>
-                <p className={`text-xs mt-1 ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
+                <p className={`text-xs mt-1 text-muted`}>
                   {t('settings.blacklistManagerFunctionality')}
                 </p>
               </div>
               <button
                 onClick={() => setIsBlacklistModalOpen(false)}
                 disabled={isBlacklistScanning || isClearingSelectedBlacklist}
-                className={`transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${isLight ? 'text-gray-500 hover:text-gray-800' : 'text-gray-400 hover:text-white'}`}
+                className={`transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-muted hover:text-ink`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1654,41 +1645,41 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </button>
             </div>
 
-            <div className={`flex items-center justify-between px-4 py-2 border-b ${isLight ? 'border-gray-200 bg-gray-50' : 'border-gray-700 bg-drone-dark/50'}`}>
+            <div className={`flex items-center justify-between px-4 py-2 border-b border-line bg-canvas/50`}>
               <div className="flex items-center gap-4 text-xs">
                 <button
                   onClick={handleSelectAllBlacklist}
                   disabled={isBlacklistScanning || blacklistEntries.length === 0}
-                  className={`${isLight ? 'text-sky-700 hover:text-sky-800' : 'text-sky-400 hover:text-sky-300'} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  className={`text-accent hover:text-accent-hover disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   {t('settings.selectAll')}
                 </button>
                 <button
                   onClick={handleDeselectAllBlacklist}
                   disabled={isBlacklistScanning || selectedBlacklistHashes.size === 0}
-                  className={`${isLight ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-gray-200'} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  className={`text-muted hover:text-ink disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   {t('settings.deselectAll')}
                 </button>
               </div>
-              <div className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+              <div className={`text-xs text-muted`}>
                 {t('settings.blacklistSelectedCount', { count: selectedBlacklistHashes.size })}
               </div>
             </div>
 
-            <div className={`settings-scroll min-h-0 overflow-y-auto p-3 ${isLight ? 'bg-white' : 'bg-drone-secondary'}`}>
+            <div className={`settings-scroll min-h-0 overflow-y-auto p-3 bg-elevated`}>
               {isBlacklistScanning ? (
-                <div className={`h-full min-h-[220px] flex flex-col items-center justify-center rounded-lg border ${isLight ? 'border-gray-200 bg-gray-50' : 'border-gray-700 bg-drone-dark/50'}`}>
-                  <svg className="w-8 h-8 text-drone-primary animate-spin" viewBox="0 0 24 24" fill="none">
+                <div className={`h-full min-h-[220px] flex flex-col items-center justify-center rounded-lg border border-line bg-canvas/50`}>
+                  <svg className="w-8 h-8 text-accent animate-spin" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
                     <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
                   </svg>
-                  <p className={`mt-3 text-sm ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
+                  <p className={`mt-3 text-sm text-ink`}>
                     {t('settings.scanningSyncFolderForBlacklistedFiles')}
                   </p>
                 </div>
               ) : sortedBlacklistEntries.length === 0 ? (
-                <div className={`h-full min-h-[220px] flex items-center justify-center rounded-lg border text-sm ${isLight ? 'border-gray-200 bg-gray-50 text-gray-500' : 'border-gray-700 bg-drone-dark/50 text-gray-400'}`}>
+                <div className={`h-full min-h-[220px] flex items-center justify-center rounded-lg border text-sm border-line bg-canvas/50 text-muted`}>
                   {t('settings.noBlacklistedLogsFound')}
                 </div>
               ) : (
@@ -1698,40 +1689,29 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     return (
                       <label
                         key={entry.hash}
-                        className={`w-full rounded-lg border px-3 py-2.5 grid grid-cols-[auto_1fr] gap-3 cursor-pointer transition-colors ${checked
-                          ? isLight
-                            ? 'border-sky-300 bg-sky-50'
-                            : 'border-sky-500/60 bg-sky-500/10'
-                          : isLight
-                            ? 'border-gray-200 bg-white hover:bg-gray-50'
-                            : 'border-gray-700 bg-drone-dark/40 hover:bg-drone-dark/60'
-                          }`}
+                        className={`w-full rounded-lg border px-3 py-2.5 grid grid-cols-[auto_1fr] gap-3 cursor-pointer transition-colors ${checked ? 'border-accent/60 bg-accent/10' : 'border-line bg-elevated hover:bg-surface'}`}
                       >
                         <div className="pt-1">
                           <input
                             type="checkbox"
                             checked={checked}
                             onChange={() => toggleBlacklistSelection(entry.hash)}
-                            className="w-4 h-4 accent-sky-500"
+                            className="w-4 h-4 accent-accent"
                           />
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <code className={`text-xs px-1.5 py-0.5 rounded ${isLight ? 'bg-gray-100 text-gray-700' : 'bg-gray-900 text-gray-300'}`}>
+                            <code className={`text-xs px-1.5 py-0.5 rounded bg-canvas text-ink`}>
                               {shortenHash(entry.hash)}
                             </code>
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${entry.isPresentInSyncFolder
-                              ? isLight
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                              : isLight
-                                ? 'bg-gray-100 text-gray-600 border-gray-200'
-                                : 'bg-gray-700/30 text-gray-300 border-gray-600'
+                              ? 'bg-success/15 text-success border-success/30'
+                              : 'bg-surface text-muted border-line'
                               }`}>
                               {entry.isPresentInSyncFolder ? t('settings.blacklistPresentInSyncFolder') : t('settings.blacklistNotPresentInSyncFolder')}
                             </span>
                           </div>
-                          <div className={`mt-1 text-sm truncate ${isLight ? 'text-gray-800' : 'text-gray-200'}`} title={entry.currentFilename ?? ''}>
+                          <div className={`mt-1 text-sm truncate text-ink`} title={entry.currentFilename ?? ''}>
                             {entry.currentFilename ?? t('settings.blacklistUnresolvedFilename')}
                           </div>
                         </div>
@@ -1742,11 +1722,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               )}
             </div>
 
-            <div className={`px-4 py-3 border-t ${isLight ? 'border-gray-200 bg-gray-50' : 'border-gray-700 bg-drone-dark/50'}`}>
+            <div className={`px-4 py-3 border-t border-line bg-canvas/50`}>
               <button
                 onClick={handleClearSelectedBlacklist}
                 disabled={isBlacklistScanning || isClearingSelectedBlacklist || selectedBlacklistHashes.size === 0}
-                className="w-full py-2 px-3 rounded-lg border border-amber-600 text-amber-500 hover:bg-amber-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="w-full py-2 px-3 rounded-lg border border-warning/60 text-warning hover:bg-warning/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 {isClearingSelectedBlacklist ? t('settings.clearingSelectedLogs') : t('settings.clearSelectedFromBlacklist')}
               </button>

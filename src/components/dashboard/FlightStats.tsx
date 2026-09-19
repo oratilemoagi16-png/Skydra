@@ -247,15 +247,15 @@ export function FlightStats({ data }: FlightStatsProps) {
   const batteryCapsuleIsDecommissioned = batteryCapsuleLabel ? isDecommissioned(batteryCapsuleLabel) : false;
 
   return (
-    <div className="bg-drone-secondary border-b border-gray-700 px-4 py-3">
+    <div className="bg-surface border-b border-line px-4 py-3">
       {/* Flight Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-ink">
             {flight.displayName || flight.fileName}
           </h2>
           {flight.notes && (
-            <p className="text-sm text-amber-400/80 mt-1 flex items-start gap-1.5">
+            <p className="text-sm text-muted mt-1 flex items-start gap-1.5">
               <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -263,38 +263,38 @@ export function FlightStats({ data }: FlightStatsProps) {
             </p>
           )}
           {flight.droneModel && !flight.droneModel.startsWith('Unknown') && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-muted mt-2">
               {flight.droneModel}
             </p>
           )}
-          <div className="text-sm text-gray-400 flex flex-wrap items-center gap-2 mt-2">
+          <div className="text-sm text-muted flex flex-wrap items-center gap-2 mt-2">
             <span className="font-mono text-[13px]">{formatDateTime(flight.startTime, dateLocale, appLanguage, timeFormat === '24h' ? false : true)}</span>
             {flight.aircraftName && (
               <span className={`px-2 py-0.5 rounded-full text-xs border ${flight.droneSerial && isDecommissioned(getDroneDisplayName(flight.droneSerial, flight.aircraftName || flight.droneModel || ''))
-                ? 'border-gray-500/40 text-gray-400 bg-gray-500/15'
-                : 'border-drone-primary/40 text-drone-primary bg-drone-primary/10'
+                ? 'border-line text-muted bg-surface/60'
+                : 'border-accent/40 text-accent bg-accent/10'
                 }`}>
                 {t('flightStats.device')} {flight.aircraftName}
               </span>
             )}
             {flight.droneSerial && (
               <span className={`px-2 py-0.5 rounded-full text-xs border font-mono ${isDecommissioned(getDroneDisplayName(flight.droneSerial, flight.aircraftName || flight.droneModel || ''))
-                ? 'border-gray-500/40 text-gray-400 bg-gray-500/15'
-                : 'border-gray-600/60 text-gray-400 bg-drone-surface/60'
+                ? 'border-line text-muted bg-surface/60'
+                : 'border-line-strong text-muted bg-surface/60'
                 }`}>
                 {t('flightStats.sn')} {getDisplaySerial(flight.droneSerial)}
               </span>
             )}
             {flight.batterySerial && (
               <span className={`px-2 py-0.5 rounded-full text-xs border font-mono ${batteryCapsuleIsDecommissioned
-                ? 'border-gray-500/40 text-gray-400 bg-gray-500/15'
-                : 'border-drone-accent/40 text-drone-accent bg-drone-accent/10'
+                ? 'border-line text-muted bg-surface/60'
+                : 'border-track/40 text-track bg-track/10'
                 }`}>
                 {t('flightStats.battery')} {batteryCapsuleLabel}
               </span>
             )}
             {flight.rcSerial && (
-              <span className="px-2 py-0.5 rounded-full text-xs border border-purple-500/40 text-purple-400 bg-purple-500/10 font-mono">
+              <span className="px-2 py-0.5 rounded-full text-xs border border-line-strong text-muted bg-surface/60 font-mono">
                 {t('flightStats.controller')} {getDisplaySerial(flight.rcSerial)}
               </span>
             )}
@@ -307,8 +307,8 @@ export function FlightStats({ data }: FlightStatsProps) {
                 <span
                   key={tagName}
                   className={`group relative px-2 py-0.5 rounded-full text-xs border cursor-default ${isAuto
-                    ? 'border-teal-500/40 text-teal-300 bg-teal-500/10'
-                    : 'border-violet-500/40 text-violet-300 bg-violet-500/10'
+                    ? 'border-accent/40 text-accent bg-accent/10'
+                    : 'border-line-strong text-ink bg-elevated'
                     }`}
                 >
                   {tagName}
@@ -318,7 +318,7 @@ export function FlightStats({ data }: FlightStatsProps) {
                       e.stopPropagation();
                       removeTag(flight.id, tagName);
                     }}
-                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-400"
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-danger text-accent-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-danger/80"
                     title={t('flightStats.removeTag', { name: tagName })}
                   >
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -344,16 +344,16 @@ export function FlightStats({ data }: FlightStatsProps) {
                       }
                     }}
                     placeholder={t('flightStats.tagName')}
-                    className="h-6 w-28 text-xs px-2 rounded-full bg-drone-surface border border-gray-600 text-gray-200 focus:outline-none focus:border-violet-500"
+                    className="h-6 w-28 text-xs px-2 rounded-full bg-elevated border border-line text-ink focus:outline-none focus:border-accent"
                   />
                   {tagSuggestions.length > 0 && (
-                    <div className="absolute left-0 top-full mt-1 z-50 w-40 rounded-lg border border-gray-700 bg-drone-surface shadow-xl max-h-40 overflow-auto">
+                    <div className="absolute left-0 top-full mt-1 z-50 w-40 rounded-lg border border-line bg-elevated shadow-xl max-h-40 overflow-auto">
                       {tagSuggestions.map((suggestion) => (
                         <button
                           key={suggestion}
                           type="button"
                           onClick={() => handleAddTag(suggestion)}
-                          className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-violet-500/20 hover:text-violet-200 transition-colors"
+                          className="w-full text-left px-3 py-1.5 text-xs text-ink hover:bg-accent/15 hover:text-accent transition-colors"
                         >
                           {suggestion}
                         </button>
@@ -365,7 +365,7 @@ export function FlightStats({ data }: FlightStatsProps) {
                 <button
                   type="button"
                   onClick={() => setIsAddingTag(true)}
-                  className="w-5 h-5 rounded-full border border-dashed border-gray-500 text-gray-400 flex items-center justify-center hover:border-violet-400 hover:text-violet-400 transition-colors"
+                  className="w-5 h-5 rounded-full border border-dashed border-line-strong text-muted flex items-center justify-center hover:border-accent hover:text-accent transition-colors"
                   title={t('flightStats.addTag')}
                 >
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -376,7 +376,7 @@ export function FlightStats({ data }: FlightStatsProps) {
         </div>
 
         <div className="text-left md:text-right self-start md:self-auto">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted">
             {flight.pointCount?.toLocaleString(locale) || 0} {t('flightStats.dataPoints')}
           </p>
         </div>
@@ -419,7 +419,7 @@ export function FlightStats({ data }: FlightStatsProps) {
               maxBattery !== null && minBattery !== null ? (
                 <span className="whitespace-nowrap">
                   <span className={getBatteryLevelColorClass(maxBattery)}>{maxBattery}%</span>
-                  <span className="mx-1 text-gray-400">—</span>
+                  <span className="mx-1 text-muted">—</span>
                   <span className={getBatteryLevelColorClass(minBattery)}>{minBattery}%</span>
                 </span>
               ) : (
@@ -450,7 +450,7 @@ export function FlightStats({ data }: FlightStatsProps) {
             onClick={() => setIsWeatherOpen(true)}
             disabled={!flight.homeLat || !flight.homeLon || !flight.startTime}
             title={t('flightStats.flightWeather')}
-            className="h-full min-h-[52px] w-[62px] flex items-center justify-center rounded-lg border-2 border-sky-500/70 text-sky-400 transition-all duration-200 hover:bg-sky-500 hover:text-white hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-sky-400"
+            className="h-full min-h-[52px] w-[62px] flex items-center justify-center rounded-lg border-2 border-line-strong text-muted transition-all duration-200 hover:bg-elevated hover:text-accent hover:border-accent hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted"
           >
             <WeatherBtnIcon />
           </button>
@@ -459,7 +459,7 @@ export function FlightStats({ data }: FlightStatsProps) {
           <button
             type="button"
             onClick={() => setIsExportOpen((open) => !open)}
-            className="w-full xl:w-[126px] h-full min-h-[52px] flex items-center justify-center gap-2 rounded-lg border-2 border-drone-accent/70 text-drone-accent text-sm font-semibold px-2 transition-all duration-200 hover:bg-drone-accent hover:text-white hover:shadow-md"
+            className="w-full xl:w-[126px] h-full min-h-[52px] flex items-center justify-center gap-2 rounded-lg border-2 border-accent/70 text-accent text-sm font-semibold px-2 transition-all duration-200 hover:bg-accent hover:text-accent-ink hover:shadow-md"
           >
             <ExportIcon />
             {isExporting ? t('flightStats.exporting') : t('flightStats.export')}
@@ -471,7 +471,7 @@ export function FlightStats({ data }: FlightStatsProps) {
                 className="fixed inset-0 z-40"
                 onClick={() => setIsExportOpen(false)}
               />
-              <div className="themed-select-dropdown absolute right-0 top-full z-50 mt-2 w-40 rounded-xl border border-gray-700 p-1 shadow-xl">
+              <div className="themed-select-dropdown absolute right-0 top-full z-50 mt-2 w-40 rounded-xl border border-line p-1 shadow-xl">
                 {exportOptions.map((option) => (
                   <button
                     key={option.id}
@@ -528,20 +528,20 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, alert }: StatCardProps) {
   return (
-    <div className="bg-drone-surface/50 rounded-lg px-3 py-2 border border-gray-700/50 text-center">
+    <div className="bg-elevated/50 rounded-lg px-3 py-2 border border-line/60 text-center">
       <div className="flex flex-col items-center gap-1">
         <div className="flex items-center justify-center gap-2">
-          <div className={`${alert ? 'text-red-400' : 'text-drone-primary'}`}>
+          <div className={`${alert ? 'text-danger' : 'text-accent'}`}>
             {icon}
           </div>
           <p
-            className={`text-lg font-semibold ${alert ? 'text-red-400' : 'text-white'
+            className={`text-lg font-semibold ${alert ? 'text-danger' : 'text-ink'
               }`}
           >
             {value}
           </p>
         </div>
-        <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-xs text-muted">{label}</p>
       </div>
     </div>
   );
@@ -629,10 +629,9 @@ function BatteryIcon() {
 }
 
 function getBatteryLevelColorClass(level: number): string {
-  if (level <= 15) return 'text-red-400';
-  if (level <= 30) return 'text-orange-400';
-  if (level <= 50) return 'text-yellow-400';
-  return 'text-green-400';
+  if (level <= 15) return 'text-danger';
+  if (level <= 50) return 'text-warning';
+  return 'text-success';
 }
 
 function ExportIcon() {

@@ -93,9 +93,7 @@ export function DatePickerPopover({
   const [jumpError, setJumpError] = useState<string | null>(null);
 
   const posClass = position === 'absolute' ? 'absolute' : 'fixed';
-  const popoverTheme = isLight
-    ? 'bg-white border-gray-300'
-    : 'bg-drone-surface border-gray-700';
+  const popoverTheme = 'bg-elevated border-line';
 
   const maxDateValue = useMemo(() => {
     if (!jumpMaxDate) return undefined;
@@ -176,7 +174,7 @@ export function DatePickerPopover({
         style={style}
       >
         {title && (
-          <div className={`mb-2 text-xs font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+          <div className={`mb-2 text-xs font-medium text-muted`}>
             {title}
           </div>
         )}
@@ -200,24 +198,18 @@ export function DatePickerPopover({
                 placeholder={t('common.dateJumpPlaceholder')}
                 inputMode="numeric"
                 maxLength={10}
-                className={`h-8 flex-1 rounded-md border px-2 text-xs focus:outline-none focus:ring-1 focus:ring-drone-primary ${isLight
-                  ? 'border-gray-300 bg-white text-gray-900 placeholder:text-gray-400'
-                  : 'border-gray-600 bg-drone-dark text-gray-100 placeholder:text-gray-500'
-                  }`}
+                className={`h-8 flex-1 rounded-md border px-2 text-xs focus:outline-none focus:ring-1 focus:ring-focus border-line-strong bg-canvas text-ink placeholder:text-muted`}
               />
               <button
                 type="button"
                 onClick={handleJumpSingle}
-                className={`h-8 rounded-md border px-2.5 text-xs font-medium transition-colors ${isLight
-                  ? 'border-gray-300 text-gray-800 hover:bg-gray-100'
-                  : 'border-gray-600 text-gray-200 hover:bg-gray-700/60'
-                  }`}
+                className={`h-8 rounded-md border px-2.5 text-xs font-medium transition-colors border-line-strong text-ink hover:bg-line/60`}
               >
                 {t('common.go')}
               </button>
             </div>
             {jumpError && (
-              <p className={`mt-1 text-[11px] ${isLight ? 'text-red-600' : 'text-red-400'}`}>
+              <p className={`mt-1 text-[11px] text-danger`}>
                 {jumpError}
               </p>
             )}
@@ -244,10 +236,7 @@ export function DatePickerPopover({
                 aria-label={t('overview.selectStartDate')}
                 inputMode="numeric"
                 maxLength={10}
-                className={`h-7 min-w-0 flex-1 rounded-md border px-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-drone-primary ${isLight
-                  ? 'border-gray-300 bg-white text-gray-900 placeholder:text-gray-400'
-                  : 'border-gray-600 bg-drone-dark text-gray-100 placeholder:text-gray-500'
-                  }`}
+                className={`h-7 min-w-0 flex-1 rounded-md border px-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-focus border-line-strong bg-canvas text-ink placeholder:text-muted`}
               />
               <input
                 type="text"
@@ -266,24 +255,18 @@ export function DatePickerPopover({
                 aria-label={t('overview.selectEndDate')}
                 inputMode="numeric"
                 maxLength={10}
-                className={`h-7 min-w-0 flex-1 rounded-md border px-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-drone-primary ${isLight
-                  ? 'border-gray-300 bg-white text-gray-900 placeholder:text-gray-400'
-                  : 'border-gray-600 bg-drone-dark text-gray-100 placeholder:text-gray-500'
-                  }`}
+                className={`h-7 min-w-0 flex-1 rounded-md border px-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-focus border-line-strong bg-canvas text-ink placeholder:text-muted`}
               />
               <button
                 type="button"
                 onClick={handleJumpRange}
-                className={`h-7 shrink-0 rounded-md border px-2 text-[11px] font-medium transition-colors ${isLight
-                  ? 'border-gray-300 text-gray-800 hover:bg-gray-100'
-                  : 'border-gray-600 text-gray-200 hover:bg-gray-700/60'
-                  }`}
+                className={`h-7 shrink-0 rounded-md border px-2 text-[11px] font-medium transition-colors border-line-strong text-ink hover:bg-line/60`}
               >
                 {t('common.go')}
               </button>
             </div>
             {jumpError && (
-              <p className={`mt-1 text-[11px] ${isLight ? 'text-red-600' : 'text-red-400'}`}>
+              <p className={`mt-1 text-[11px] text-danger`}>
                 {jumpError}
               </p>
             )}

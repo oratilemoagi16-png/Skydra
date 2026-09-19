@@ -140,21 +140,21 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
             onClick={onClose}
         >
             <div
-                className="bg-drone-secondary border border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col modal-mobile-max my-auto"
+                className="bg-surface border border-line rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col modal-mobile-max my-auto"
                 style={{ maxHeight: '85vh' }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-3 border-b border-gray-700 flex-shrink-0">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-line flex-shrink-0">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">{t('report.title')}</h2>
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <h2 className="text-lg font-semibold text-ink">{t('report.title')}</h2>
+                        <p className="text-xs text-muted mt-0.5">
                             {t('report.description', { n: flightCount })}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/30 transition-colors"
+                        className="p-1.5 rounded-lg text-muted hover:text-ink hover:bg-line/30 transition-colors"
                         aria-label="Close"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -167,47 +167,47 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
                 <div className="px-6 pt-4 pb-2 flex-shrink-0 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs font-medium text-gray-300 mb-1">
-                                {t('report.documentTitle')} <span className="text-red-400">*</span>
+                            <label className="block text-xs font-medium text-ink mb-1">
+                                {t('report.documentTitle')} <span className="text-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 value={documentTitle}
                                 onChange={(e) => setDocumentTitle(e.target.value)}
                                 placeholder={t('report.titlePlaceholder')}
-                                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-600 bg-drone-dark text-white placeholder-gray-500 focus:border-drone-primary focus:ring-1 focus:ring-drone-primary focus:outline-none transition-colors"
+                                className="w-full px-3 py-2 text-sm rounded-lg border border-line-strong bg-canvas text-ink placeholder:text-faint focus:border-accent focus:ring-1 focus:ring-focus focus:outline-none transition-colors"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-300 mb-1">
-                                {t('report.pilotName')} <span className="text-red-400">*</span>
+                            <label className="block text-xs font-medium text-ink mb-1">
+                                {t('report.pilotName')} <span className="text-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 value={pilotName}
                                 onChange={(e) => setPilotName(e.target.value)}
                                 placeholder={t('report.pilotPlaceholder')}
-                                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-600 bg-drone-dark text-white placeholder-gray-500 focus:border-drone-primary focus:ring-1 focus:ring-drone-primary focus:outline-none transition-colors"
+                                className="w-full px-3 py-2 text-sm rounded-lg border border-line-strong bg-canvas text-ink placeholder:text-faint focus:border-accent focus:ring-1 focus:ring-focus focus:outline-none transition-colors"
                             />
                         </div>
                     </div>
 
                     {/* Validation error */}
                     {validationError && (
-                        <div className="text-xs text-red-400 bg-red-900/40 border border-red-700/50 rounded-lg px-3 py-2">
+                        <div className="text-xs text-danger bg-danger/15 border border-danger/40 rounded-lg px-3 py-2">
                             {validationError}
                         </div>
                     )}
 
                     {/* Global controls */}
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-300 uppercase tracking-wide">{t('report.reportFields')}</span>
+                        <span className="text-xs font-semibold text-ink uppercase tracking-wide">{t('report.reportFields')}</span>
                         <div className="flex items-center gap-3 text-xs">
-                            <button onClick={selectAllGroups} className="text-sky-400 hover:text-sky-300 font-medium transition-colors">{t('report.all')}</button>
-                            <span className="text-gray-600">/</span>
-                            <button onClick={selectNoneGroups} className="text-sky-400 hover:text-sky-300 font-medium transition-colors">{t('report.none')}</button>
-                            <span className="text-gray-600">/</span>
-                            <button onClick={resetAll} className="text-sky-400 hover:text-sky-300 font-medium transition-colors">{t('report.reset')}</button>
+                            <button onClick={selectAllGroups} className="text-accent hover:text-accent font-medium transition-colors">{t('report.all')}</button>
+                            <span className="text-muted">/</span>
+                            <button onClick={selectNoneGroups} className="text-accent hover:text-accent font-medium transition-colors">{t('report.none')}</button>
+                            <span className="text-muted">/</span>
+                            <button onClick={resetAll} className="text-accent hover:text-accent font-medium transition-colors">{t('report.reset')}</button>
                         </div>
                     </div>
                 </div>
@@ -218,15 +218,15 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
                         {FIELD_GROUPS.map((group) => (
                             <div
                                 key={group.name}
-                                className="rounded-xl border border-gray-700 bg-drone-surface/50 overflow-hidden"
+                                className="rounded-xl border border-line bg-elevated/50 overflow-hidden"
                             >
                                 {/* Group header */}
-                                <div className="flex items-center justify-between px-4 py-2 bg-drone-surface border-b border-gray-700/80">
-                                    <span className="text-xs font-semibold text-gray-300">{t(`report.${group.name}`)}</span>
+                                <div className="flex items-center justify-between px-4 py-2 bg-elevated border-b border-line">
+                                    <span className="text-xs font-semibold text-ink">{t(`report.${group.name}`)}</span>
                                     <div className="flex items-center gap-2 text-[10px]">
-                                        <button onClick={() => setGroupAll(group.name)} className="text-sky-400 hover:text-sky-300 font-medium transition-colors">{t('report.all')}</button>
-                                        <span className="text-gray-600">/</span>
-                                        <button onClick={() => setGroupNone(group.name)} className="text-sky-400 hover:text-sky-300 font-medium transition-colors">{t('report.none')}</button>
+                                        <button onClick={() => setGroupAll(group.name)} className="text-accent hover:text-accent font-medium transition-colors">{t('report.all')}</button>
+                                        <span className="text-muted">/</span>
+                                        <button onClick={() => setGroupNone(group.name)} className="text-accent hover:text-accent font-medium transition-colors">{t('report.none')}</button>
                                     </div>
                                 </div>
 
@@ -240,8 +240,8 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
                                             <div
                                                 onClick={() => toggleField(field.key)}
                                                 className={`w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center transition-all ${fieldConfig[field.key]
-                                                    ? 'bg-sky-500 border-sky-500'
-                                                    : 'border-gray-600 group-hover:border-sky-400'
+                                                    ? 'bg-accent border-accent'
+                                                    : 'border-line-strong group-hover:border-accent'
                                                     }`}
                                             >
                                                 {fieldConfig[field.key] && (
@@ -250,7 +250,7 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
                                                     </svg>
                                                 )}
                                             </div>
-                                            <span className="text-xs text-gray-400 group-hover:text-white transition-colors select-none">
+                                            <span className="text-xs text-muted group-hover:text-ink transition-colors select-none">
                                                 {t(`report.${field.key}`)}
                                             </span>
                                         </label>
@@ -262,10 +262,10 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-end gap-3 px-6 py-3 border-t border-gray-700 flex-shrink-0">
+                <div className="flex items-center justify-end gap-3 px-6 py-3 border-t border-line flex-shrink-0">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700/30 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-muted hover:text-ink hover:bg-line/30 rounded-lg transition-colors"
                     >
                         {t('report.cancel')}
                     </button>
@@ -273,8 +273,8 @@ export function HtmlReportModal({ isOpen, onClose, onGenerate, flightCount }: Ht
                         onClick={handleGenerate}
                         disabled={!hasAnySelected}
                         className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${hasAnySelected
-                            ? 'bg-drone-primary hover:bg-sky-500 text-white shadow-md shadow-sky-500/25 hover:shadow-sky-500/40'
-                            : 'bg-gray-700/50 text-gray-500 cursor-not-allowed'
+                            ? 'bg-accent hover:bg-accent text-accent-ink shadow-md shadow-accent/25 hover:shadow-accent/40'
+                            : 'bg-line/50 text-muted cursor-not-allowed'
                             }`}
                     >
                         {t('report.generate')}

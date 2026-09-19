@@ -36,7 +36,7 @@ export function TopBar() {
     >
       <div className="flex items-center gap-2.5 min-w-0">
         {/* Wordmark asset is light-on-dark; keep it on a dark chip in both themes */}
-        <span className="inline-flex items-center rounded-md bg-[#15161a] px-2.5 py-1">
+        <span className="inline-flex items-center rounded-md bg-canvas px-2.5 py-1">
           <img
             src={wordmarkUrl}
             alt="Skydra"

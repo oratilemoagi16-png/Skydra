@@ -30,7 +30,7 @@
   /* Brand accent — interaction/brand only, never a status color */
   --skydra-accent: 232 112 58;       /* #E8703A signal orange */
   --skydra-accent-hover: 212 100 43; /* #D4642B darker on hover: accent-ink ≥3:1 */
-  --skydra-accent-ink: 255 255 255;  /* text/icon on accent fill */
+  --skydra-accent-ink: 26 27 30;      /* text/icon on accent fill — charcoal on orange reads AA */
 
   /* Status layer (aviation red/amber/green, distinct from accent) */
   --skydra-danger: 242 109 112;      /* #F26D70 AA on elevated */
@@ -108,26 +108,6 @@ body.theme-light {
   scrollbar-color: rgb(var(--skydra-border-strong)) rgb(var(--skydra-bg));
 }
 
-body.theme-light .text-gray-400 {
-  color: #64748b !important;
-}
-
-body.theme-light .text-gray-500 {
-  color: #94a3b8 !important;
-}
-
-body.theme-light .text-gray-300 {
-  color: #1e293b !important;
-}
-
-body.theme-light .text-gray-100 {
-  color: #1e293b !important;
-}
-
-body.theme-light .text-white {
-  color: #0f172a !important;
-}
-
 /* Wordmark asset is white-on-transparent — invert for the light theme */
 body.theme-light .wordmark-img {
   filter: invert(0.88);
@@ -140,132 +120,31 @@ body.theme-light .flycard-content .text-white,
 }
 
 /* Keep button text white on colored backgrounds in light mode */
-body.theme-light .btn-primary,
-body.theme-light .bg-drone-primary {
+body.theme-light .btn-primary {
   color: #ffffff !important;
 }
 
-body.theme-light .border-gray-700 {
-  border-color: #e2e8f0 !important;
-}
-
-/* Light mode: form inputs with dark hardcoded classes */
-body.theme-light .bg-gray-900 {
-  background-color: #ffffff !important;
-}
-
-body.theme-light .bg-gray-800 {
-  background-color: #f8fafc !important;
-}
-
-body.theme-light .border-gray-600 {
-  border-color: #cbd5e1 !important;
-}
-
-body.theme-light .text-gray-200 {
-  color: #1e293b !important;
-}
-
-body.theme-light .placeholder-gray-500::placeholder {
-  color: #94a3b8 !important;
-}
-
-body.theme-light .hover\:text-gray-300:hover {
-  color: #334155 !important;
-}
-
-body.theme-light .hover\:bg-gray-700\/50:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-body.theme-light .bg-gray-700 {
-  background-color: #e2e8f0 !important;
-}
-
-/* Sort dropdown in overview panels */
-.sort-select {
-  background-color: rgb(var(--skydra-bg)) !important;
-  border-color: rgb(var(--skydra-border) / 0.5) !important;
-  color: rgb(var(--skydra-muted)) !important;
-  color-scheme: dark;
-}
-.sort-select option {
-  background-color: rgb(var(--skydra-bg)) !important;
-  color: rgb(var(--skydra-muted)) !important;
-}
-body.theme-light .sort-select {
-  background-color: rgb(var(--skydra-elevated)) !important;
-  border-color: rgb(var(--skydra-border-strong)) !important;
-  color: rgb(var(--skydra-text)) !important;
-  color-scheme: light;
-}
-body.theme-light .sort-select option {
-  background-color: rgb(var(--skydra-elevated)) !important;
-  color: rgb(var(--skydra-text)) !important;
-}
-
-/* Light mode: toggle switch off state - darker gray background */
+/* Light mode: toggle switch off state */
 body.theme-light .toggle-track-off {
-  background-color: rgb(203, 213, 225) !important;
-  /* slate-300 */
-  border-color: rgb(148, 163, 184) !important;
-  /* slate-400 */
+  background-color: rgb(var(--skydra-muted) / 0.35) !important;
+  border-color: rgb(var(--skydra-muted) / 0.5) !important;
 }
 
-/* Light mode hover overrides */
-body.theme-light .hover\:bg-gray-700\/30:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+/* Map overlay panels (settings, replay info) — token-driven, both themes */
+.map-overlay {
+  background-color: rgb(var(--skydra-elevated) / 0.92);
+  border: 1px solid rgb(var(--skydra-border));
+  border-radius: var(--skydra-radius);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-body.theme-light .hover\:bg-gray-700\/40:hover {
-  background-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-body.theme-light .hover\:bg-gray-700:hover {
-  background-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-body.theme-light .hover\:text-white:hover {
-  color: #0f172a !important;
-}
-
-body.theme-light .hover\:text-gray-200:hover {
-  color: #334155 !important;
-}
-
-/* Light mode: map hover tooltip — light background with dark text */
-body.theme-light .map-tooltip {
-  background-color: rgb(var(--skydra-elevated) / 0.95) !important;
-  border-color: rgb(var(--skydra-border) / 0.7) !important;
-  color: rgb(var(--skydra-text)) !important;
-}
-
-body.theme-light .map-tooltip .text-gray-400 {
-  color: rgb(var(--skydra-muted)) !important;
-}
-
-body.theme-light .map-tooltip .text-gray-500 {
-  color: rgb(var(--skydra-muted)) !important;
-}
-
-body.theme-light .map-tooltip .text-white {
-  color: rgb(var(--skydra-text)) !important;
-}
-
-body.theme-light .map-tooltip .border-gray-700\/60 {
-  border-color: rgb(var(--skydra-border) / 0.6) !important;
-}
-
-/* Light mode: map controls panel — light background */
-body.theme-light .map-overlay {
-  background-color: rgb(var(--skydra-elevated) / 0.9) !important;
-  border-color: rgb(var(--skydra-border)) !important;
-}
-
-/* Light mode: RC stick joystick pads */
-body.theme-light .rc-stick-pad {
-  background-color: rgb(var(--skydra-elevated) / 0.9) !important;
-  border-color: rgb(var(--skydra-border) / 0.7) !important;
+/* Hover/readout tooltip on the flight map */
+.map-tooltip {
+  background-color: rgb(var(--skydra-elevated) / 0.95);
+  border: 1px solid rgb(var(--skydra-border));
+  border-radius: var(--skydra-radius);
+  color: rgb(var(--skydra-text));
 }
 
 /* RC stick crosshair lines */
@@ -275,7 +154,7 @@ body.theme-light .rc-stick-pad {
 
 /* RC stick L/R labels */
 .rc-stick-label {
-  color: rgb(var(--skydra-ink) / 0.7);
+  color: rgb(var(--skydra-text) / 0.7);
 }
 
 /* Message count badge — always white text */
@@ -283,167 +162,8 @@ body.theme-light .msg-badge-count {
   color: #ffffff !important;
 }
 
-/* ─── Flight Messages Modal — light mode ─────────────────────────── */
-body.theme-light .flight-messages-modal {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-}
-
-body.theme-light .flight-messages-modal .border-gray-700,
-body.theme-light .flight-messages-modal .border-gray-700\/50 {
-  border-color: #e2e8f0 !important;
-}
-
-body.theme-light .flight-messages-modal .divide-gray-700\/40>*+* {
-  border-color: rgba(226, 232, 240, 0.7) !important;
-}
-
-body.theme-light .flight-messages-modal .msg-col-label {
-  color: #94a3b8 !important;
-}
-
-body.theme-light .flight-messages-modal .msg-time {
-  color: #1e293b !important;
-}
-
-body.theme-light .flight-messages-modal .msg-flight-time {
-  color: #64748b !important;
-}
-
-body.theme-light .flight-messages-modal .msg-text-caution {
-  color: #dc2626 !important;
-}
-
-body.theme-light .flight-messages-modal .msg-text-warn {
-  color: #b45309 !important;
-}
-
-body.theme-light .flight-messages-modal .msg-text-tip {
-  color: #1d4ed8 !important;
-}
-
-body.theme-light .flight-messages-modal .hover\:bg-red-900\/10:hover {
-  background-color: rgba(239, 68, 68, 0.06) !important;
-}
-
-body.theme-light .flight-messages-modal .hover\:bg-amber-900\/10:hover {
-  background-color: rgba(245, 158, 11, 0.06) !important;
-}
-
-body.theme-light .flight-messages-modal .hover\:bg-blue-900\/10:hover {
-  background-color: rgba(59, 130, 246, 0.06) !important;
-}
 
 
-/* Light mode: flight tags */
-body.theme-light .text-teal-300 {
-  color: #0d9488 !important;
-}
-
-body.theme-light .border-teal-500\/40 {
-  border-color: rgba(20, 184, 166, 0.5) !important;
-}
-
-body.theme-light .bg-teal-500\/10 {
-  background-color: rgba(20, 184, 166, 0.12) !important;
-}
-
-body.theme-light .text-violet-300 {
-  color: #7c3aed !important;
-}
-
-body.theme-light .border-violet-500\/40 {
-  border-color: rgba(139, 92, 246, 0.5) !important;
-}
-
-body.theme-light .bg-violet-500\/10 {
-  background-color: rgba(139, 92, 246, 0.12) !important;
-}
-
-body.theme-light .text-violet-200 {
-  color: #6d28d9 !important;
-}
-
-body.theme-light .hover\:bg-violet-500\/20:hover {
-  background-color: rgba(139, 92, 246, 0.15) !important;
-}
-
-body.theme-light .hover\:text-violet-200:hover {
-  color: #6d28d9 !important;
-}
-
-body.theme-light .hover\:border-violet-400:hover {
-  border-color: #8b5cf6 !important;
-}
-
-body.theme-light .hover\:text-violet-400:hover {
-  color: #7c3aed !important;
-}
-
-body.theme-light .focus\:border-violet-500:focus {
-  border-color: #8b5cf6 !important;
-}
-
-/* Light mode: settings modal button text */
-body.theme-light .text-teal-400 {
-  color: #0d9488 !important;
-}
-
-body.theme-light .border-teal-600 {
-  border-color: #0d9488 !important;
-}
-
-body.theme-light .hover\:bg-teal-500\/10:hover {
-  background-color: rgba(13, 148, 136, 0.12) !important;
-}
-
-body.theme-light .text-amber-400 {
-  color: #92400e !important;
-}
-
-body.theme-light .text-amber-400\/80 {
-  color: #78350f !important;
-}
-
-body.theme-light .text-amber-300 {
-  color: #78350f !important;
-}
-
-body.theme-light .text-amber-200 {
-  color: #451a03 !important;
-}
-
-body.theme-light .border-amber-600 {
-  border-color: #b45309 !important;
-}
-
-body.theme-light .border-amber-600\/60 {
-  border-color: rgba(180, 83, 9, 0.6) !important;
-}
-
-body.theme-light .border-amber-500\/30 {
-  border-color: rgba(180, 83, 9, 0.4) !important;
-}
-
-body.theme-light .bg-amber-500\/10 {
-  background-color: rgba(251, 191, 36, 0.15) !important;
-}
-
-body.theme-light .hover\:bg-amber-500\/10:hover {
-  background-color: rgba(180, 83, 9, 0.1) !important;
-}
-
-body.theme-light .text-sky-400 {
-  color: #0369a1 !important;
-}
-
-body.theme-light .border-sky-600 {
-  border-color: #0369a1 !important;
-}
-
-body.theme-light .hover\:bg-sky-500\/10:hover {
-  background-color: rgba(3, 105, 161, 0.1) !important;
-}
 
 body.modal-open {
   overflow: hidden;
@@ -624,12 +344,12 @@ body.overlay-active .settings-scroll {
 
 .themed-select-option:hover {
   background-color: rgb(var(--skydra-accent) / 0.35);
-  color: #ffffff;
+  color: rgb(var(--skydra-text));
 }
 
 .themed-select-option[data-active="true"] {
   background-color: rgb(var(--skydra-accent) / 0.25);
-  color: #ffffff;
+  color: rgb(var(--skydra-text));
 }
 
 /* Light theme overrides */
@@ -775,7 +495,7 @@ body.theme-dark .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
   height: 4px;
   transform: translateY(-50%);
   border-radius: 2px;
-  background: rgb(var(--drone-primary));
+  background: rgb(var(--skydra-accent));
   left: var(--lo-pct, 0%);
   right: calc(100% - var(--hi-pct, 100%));
   pointer-events: none;
@@ -802,8 +522,8 @@ body.theme-dark .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgb(var(--drone-primary));
-  border: 2px solid #ffffff;
+  background: rgb(var(--skydra-accent));
+  border: 2px solid rgb(var(--skydra-accent-ink));
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   pointer-events: auto;
@@ -831,8 +551,8 @@ body.theme-dark .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgb(var(--drone-primary));
-  border: 2px solid #ffffff;
+  background: rgb(var(--skydra-accent));
+  border: 2px solid rgb(var(--skydra-accent-ink));
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   pointer-events: auto;
@@ -1004,7 +724,7 @@ body.theme-light .dual-range-input::-moz-range-thumb {
 }
 
 /* Light mode: ensure spinner border is visible */
-body.theme-light .spinner.border-drone-primary {
+body.theme-light .spinner.border-accent {
   border-color: rgb(var(--skydra-accent)) !important;
   border-top-color: transparent !important;
 }
@@ -1036,8 +756,8 @@ body.theme-light .spinner.border-drone-primary {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgb(var(--drone-accent));
-  border: 2px solid #fff;
+  background: rgb(var(--skydra-track));
+  border: 2px solid rgb(var(--skydra-accent-ink));
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
@@ -1046,8 +766,8 @@ body.theme-light .spinner.border-drone-primary {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgb(var(--drone-accent));
-  border: 2px solid #fff;
+  background: rgb(var(--skydra-track));
+  border: 2px solid rgb(var(--skydra-accent-ink));
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
