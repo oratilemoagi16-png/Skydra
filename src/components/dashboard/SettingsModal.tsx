@@ -211,17 +211,17 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     };
   }, [isOpen]);
 
-  // Close on Escape key (unless busy)
+  // Close on Escape key (unless busy or a nested dialog has focus)
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !isBusy) {
+      if (event.key === 'Escape' && !isBusy && !isAboutOpen && !isBlacklistModalOpen) {
         onClose();
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isBusy, onClose]);
+  }, [isOpen, isBusy, isAboutOpen, isBlacklistModalOpen, onClose]);
 
   const checkApiKey = async () => {
     try {
