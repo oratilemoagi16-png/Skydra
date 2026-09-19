@@ -775,7 +775,6 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
   const timeFormat = useFlightStore((state) => state.timeFormat);
   const mapSyncEnabled = useFlightStore((state) => state.mapSyncEnabled);
   const setMapSyncEnabled = useFlightStore((state) => state.setMapSyncEnabled);
-  const mapReplayProgress = useFlightStore((state) => state.mapReplayProgress);
   const telemetryColors = useFlightStore((state) => state.telemetryColors);
   const setTelemetryColor = useFlightStore((state) => state.setTelemetryColor);
   const resetTelemetryColor = useFlightStore((state) => state.resetTelemetryColor);
@@ -921,31 +920,48 @@ export function TelemetryCharts({ data, unitPrefs, startTime }: TelemetryChartsP
     [dragZoomActive, dragZoomAllowed, syncZoom]
   );
 
-  // Show vertical line indicator when map replay progress changes
+  // Show vertical line indicator when map replay progress changes.
+  // Subscribed transiently (not via useFlightStore's hook) so the ~10Hz
+  // replay writes never re-render this component — they only dispatch
+  // showTip/hideTip on the ECharts instances.
+  const mapSyncEnabledRef = useRef(mapSyncEnabled);
+  mapSyncEnabledRef.current = mapSyncEnabled;
+  const dataTimeRef = useRef(data.time);
+  dataTimeRef.current = data.time;
   useEffect(() => {
-    if (!mapSyncEnabled || mapReplayProgress === 0) {
-      // Clear axis pointer when not syncing or at start
-      chartsRef.current.forEach((chart) => {
-        chart.dispatchAction({
-          type: 'hideTip',
+    const applyProgress = (progress: number) => {
+      const dataLength = dataTimeRef.current?.length ?? 0;
+      if (!mapSyncEnabledRef.current || progress === 0 || dataLength === 0) {
+        chartsRef.current.forEach((chart) => {
+          chart.dispatchAction({ type: 'hideTip' });
         });
+        return;
+      }
+      const dataIndex = Math.round(progress * (dataLength - 1));
+      chartsRef.current.forEach((chart) => {
+        chart.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex });
       });
-      return;
-    }
+    };
 
-    const dataLength = data.time?.length ?? 0;
-    if (dataLength === 0) return;
-
-    const dataIndex = Math.round(mapReplayProgress * (dataLength - 1));
-
-    chartsRef.current.forEach((chart) => {
-      chart.dispatchAction({
-        type: 'showTip',
-        seriesIndex: 0,
-        dataIndex,
-      });
+    applyProgress(useFlightStore.getState().mapReplayProgress);
+    let lastProgress = useFlightStore.getState().mapReplayProgress;
+    const unsubscribe = useFlightStore.subscribe((state) => {
+      const progress = state.mapReplayProgress;
+      if (progress === lastProgress) return;
+      lastProgress = progress;
+      applyProgress(progress);
     });
-  }, [mapSyncEnabled, mapReplayProgress, data.time]);
+    return unsubscribe;
+  }, [data.time]);
+
+  // Clear the pointer when map sync is toggled off
+  useEffect(() => {
+    if (!mapSyncEnabled) {
+      chartsRef.current.forEach((chart) => {
+        chart.dispatchAction({ type: 'hideTip' });
+      });
+    }
+  }, [mapSyncEnabled]);
 
   // Memoize chart options to prevent unnecessary re-renders
   // Use dynamic chart creation when custom fields are selected

@@ -7,34 +7,28 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFlightStore } from '@/stores/flightStore';
 import { FlightList } from './FlightList';
-import { FlightStats } from './FlightStats';
 import { SettingsModal } from './SettingsModal';
-import { TelemetryCharts } from '@/components/charts/TelemetryCharts';
-import { FlightMap } from '@/components/map/FlightMap';
-import { FlightMessagesModal } from './FlightMessagesModal';
+import { FlightWorkspace } from './FlightWorkspace';
 import { Overview } from './Overview';
 import { NavDock, type DockView } from '@/components/shell/NavDock';
 import { TopBar } from '@/components/shell/TopBar';
 import { ImportSheet } from '@/components/shell/ImportSheet';
 
 export function Dashboard() {
-  const {
-    currentFlightData,
-    overviewStats,
-    isLoading,
-    flights,
-    isFlightsInitialized,
-    selectedFlightId,
-    unitPrefs,
-    themeMode,
-    loadOverview,
-    isImporting,
-    isBatchProcessing,
-  } = useFlightStore();
+  const currentFlightData = useFlightStore((s) => s.currentFlightData);
+  const overviewStats = useFlightStore((s) => s.overviewStats);
+  const isLoading = useFlightStore((s) => s.isLoading);
+  const flights = useFlightStore((s) => s.flights);
+  const isFlightsInitialized = useFlightStore((s) => s.isFlightsInitialized);
+  const selectedFlightId = useFlightStore((s) => s.selectedFlightId);
+  const unitPrefs = useFlightStore((s) => s.unitPrefs);
+  const themeMode = useFlightStore((s) => s.themeMode);
+  const loadOverview = useFlightStore((s) => s.loadOverview);
+  const isImporting = useFlightStore((s) => s.isImporting);
+  const isBatchProcessing = useFlightStore((s) => s.isBatchProcessing);
   const { t } = useTranslation();
   const [showSettings, setShowSettings] = useState(false);
   const [showImport, setShowImport] = useState(false);
-  const [showMessagesModal, setShowMessagesModal] = useState(false);
   const [activeView, setActiveView] = useState<DockView>('overview');
   const [topSidebarFlightId, setTopSidebarFlightId] = useState<number | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -55,25 +49,18 @@ export function Dashboard() {
     }
     return true;
   });
-  // Default split favors the map — it is the dominant working surface.
-  const [mainSplit, setMainSplit] = useState(45);
-  const [mainPanelsWidth, setMainPanelsWidth] = useState(0);
-  // Track if telemetry panel is collapsed (slider pulled past minimum width)
-  const [isTelemetryCollapsed, setIsTelemetryCollapsed] = useState(false);
-  const [preCollapseSplit, setPreCollapseSplit] = useState<number | null>(null);
   const [isImporterExternallyBusy, setIsImporterExternallyBusy] = useState(false);
-  // Width of telemetry panel when collapsed (minimum visible width)
-  const TELEMETRY_MIN_VISIBLE_WIDTH = 40;
-  const TELEMETRY_MIN_NORMAL_WIDTH = 520;
-  const TELEMETRY_SCROLL_MIN_WIDTH = 520;
-  const TELEMETRY_CARD_MIN_WIDTH = 480;
-  const MAP_MIN_WIDTH = 320;
-  const MAP_STACK_TRIGGER_WIDTH = 400;
-  const SIDE_BY_SIDE_MIN_WIDTH = TELEMETRY_MIN_NORMAL_WIDTH + MAP_STACK_TRIGGER_WIDTH + 48;
-  // Below this desktop viewport width, selecting a flight collapses the rail
-  // so the map keeps ≥50–60% of the view at 1280px-class laptops.
-  const RAIL_AUTOCOLLAPSE_MAX_VIEWPORT = 1440;
-  const resizingRef = useRef<null | 'sidebar' | 'main'>(null);
+  const resizingRef = useRef<null | 'sidebar'>(null);
+
+  // Track the mobile breakpoint reactively (devtools resize, orientation)
+  const [isNarrowViewport, setIsNarrowViewport] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
+  useEffect(() => {
+    const onResize = () => setIsNarrowViewport(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
   // First-run affordance: with no flights yet, open the import sheet once.
   const autoImportShownRef = useRef(false);
   useEffect(() => {
@@ -95,28 +82,6 @@ export function Dashboard() {
         const nextWidth = Math.min(Math.max(event.clientX, 340), 420);
         setSidebarWidth(nextWidth);
       }
-      if (resizingRef.current === 'main') {
-        const container = document.getElementById('main-panels');
-        if (!container) return;
-        const rect = container.getBoundingClientRect();
-        const percentage = ((event.clientX - rect.left) / rect.width) * 100;
-        const minLeftPercent = (TELEMETRY_MIN_VISIBLE_WIDTH / rect.width) * 100;
-        const maxLeftPercent = 100 - (MAP_MIN_WIDTH / rect.width) * 100;
-
-        // Calculate the actual pixel width the telemetry panel would be
-        const telemetryPixelWidth = (percentage / 100) * rect.width;
-
-        // If dragging below normal minimum, collapse the telemetry panel
-        if (telemetryPixelWidth < TELEMETRY_MIN_NORMAL_WIDTH) {
-          setIsTelemetryCollapsed(true);
-        } else {
-          setIsTelemetryCollapsed(false);
-        }
-
-        setMainSplit(
-          Math.min(Math.max(percentage, minLeftPercent), maxLeftPercent)
-        );
-      }
     };
 
     const handleMouseUp = () => {
@@ -131,51 +96,18 @@ export function Dashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    const container = document.getElementById('main-panels');
-    if (!container) {
-      setMainPanelsWidth(0);
-      return;
-    }
+  const isDesktopLayout = !isNarrowViewport;
 
-    const updateWidth = () => {
-      const host = container.parentElement;
-      const availableWidth = host
-        ? host.getBoundingClientRect().width
-        : container.getBoundingClientRect().width;
-      setMainPanelsWidth(availableWidth);
-    };
-
-    updateWidth();
-
-    const observer = new ResizeObserver(() => {
-      updateWidth();
-    });
-    observer.observe(container);
-
-    window.addEventListener('resize', updateWidth);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updateWidth);
-    };
-  }, [activeView, currentFlightData?.flight.id, isSidebarHidden, sidebarWidth]);
-
-  const isDesktopLayout = typeof window !== 'undefined' && window.innerWidth >= 768;
-  const shouldStackPanels = isDesktopLayout && mainPanelsWidth > 0
-    ? mainPanelsWidth < SIDE_BY_SIDE_MIN_WIDTH
-    : !isDesktopLayout;
-
-  // On <1440px desktops the 340px rail + telemetry would push the map under
-  // the fold; collapse the rail on selection (user can reopen via the edge tab).
+  // Sweep constant: on <1440px desktops the 340px list rail + detail rail would
+  // push the map under half the view — collapse the rail on flight selection
+  // (the user reopens it via the edge tab).
+  const RAIL_AUTOCOLLAPSE_MAX_VIEWPORT = 1440;
   useEffect(() => {
     if (selectedFlightId === null) return;
     if (window.innerWidth >= 768 && window.innerWidth < RAIL_AUTOCOLLAPSE_MAX_VIEWPORT) {
       setIsSidebarHidden(true);
     }
   }, [selectedFlightId]);
-  const splitCardsViewportHeight = isDesktopLayout && !shouldStackPanels
-    ? 'calc(100dvh - 200px)'
-    : undefined;
 
   // Apply theme class on mount and listen for system preference changes.
   // The store's setThemeMode already applies classes synchronously for instant switching;
@@ -241,7 +173,7 @@ export function Dashboard() {
   const isImporterBusy = isImporting || isBatchProcessing || isImporterExternallyBusy;
   const sidebarMinHeight = 620
     + (!isFiltersCollapsed ? 180 : 0);
-  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobileViewport = isNarrowViewport;
   // Rail stays mounted in Overview so FlightList keeps reporting the top flight
   // (used to auto-select on first navigation); it collapses out of layout.
   const railHidden = isSidebarHidden || activeView === 'overview';
@@ -297,14 +229,14 @@ export function Dashboard() {
           paddingRight: isDesktopLayout ? 0 : undefined,
           paddingBottom: isDesktopLayout ? 0 : undefined,
           paddingLeft: isDesktopLayout ? 0 : undefined,
-          width: typeof window !== 'undefined' && window.innerWidth < 768
+          width: isNarrowViewport
             ? '100%'
             : (railHidden ? 0 : sidebarWidth),
-          minWidth: typeof window !== 'undefined' && window.innerWidth < 768
+          minWidth: isNarrowViewport
             ? '100%'
             : (railHidden ? 0 : 340),
           transform: railHidden
-            ? (typeof window !== 'undefined' && window.innerWidth < 768
+            ? (isNarrowViewport
               ? 'translateX(-100%)'
               : `translateX(-${sidebarWidth}px)`)
             : 'translateX(0)',
@@ -333,12 +265,12 @@ export function Dashboard() {
                 useFlightStore.getState().setOverviewHighlightedFlightId(null);
                 setActiveView('flights');
                 useFlightStore.getState().selectFlight(flightId);
-                if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                if (isNarrowViewport) {
                   setIsSidebarHidden(true);
                 }
               }}
               onHighlightFlight={() => {
-                if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                if (isNarrowViewport) {
                   setIsSidebarHidden(true);
                 }
               }}
@@ -398,7 +330,7 @@ export function Dashboard() {
           }
         }}
       >
-        {isLoading ? (
+        {isLoading && !isFlightsInitialized ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <div
@@ -418,7 +350,7 @@ export function Dashboard() {
                 onSelectFlight={(flightId) => {
                   setActiveView('flights');
                   useFlightStore.getState().selectFlight(flightId);
-                  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                  if (isNarrowViewport) {
                     setIsSidebarHidden(true);
                   }
                 }}
@@ -430,169 +362,43 @@ export function Dashboard() {
               </div>
             )}
           </div>
-        ) : currentFlightData ? (
-          <>
-              <div className="w-full h-full min-h-0 overflow-y-auto overflow-x-hidden">
-                <div className="w-full min-h-full md:min-h-[780px] flex flex-col">
-                {/* Stats Bar */}
-                <FlightStats data={currentFlightData} />
-
-                {/* Charts and Map Grid */}
-                <div id="main-panels" className={`${shouldStackPanels ? 'flex-none' : 'flex-1'} md:min-h-[620px] flex flex-col ${shouldStackPanels ? '' : 'md:flex-row'} gap-4 p-4 overflow-visible ${shouldStackPanels ? '' : 'md:overflow-hidden'}`}>
-                  {/* Telemetry Charts - when collapsed, content clips instead of squeezing */}
-                  <div
-                    className={`card flex flex-col min-h-[400px] md:min-h-[520px] relative ${isTelemetryCollapsed ? 'overflow-hidden' : 'overflow-hidden'}`}
-                    style={{
-                      flexBasis: isDesktopLayout && !shouldStackPanels ? `${mainSplit}%` : 'auto',
-                      flexGrow: isDesktopLayout && !shouldStackPanels ? 0 : 1,
-                      minWidth: isDesktopLayout && !shouldStackPanels ? (isTelemetryCollapsed ? TELEMETRY_MIN_VISIBLE_WIDTH : TELEMETRY_CARD_MIN_WIDTH) : '100%',
-                      flexShrink: 0,
-                      height: splitCardsViewportHeight,
-                      maxHeight: splitCardsViewportHeight ?? '720px',
-                    }}
-                  >
-                    <div className={`border-b border-line flex items-center ${isTelemetryCollapsed ? 'justify-center p-2' : 'justify-between p-3'}`}>
-                      {!isTelemetryCollapsed && (
-                        <div className="flex items-center gap-2">
-                          <h2 className="font-semibold text-ink">
-                            {t('dashboard.telemetryData')}
-                          </h2>
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const container = document.getElementById('main-panels');
-                          if (!container) return;
-                          const rect = container.getBoundingClientRect();
-
-                          if (!isTelemetryCollapsed) {
-                            // Collapse it
-                            setPreCollapseSplit(mainSplit);
-                            setIsTelemetryCollapsed(true);
-                            // Set to minimum visible width percentage
-                            const minLeftPercent = (TELEMETRY_MIN_VISIBLE_WIDTH / rect.width) * 100;
-                            setMainSplit(minLeftPercent);
-                          } else {
-                            // Expand it
-                            setIsTelemetryCollapsed(false);
-                            // Restore previous split or default to the map-dominant split
-                            const minNormalPercent = (TELEMETRY_MIN_NORMAL_WIDTH / rect.width) * 100;
-                            if (preCollapseSplit !== null && preCollapseSplit > minNormalPercent) {
-                              setMainSplit(preCollapseSplit);
-                            } else {
-                              setMainSplit(45);
-                            }
-                          }
-                        }}
-                        className={`rounded-lg text-muted hover:text-ink hover:bg-line/60 transition-colors ${isTelemetryCollapsed ? 'p-1' : 'p-1.5'}`}
-                        title={isTelemetryCollapsed ? t('dashboard.expandPanel') : t('dashboard.collapsePanel')}
-                        aria-label={isTelemetryCollapsed ? t('dashboard.expandPanel') : t('dashboard.collapsePanel')}
-                      >
-                        <svg
-                          className={`transition-transform duration-200 ${isTelemetryCollapsed ? 'w-4 h-4' : 'w-5 h-5'} ${isTelemetryCollapsed ? 'rotate-180' : ''}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* Inner container that maintains minimum width for content */}
-                    <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto p-2">
-                      <div
-                        className="min-h-full"
-                        style={{
-                          minWidth: isDesktopLayout && !shouldStackPanels ? TELEMETRY_MIN_NORMAL_WIDTH : `${TELEMETRY_SCROLL_MIN_WIDTH}px`,
-                          width: isDesktopLayout && !shouldStackPanels ? (isTelemetryCollapsed ? TELEMETRY_MIN_NORMAL_WIDTH : '100%') : '100%',
-                        }}
-                      >
-                        <TelemetryCharts
-                          data={currentFlightData!.telemetry}
-                          unitPrefs={unitPrefs}
-                          startTime={currentFlightData!.flight.startTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onMouseDown={() => {
-                      resizingRef.current = 'main';
-                    }}
-                    className={`${shouldStackPanels ? 'hidden' : 'block'} w-2 shrink-0 self-stretch cursor-col-resize bg-line rounded hover:bg-accent/80 transition-colors`}
-                    title={t('dashboard.dragToResize')}
-                  />
-
-                  {/* Flight Map */}
-                  <div
-                    className={`card flex flex-col ${isDesktopLayout && !shouldStackPanels ? '' : 'h-[648px]'} md:min-h-[520px] overflow-hidden`}
-                    style={{
-                      flexBasis: isDesktopLayout && !shouldStackPanels ? 'auto' : 'auto',
-                      flexGrow: isDesktopLayout && !shouldStackPanels ? 1 : 0,
-                      minWidth: isDesktopLayout && !shouldStackPanels ? MAP_MIN_WIDTH : '100%',
-                      flexShrink: isDesktopLayout && !shouldStackPanels ? 1 : 0,
-                      height: splitCardsViewportHeight,
-                      maxHeight: splitCardsViewportHeight ?? '720px',
-                    }}
-                  >
-                    <div className="px-3 py-2.5 border-b border-line flex items-center justify-between">
-                      <h2 className="font-semibold text-ink">{t('dashboard.flightPath')}</h2>
-                      {currentFlightData?.messages && currentFlightData.messages.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setShowMessagesModal(true)}
-                          className="relative p-1.5 rounded-lg text-muted hover:text-ink hover:bg-line/60 transition-colors"
-                          title={t('dashboard.viewFlightMessages')}
-                          aria-label={t('dashboard.viewFlightMessages')}
-                        >
-                          {/* Chat-bubble icon */}
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M8 10h.01M12 10h.01M16 10h.01M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"
-                            />
-                          </svg>
-                          {/* Red badge with count */}
-                          <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-0.5 flex items-center justify-center rounded-full bg-danger text-canvas msg-badge-count text-[11px] font-bold leading-none border border-canvas">
-                            {currentFlightData.messages.length > 99 ? '99+' : currentFlightData.messages.length}
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex-1 min-h-[420px] relative">
-                      <FlightMap
-                        track={currentFlightData!.track}
-                        homeLat={currentFlightData!.flight.homeLat}
-                        homeLon={currentFlightData!.flight.homeLon}
-                        durationSecs={currentFlightData!.flight.durationSecs}
-                        telemetry={currentFlightData!.telemetry}
-                        themeMode={themeMode}
-                        messages={currentFlightData!.messages}
-                      />
-                    </div>
+        ) : selectedFlightId !== null ? (
+          (() => {
+            // The store keeps the previous flight mounted while the next one
+            // fetches — render it dimmed instead of blanking the workspace.
+            const workspaceData = currentFlightData;
+            const isStaleData = !!workspaceData && workspaceData.flight.id !== selectedFlightId;
+            if (workspaceData) {
+              return (
+                <FlightWorkspace
+                  data={workspaceData}
+                  stale={isStaleData}
+                  isMobileViewport={isNarrowViewport}
+                  onBackToList={isNarrowViewport ? () => setIsSidebarHidden(false) : undefined}
+                />
+              );
+            }
+            // First load for this selection — skeleton zones, not a blank panel
+            return (
+              <div className="flex flex-col h-full min-h-0 bg-canvas" aria-busy="true" aria-label={t('dashboard.loadingFlightData')}>
+                <div className="h-11 shrink-0 border-b border-line bg-surface flex items-center gap-3 px-4">
+                  <div className="h-3 w-40 rounded bg-elevated animate-pulse" />
+                  <div className="h-3 w-24 rounded bg-elevated/70 animate-pulse hidden sm:block" />
+                </div>
+                <div className="flex-1 min-h-0 flex">
+                  <div className="flex-1 min-w-0 bg-elevated/40 animate-pulse" />
+                  <div className="hidden md:block w-[300px] shrink-0 border-l border-line bg-surface p-3 space-y-2">
+                    <div className="h-8 rounded bg-elevated animate-pulse" />
+                    <div className="h-16 rounded bg-elevated/70 animate-pulse" />
+                    <div className="h-16 rounded bg-elevated/70 animate-pulse" />
                   </div>
                 </div>
+                <div className="hidden md:block h-[300px] shrink-0 border-t border-line bg-surface p-3">
+                  <div className="h-full rounded bg-elevated/50 animate-pulse" />
+                </div>
               </div>
-            </div>
-            {/* Flight Messages Modal */}
-            {showMessagesModal && currentFlightData?.messages && currentFlightData.messages.length > 0 && (
-              <FlightMessagesModal
-                isOpen={showMessagesModal}
-                onClose={() => setShowMessagesModal(false)}
-                messages={currentFlightData.messages}
-                flightStartTime={currentFlightData.flight.startTime ?? null}
-              />
-            )}
-          </>
+            );
+          })()
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center max-w-md">

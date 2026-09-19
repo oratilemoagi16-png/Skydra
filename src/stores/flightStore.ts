@@ -474,14 +474,13 @@ export const useFlightStore = create<FlightState>((set, get) => ({
       return;
     }
 
-    // Always show loading briefly so user sees click feedback
-    set({ isLoading: true, error: null, selectedFlightId: flightId, currentFlightData: null });
+    // Keep the previously-loaded flight mounted while the next one fetches —
+    // the workspace shows it dimmed instead of blanking the whole panel.
+    set({ isLoading: true, error: null, selectedFlightId: flightId });
 
     // Check cache first
     const cached = get()._flightDataCache.get(flightId);
     if (cached) {
-      // Brief delay so spinner is visible even on cache hit
-      await new Promise((resolve) => setTimeout(resolve, 120));
       set({ currentFlightData: cached, isLoading: false, error: null });
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('lastSelectedFlightId', String(flightId));
@@ -500,6 +499,8 @@ export const useFlightStore = create<FlightState>((set, get) => ({
       }
       cache.set(flightId, flightData);
 
+      // Ignore the response if the user has since selected a different flight
+      if (get().selectedFlightId !== flightId) return;
       set({ currentFlightData: flightData, isLoading: false, _flightDataCache: cache });
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('lastSelectedFlightId', String(flightId));
@@ -509,6 +510,8 @@ export const useFlightStore = create<FlightState>((set, get) => ({
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('lastSelectedFlightId');
       }
+      // Don't clobber a newer selection with a stale request's error
+      if (get().selectedFlightId !== flightId) return;
       set({
         isLoading: false,
         selectedFlightId: null,

@@ -25,6 +25,7 @@ import { FlyCardGenerator } from './FlyCardGenerator';
 import { HtmlReportModal } from './HtmlReportModal';
 import ColorPickerModal from './ColorPickerModal';
 import { DatePickerPopover } from '@/components/ui/DatePickerPopover';
+import { Modal } from '@/components/ui/Modal';
 import { buildHtmlReport, type HtmlReportFieldConfig, type FlightReportData } from '@/lib/htmlReportBuilder';
 import { fetchFlightWeather } from '@/lib/weather';
 import {
@@ -229,36 +230,36 @@ export function FlightList({
   };
 
   const isMobileRuntime = useIsMobileRuntime();
-  const {
-    flights,
-    selectedFlightId,
-    selectFlight,
-    deleteFlight,
-    updateFlightName,
-    updateFlightNotes,
-    updateFlightColor,
-    unitPrefs,
-    locale,
-    dateLocale,
-    appLanguage,
-    timeFormat,
-    getBatteryDisplayName,
-    getDroneDisplayName,
-    droneNameMap,
-    allTags,
-    mapAreaFilterEnabled,
-    mapVisibleBounds,
-    setMapAreaFilterEnabled,
-    clearSelection,
-    hideSerialNumbers,
-    getDisplaySerial,
-    overviewHighlightedFlightId,
-    setOverviewHighlightedFlightId,
-    loadAllTags,
-    clearFlightDataCache,
-    activeProfile,
-  } =
-    useFlightStore();
+  // Per-field selectors keep this large component off per-frame store writes
+  // (e.g. replay progress) — only the fields below trigger re-renders.
+  const flights = useFlightStore((s) => s.flights);
+  const selectedFlightId = useFlightStore((s) => s.selectedFlightId);
+  const selectFlight = useFlightStore((s) => s.selectFlight);
+  const deleteFlight = useFlightStore((s) => s.deleteFlight);
+  const updateFlightName = useFlightStore((s) => s.updateFlightName);
+  const updateFlightNotes = useFlightStore((s) => s.updateFlightNotes);
+  const updateFlightColor = useFlightStore((s) => s.updateFlightColor);
+  const unitPrefs = useFlightStore((s) => s.unitPrefs);
+  const locale = useFlightStore((s) => s.locale);
+  const dateLocale = useFlightStore((s) => s.dateLocale);
+  const appLanguage = useFlightStore((s) => s.appLanguage);
+
+  const timeFormat = useFlightStore((s) => s.timeFormat);
+  const getBatteryDisplayName = useFlightStore((s) => s.getBatteryDisplayName);
+  const getDroneDisplayName = useFlightStore((s) => s.getDroneDisplayName);
+  const droneNameMap = useFlightStore((s) => s.droneNameMap);
+  const allTags = useFlightStore((s) => s.allTags);
+  const mapAreaFilterEnabled = useFlightStore((s) => s.mapAreaFilterEnabled);
+  const mapVisibleBounds = useFlightStore((s) => s.mapVisibleBounds);
+  const setMapAreaFilterEnabled = useFlightStore((s) => s.setMapAreaFilterEnabled);
+  const clearSelection = useFlightStore((s) => s.clearSelection);
+  const hideSerialNumbers = useFlightStore((s) => s.hideSerialNumbers);
+  const getDisplaySerial = useFlightStore((s) => s.getDisplaySerial);
+  const overviewHighlightedFlightId = useFlightStore((s) => s.overviewHighlightedFlightId);
+  const setOverviewHighlightedFlightId = useFlightStore((s) => s.setOverviewHighlightedFlightId);
+  const loadAllTags = useFlightStore((s) => s.loadAllTags);
+  const clearFlightDataCache = useFlightStore((s) => s.clearFlightDataCache);
+  const activeProfile = useFlightStore((s) => s.activeProfile);
 
   const { t } = useTranslation();
   const batteryPairIndex = useBatteryPairIndex();
@@ -358,8 +359,78 @@ export function FlightList({
     flightId: number;
     boundsLeft: number;
     boundsRight: number;
+    /** 'row' = invoked from the list rail, 'workspace' = from the workspace header */
+    source: 'row' | 'workspace';
   } | null>(null);
   const [contextExportSubmenuOpen, setContextExportSubmenuOpen] = useState(false);
+  // Element that opened the context menu — focus returns here on Esc/close
+  const contextMenuTriggerRef = useRef<HTMLElement | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement | null>(null);
+
+  /** Open the per-flight actions menu at a viewport position. */
+  const openContextMenu = useCallback((
+    flightId: number,
+    clientX: number,
+    clientY: number,
+    trigger?: HTMLElement | null,
+    anchorEl?: HTMLElement | null,
+    source: 'row' | 'workspace' = 'row',
+  ) => {
+    const menuWidth = 200;
+    const menuHeight = 290;
+    const safeTop = getSafeAreaInsetPx('--mobile-safe-top');
+    const safeBottom = getSafeAreaInsetPx('--mobile-safe-bottom');
+    const safeLeft = getSafeAreaInsetPx('--mobile-safe-left');
+    const safeRight = getSafeAreaInsetPx('--mobile-safe-right');
+    const topReserve = (isMobileRuntime ? 56 : 8) + safeTop;
+    const bottomReserve = (isMobileRuntime ? 72 : 8) + safeBottom;
+    const leftReserve = 8 + safeLeft;
+    const rightReserve = 8 + safeRight;
+
+    // Constrain the menu to the containing sidebar when there is one,
+    // otherwise to the viewport (e.g. when opened from the workspace header
+    // while the rail is hidden on mobile).
+    const sidebarRect = anchorEl?.closest('aside')?.getBoundingClientRect();
+    const boundsLeft = sidebarRect?.left ?? 0;
+    const boundsRight = sidebarRect?.right ?? window.innerWidth;
+    const boundsTop = sidebarRect?.top ?? 0;
+    const boundsBottom = sidebarRect?.bottom ?? window.innerHeight;
+
+    const minX = boundsLeft + leftReserve;
+    const maxX = Math.max(minX, boundsRight - menuWidth - rightReserve);
+    const minY = boundsTop + topReserve;
+    const maxY = Math.max(minY, boundsBottom - menuHeight - bottomReserve);
+    const x = Math.min(Math.max(clientX, minX), maxX);
+    const y = Math.min(Math.max(clientY, minY), maxY);
+
+    contextMenuTriggerRef.current = trigger ?? null;
+    setContextMenu({ x, y, flightId, boundsLeft, boundsRight, source });
+    setContextExportSubmenuOpen(false);
+  }, [isMobileRuntime]);
+
+  // Workspace header ⋯ opens the same per-flight menu via a window event so
+  // the rail does not need to be visible (mobile: workspace hides the rail).
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        flightId?: number;
+        x?: number;
+        y?: number;
+        trigger?: HTMLElement | null;
+      }>).detail;
+      if (!detail?.flightId) return;
+      openContextMenu(
+        detail.flightId,
+        detail.x ?? window.innerWidth / 2,
+        detail.y ?? window.innerHeight / 3,
+        detail.trigger ?? null,
+        detail.trigger ?? null,
+        'workspace',
+      );
+    };
+    window.addEventListener('skydra:open-flight-actions', handler);
+    return () => window.removeEventListener('skydra:open-flight-actions', handler);
+  }, [openContextMenu]);
   const [isRegeneratingTags, setIsRegeneratingTags] = useState(false);
   // Color picker state
   const [colorPickerFlightId, setColorPickerFlightId] = useState<number | null>(null);
@@ -1485,84 +1556,99 @@ export function FlightList({
     onTopFlightChange?.(sortedFlights[0]?.id ?? null);
   }, [sortedFlights, onTopFlightChange]);
 
-  // Keyboard navigation: Up/Down arrows to navigate flights
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Don't handle if typing in an input field
-      const target = event.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        return;
-      }
+  // ── Listbox keyboard model (a11y B2) ─────────────────────────────
+  // Rows are role="option" inside a role="listbox" with roving tabindex:
+  // one Tab stop for the whole list. ArrowUp/Down + Home/End move the
+  // cursor (preview highlight in flights view, map highlight in overview),
+  // Enter/Space activate, Shift+F10 / the Menu key opens the row's menu.
+  const listboxRef = useRef<HTMLDivElement | null>(null);
 
-      // Don't handle if a modal/dropdown is open
-      if (isDateOpen || isSortOpen || isTagDropdownOpen || isColorDropdownOpen || isExportDropdownOpen || editingId !== null) {
-        return;
-      }
+  const focusFlightOption = useCallback((flightId: number) => {
+    const el = listboxRef.current?.querySelector<HTMLElement>(
+      `[data-flight-id="${flightId}"]`
+    );
+    el?.focus();
+    el?.scrollIntoView({ block: 'nearest' });
+  }, []);
 
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+  // Move the keyboard cursor to an option index (wraps around)
+  const moveListCursor = useCallback((nextIndex: number) => {
+    const nextFlight = sortedFlights[nextIndex];
+    if (!nextFlight) return;
+    if (activeView === 'overview') {
+      setOverviewHighlightedFlightId(nextFlight.id);
+    } else {
+      setPreviewFlightId(nextFlight.id);
+    }
+    focusFlightOption(nextFlight.id);
+  }, [sortedFlights, activeView, setOverviewHighlightedFlightId, focusFlightOption]);
+
+  // Activate a flight (Enter/Space or the option's own click equivalent)
+  const activateFlightOption = useCallback((flightId: number) => {
+    if (activeView === 'overview') {
+      // In overview mode, activation scrolls to the cluster map and highlights
+      setOverviewHighlightedFlightId(flightId);
+      const mapElement = document.getElementById('overview-cluster-map');
+      if (mapElement) {
+        smoothScrollToElement(mapElement, 800).then(() => {
+          onHighlightFlight?.(flightId);
+        });
+      } else {
+        onHighlightFlight?.(flightId);
+      }
+    } else {
+      selectFlight(flightId);
+      onSelectFlight?.(flightId);
+      setPreviewFlightId(null);
+    }
+  }, [activeView, selectFlight, onSelectFlight, onHighlightFlight, setOverviewHighlightedFlightId]);
+
+  const handleOptionKeyDown = useCallback((event: React.KeyboardEvent, flight: Flight) => {
+    // Inner controls (rename input, confirm buttons, ⋯ trigger) own their keys
+    if (event.target !== event.currentTarget) return;
+
+    const currentIndex = sortedFlights.findIndex(f => f.id === flight.id);
+
+    switch (event.key) {
+      case 'ArrowDown':
         event.preventDefault();
-
-        if (sortedFlights.length === 0) return;
-
-        // Use previewFlightId if set (during navigation), otherwise use selectedFlightId
-        const currentId = previewFlightId ?? (activeView === 'overview' ? overviewHighlightedFlightId : selectedFlightId);
-        const currentIndex = currentId
-          ? sortedFlights.findIndex(f => f.id === currentId)
-          : -1;
-
-        let nextIndex: number;
-        if (event.key === 'ArrowDown') {
-          nextIndex = currentIndex < sortedFlights.length - 1 ? currentIndex + 1 : 0;
-        } else {
-          nextIndex = currentIndex > 0 ? currentIndex - 1 : sortedFlights.length - 1;
-        }
-
-        const nextFlight = sortedFlights[nextIndex];
-        if (nextFlight) {
-          if (activeView === 'overview') {
-            // In overview mode, arrow keys only highlight in the list (no map scroll yet)
-            setOverviewHighlightedFlightId(nextFlight.id);
-          } else {
-            // In flights mode, arrow keys update preview
-            setPreviewFlightId(nextFlight.id);
-          }
-
-          // Scroll the item into view in the flight list
-          const flightElement = document.querySelector(`[data-flight-id="${nextFlight.id}"]`);
-          flightElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        }
-      }
-
-      // Enter key selects and loads the previewed/highlighted flight
-      if (event.key === 'Enter') {
+        moveListCursor(currentIndex < sortedFlights.length - 1 ? currentIndex + 1 : 0);
+        break;
+      case 'ArrowUp':
         event.preventDefault();
-        const targetFlightId = previewFlightId ?? (activeView === 'overview' ? overviewHighlightedFlightId : null);
-        if (targetFlightId !== null) {
-          if (activeView === 'overview') {
-            // In overview mode, Enter scrolls to map and shows the flight
-            const mapElement = document.getElementById('overview-cluster-map');
-            if (mapElement) {
-              smoothScrollToElement(mapElement, 800).then(() => {
-                onHighlightFlight?.(targetFlightId);
-              });
-            } else {
-              onHighlightFlight?.(targetFlightId);
-            }
-          } else {
-            // In flights mode, Enter loads the flight
-            selectFlight(targetFlightId);
-            onSelectFlight?.(targetFlightId);
-            setPreviewFlightId(null);
-          }
+        moveListCursor(currentIndex > 0 ? currentIndex - 1 : sortedFlights.length - 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        moveListCursor(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        moveListCursor(sortedFlights.length - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        activateFlightOption(flight.id);
+        break;
+      case 'ContextMenu':
+        event.preventDefault();
+        {
+          const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+          openContextMenu(flight.id, rect.left + rect.width / 2, rect.top + rect.height / 2, event.currentTarget as HTMLElement, event.currentTarget as HTMLElement);
         }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [sortedFlights, selectedFlightId, previewFlightId, overviewHighlightedFlightId, activeView, selectFlight, onSelectFlight, onHighlightFlight, setOverviewHighlightedFlightId, isDateOpen, isSortOpen, isTagDropdownOpen, isColorDropdownOpen, isExportDropdownOpen, editingId]);
+        break;
+      case 'F10':
+        if (event.shiftKey) {
+          event.preventDefault();
+          const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+          openContextMenu(flight.id, rect.left + rect.width / 2, rect.top + rect.height / 2, event.currentTarget as HTMLElement, event.currentTarget as HTMLElement);
+        }
+        break;
+      default:
+        break;
+    }
+  }, [sortedFlights, moveListCursor, activateFlightOption, openContextMenu]);
 
   const sortOptions = useMemo(
     () => [
@@ -2369,34 +2455,90 @@ export function FlightList({
   const handleContextMenu = (e: React.MouseEvent, flightId: number) => {
     e.preventDefault();
     e.stopPropagation();
+    openContextMenu(flightId, e.clientX, e.clientY, e.currentTarget as HTMLElement, e.currentTarget as HTMLElement);
+  };
 
-    const menuWidth = 200;
-    const menuHeight = 290;
-    const safeTop = getSafeAreaInsetPx('--mobile-safe-top');
-    const safeBottom = getSafeAreaInsetPx('--mobile-safe-bottom');
-    const safeLeft = getSafeAreaInsetPx('--mobile-safe-left');
-    const safeRight = getSafeAreaInsetPx('--mobile-safe-right');
-    const topReserve = (isMobileRuntime ? 56 : 8) + safeTop;
-    const bottomReserve = (isMobileRuntime ? 72 : 8) + safeBottom;
-    const leftReserve = 8 + safeLeft;
-    const rightReserve = 8 + safeRight;
-
-    // Constrain menu to the sidebar area to avoid clipping under transformed/overflowed containers.
-    const sidebarRect = (e.currentTarget as HTMLElement).closest('aside')?.getBoundingClientRect();
-    const boundsLeft = sidebarRect?.left ?? 0;
-    const boundsRight = sidebarRect?.right ?? window.innerWidth;
-    const boundsTop = sidebarRect?.top ?? 0;
-    const boundsBottom = sidebarRect?.bottom ?? window.innerHeight;
-
-    const minX = boundsLeft + leftReserve;
-    const maxX = Math.max(minX, boundsRight - menuWidth - rightReserve);
-    const minY = boundsTop + topReserve;
-    const maxY = Math.max(minY, boundsBottom - menuHeight - bottomReserve);
-    const x = Math.min(Math.max(e.clientX, minX), maxX);
-    const y = Math.min(Math.max(e.clientY, minY), maxY);
-
-    setContextMenu({ x, y, flightId, boundsLeft, boundsRight });
+  /** Close the actions menu; optionally return focus to its trigger. */
+  const closeContextMenu = useCallback((restoreFocus = true) => {
+    setContextMenu(null);
     setContextExportSubmenuOpen(false);
+    if (restoreFocus) {
+      const trigger = contextMenuTriggerRef.current;
+      contextMenuTriggerRef.current = null;
+      if (trigger && document.contains(trigger)) {
+        trigger.focus();
+      }
+    }
+  }, []);
+
+  // Focus the first enabled menuitem when the menu opens (ARIA menu)
+  useEffect(() => {
+    if (!contextMenu) return;
+    const first = contextMenuRef.current?.querySelector<HTMLElement>(
+      '[role="menuitem"]:not([aria-disabled="true"]):not(:disabled)'
+    );
+    first?.focus();
+  }, [contextMenu]);
+
+  /** Arrow-key navigation inside the actions menu (ARIA menu keyboard model). */
+  const handleActionsMenuKeyDown = (event: React.KeyboardEvent) => {
+    const menuEl = contextMenuRef.current;
+    if (!menuEl) return;
+    const items = Array.from(
+      menuEl.querySelectorAll<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"]):not(:disabled)')
+    );
+    const activeEl = document.activeElement as HTMLElement | null;
+    const idx = activeEl ? items.indexOf(activeEl) : -1;
+    const inSubmenu = !!activeEl?.closest('[data-context-submenu]');
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        items[(idx + 1) % items.length]?.focus();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        items[(idx - 1 + items.length) % items.length]?.focus();
+        break;
+      case 'Home':
+        event.preventDefault();
+        items[0]?.focus();
+        break;
+      case 'End':
+        event.preventDefault();
+        items[items.length - 1]?.focus();
+        break;
+      case 'ArrowRight': {
+        if (activeEl?.hasAttribute('data-submenu-trigger')) {
+          event.preventDefault();
+          setContextExportSubmenuOpen(true);
+          requestAnimationFrame(() => {
+            menuEl.querySelector<HTMLElement>('[data-context-submenu] [role="menuitem"]')?.focus();
+          });
+        }
+        break;
+      }
+      case 'ArrowLeft': {
+        if (inSubmenu) {
+          event.preventDefault();
+          setContextExportSubmenuOpen(false);
+          menuEl.querySelector<HTMLElement>('[data-submenu-trigger]')?.focus();
+        }
+        break;
+      }
+      case 'Escape':
+        event.preventDefault();
+        event.stopPropagation();
+        closeContextMenu(true);
+        break;
+      case 'Tab':
+        // Menus are one tab stop: leaving the menu closes it
+        event.preventDefault();
+        closeContextMenu(true);
+        break;
+      default:
+        break;
+    }
   };
 
   // Handle single flight export from context menu
@@ -2546,13 +2688,21 @@ export function FlightList({
 
   // Handle rename from context menu
   const handleContextRename = (flightId: number) => {
+    const fromWorkspace = contextMenu?.source === 'workspace';
     setContextMenu(null);
     const flight = flights.find(f => f.id === flightId);
-    if (flight) {
-      setEditingId(flightId);
-      setDraftName(flight.displayName || flight.fileName);
-      setConfirmDeleteId(null);
+    if (!flight) return;
+    if (fromWorkspace) {
+      // Renaming from the workspace header edits inline in the header —
+      // the rail may be hidden (mobile), so the row editor isn't usable.
+      window.dispatchEvent(new CustomEvent('skydra:rename-flight', {
+        detail: { flightId },
+      }));
+      return;
     }
+    setEditingId(flightId);
+    setDraftName(flight.displayName || flight.fileName);
+    setConfirmDeleteId(null);
   };
 
   // Handle delete from context menu
@@ -2703,6 +2853,7 @@ export function FlightList({
                 onClick={() => setMapAreaFilterEnabled(!mapAreaFilterEnabled)}
                 className="flex items-center gap-2"
                 aria-pressed={mapAreaFilterEnabled}
+                aria-label={t('flightList.overviewMapFilter')}
               >
                 <span
                   className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${mapAreaFilterEnabled
@@ -2734,6 +2885,9 @@ export function FlightList({
                               setIsFilterProfileDropdownOpen((v) => !v);
                               setPendingDeleteFilterProfile(null);
                             }}
+                            aria-haspopup="listbox"
+                            aria-expanded={isFilterProfileDropdownOpen}
+                            aria-label={t('flightList.savedFilterLabel')}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
                             <span className={`truncate ${selectedFilterProfileName !== 'none' ? 'text-ink' : 'text-muted'}`}>
@@ -2922,6 +3076,8 @@ export function FlightList({
                                     const clamped = Math.min(val, hi - 1);
                                     setDurationFilterMin(clamped <= durationRange.minMins ? null : clamped);
                                   }}
+                                  aria-label={t('flightList.minDuration', 'Minimum duration')}
+                                  aria-valuetext={`${lo} ${t('flightList.minutes', 'min')}`}
                                   className="dual-range-input"
                                 />
                                 <input
@@ -2935,6 +3091,8 @@ export function FlightList({
                                     const clamped = Math.max(val, lo + 1);
                                     setDurationFilterMax(clamped >= durationRange.maxMins ? null : clamped);
                                   }}
+                                  aria-label={t('flightList.maxDuration', 'Maximum duration')}
+                                  aria-valuetext={`${hi} ${t('flightList.minutes', 'min')}`}
                                   className="dual-range-input"
                                 />
                               </div>
@@ -2979,6 +3137,8 @@ export function FlightList({
                                     const clamped = Math.min(val, hi - 1);
                                     setAltitudeFilterMin(clamped <= altitudeRange.min ? null : clamped);
                                   }}
+                                  aria-label={t('flightList.minAltitude', 'Minimum altitude')}
+                                  aria-valuetext={formatAltitude(lo, unitPrefs.altitude, locale)}
                                   className="dual-range-input"
                                 />
                                 <input
@@ -2992,6 +3152,8 @@ export function FlightList({
                                     const clamped = Math.max(val, lo + 1);
                                     setAltitudeFilterMax(clamped >= altitudeRange.max ? null : clamped);
                                   }}
+                                  aria-label={t('flightList.maxAltitude', 'Maximum altitude')}
+                                  aria-valuetext={formatAltitude(hi, unitPrefs.altitude, locale)}
                                   className="dual-range-input"
                                 />
                               </div>
@@ -3036,6 +3198,8 @@ export function FlightList({
                                     const clamped = Math.min(val, hi - 1);
                                     setDistanceFilterMin(clamped <= distanceRange.min ? null : clamped);
                                   }}
+                                  aria-label={t('flightList.minDistance', 'Minimum distance')}
+                                  aria-valuetext={formatDistance(lo, unitPrefs.distance, locale)}
                                   className="dual-range-input"
                                 />
                                 <input
@@ -3049,6 +3213,8 @@ export function FlightList({
                                     const clamped = Math.max(val, lo + 1);
                                     setDistanceFilterMax(clamped >= distanceRange.max ? null : clamped);
                                   }}
+                                  aria-label={t('flightList.maxDistance', 'Maximum distance')}
+                                  aria-valuetext={formatDistance(hi, unitPrefs.distance, locale)}
                                   className="dual-range-input"
                                 />
                               </div>
@@ -3079,6 +3245,9 @@ export function FlightList({
                         ref={dateButtonRef}
                         type="button"
                         onClick={() => setIsDateOpen((open) => !open)}
+                        aria-haspopup="dialog"
+                        aria-expanded={isDateOpen}
+                        aria-label={t('flightList.dateFilter', 'Date range')}
                         className="input flex-1 text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                       >
                         <span
@@ -3141,6 +3310,8 @@ export function FlightList({
                           ref={droneBtnRef}
                           type="button"
                           onClick={() => setIsDroneDropdownOpen((v) => !v)}
+                          aria-haspopup="listbox"
+                          aria-expanded={isDroneDropdownOpen}
                           className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                         >
                           <span className={`truncate ${selectedDrones.length > 0 ? 'text-ink' : 'text-muted'}`}>
@@ -3234,6 +3405,8 @@ export function FlightList({
                           ref={batteryBtnRef}
                           type="button"
                           onClick={() => setIsBatteryDropdownOpen((v) => !v)}
+                          aria-haspopup="listbox"
+                          aria-expanded={isBatteryDropdownOpen}
                           className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                         >
                           <span className={`truncate ${selectedBatteries.length > 0 ? 'text-ink' : 'text-muted'}`}>
@@ -3329,6 +3502,8 @@ export function FlightList({
                             ref={controllerBtnRef}
                             type="button"
                             onClick={() => setIsControllerDropdownOpen((v) => !v)}
+                            aria-haspopup="listbox"
+                            aria-expanded={isControllerDropdownOpen}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
                             <span className={`truncate ${selectedControllers.length > 0 ? 'text-ink' : 'text-muted'}`}>
@@ -3425,6 +3600,8 @@ export function FlightList({
                             ref={tagBtnRef}
                             type="button"
                             onClick={() => setIsTagDropdownOpen((v) => !v)}
+                            aria-haspopup="listbox"
+                            aria-expanded={isTagDropdownOpen}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
                             <span className={`truncate ${selectedTags.length > 0 ? 'text-ink' : 'text-muted'}`}>
@@ -3641,6 +3818,8 @@ export function FlightList({
                             ref={colorBtnRef}
                             type="button"
                             onClick={() => setIsColorDropdownOpen((v) => !v)}
+                            aria-haspopup="listbox"
+                            aria-expanded={isColorDropdownOpen}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
                             <span className={`truncate flex items-center gap-1 ${selectedColors.length > 0 ? 'text-ink' : 'text-muted'}`}>
@@ -3768,6 +3947,8 @@ export function FlightList({
                   ref={sortButtonRef}
                   type="button"
                   onClick={() => setIsSortOpen((open) => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isSortOpen}
                   className="h-8 w-8 rounded-l-md border border-line/70 bg-canvas text-ink hover:text-ink hover:border-line-strong transition-colors flex items-center justify-center"
                   aria-label={`Sort flights: ${activeSortLabel}`}
                 >
@@ -3848,6 +4029,8 @@ export function FlightList({
               <div className="relative flex-1">
                 <button
                   onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+                  aria-haspopup="menu"
+                  aria-expanded={isExportDropdownOpen}
                   disabled={filteredFlights.length === 0}
                   className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors w-full ${filteredFlights.length > 0
                     ? 'bg-accent/15 text-accent hover:bg-accent/25'
@@ -4129,201 +4312,216 @@ export function FlightList({
         </div>
       </div>
 
-      {/* Scrollable flight list */}
-      <div className="flex-1 overflow-y-auto divide-y divide-line/50">
-        {sortedFlights.map((flight) => (
-          <div
-            key={flight.id}
-            data-flight-id={flight.id}
-            onContextMenu={(e) => handleContextMenu(e, flight.id)}
-            onClick={(e) => {
-              setPreviewFlightId(null);
-              // CTRL+click (or Cmd+click on Mac) always navigates to flight details
-              if (e.ctrlKey || e.metaKey) {
-                setOverviewHighlightedFlightId(null);
-                selectFlight(flight.id);
-                onSelectFlight?.(flight.id);
-                return;
-              }
-              if (activeView === 'overview') {
-                // Single click in overview mode: scroll to map then highlight
-                const mapElement = document.getElementById('overview-cluster-map');
-                if (mapElement) {
-                  smoothScrollToElement(mapElement, 800).then(() => {
-                    setOverviewHighlightedFlightId(flight.id);
-                    onHighlightFlight?.(flight.id);
-                  });
-                } else {
-                  setOverviewHighlightedFlightId(flight.id);
-                  onHighlightFlight?.(flight.id);
-                }
-              } else {
-                // Single click in flights mode: select and load flight
-                selectFlight(flight.id);
-                onSelectFlight?.(flight.id);
-              }
-            }}
-            onDoubleClick={() => {
-              if (activeView === 'overview') {
-                // Double click in overview mode: navigate to flight details
-                setOverviewHighlightedFlightId(null);
-                selectFlight(flight.id);
-                onSelectFlight?.(flight.id);
-              }
-              // In flights mode, double-click does nothing extra (single click already loads)
-            }}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                if (activeView === 'overview') {
-                  // Enter in overview mode: navigate to flight details
-                  setOverviewHighlightedFlightId(null);
-                }
-                selectFlight(flight.id);
-                onSelectFlight?.(flight.id);
-              }
-            }}
-            className={`w-full text-left cursor-pointer transition-colors duration-150 flex select-none ${(activeView === 'overview'
-              ? overviewHighlightedFlightId === flight.id
-              : (selectedFlightId === flight.id || previewFlightId === flight.id))
-              ? 'bg-accent/15'
-              : 'hover:bg-line/30'
-              }`}
-          >
-            {/* Color bar */}
-            <div
-              className={`w-1 flex-shrink-0 rounded-r-sm transition-colors ${(activeView === 'overview'
-                ? overviewHighlightedFlightId === flight.id
-                : (selectedFlightId === flight.id || previewFlightId === flight.id))
-                ? '' : ''}`}
-              style={{ backgroundColor: flight.color ?? '#7dd3fc' }}
-            />
-            <div className="flex-1 min-w-0 px-2.5 py-2">
-              {/* Rename mode */}
-              {editingId === flight.id ? (
-                <div>
-                  <input
-                    value={draftName}
-                    onChange={(e) => setDraftName(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    className="input h-7 text-sm px-2 w-full"
-                    placeholder={t('flightList.flightName')}
-                  />
-                  <div className="flex items-center gap-2 mt-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const name = draftName.trim();
-                        if (name.length > 0) {
-                          updateFlightName(flight.id, name);
-                        }
-                        setEditingId(null);
-                      }}
-                      className="text-xs text-accent"
-                    >
-                      {t('flightList.save')}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingId(null);
-                      }}
-                      className="text-xs text-muted"
-                    >
-                      {t('flightList.cancel')}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between gap-1">
-                  <p
-                    className="text-sm text-ink truncate flex-1 min-w-0"
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      setEditingId(flight.id);
-                      setDraftName(flight.displayName || flight.fileName);
-                      setConfirmDeleteId(null);
-                    }}
-                    title={[
-                      flight.displayName || flight.fileName,
-                      `Start: ${formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}`,
-                      `Duration: ${formatDuration(flight.durationSecs)}`,
-                      `Distance: ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}`,
-                      `Max Altitude: ${formatAltitude(flight.maxAltitude, unitPrefs.altitude, locale)}`,
-                      flight.notes ? `Notes: ${flight.notes}` : null
-                    ].filter(Boolean).join('\n')}
-                  >
-                    {flight.displayName || flight.fileName}
-                  </p>
-                  <div className="flex items-center gap-0.5 flex-shrink-0">
-                    <button
-                      onClick={(e) => {
+      {/* Scrollable flight list — ARIA listbox with roving tabindex (B2) */}
+      <div
+        ref={listboxRef}
+        role="listbox"
+        aria-label={t('flightList.flightList', 'Flight list')}
+        className="flex-1 overflow-y-auto divide-y divide-line/60"
+      >
+        {sortedFlights.map((flight) => {
+          const isSelectedOption = activeView === 'overview'
+            ? overviewHighlightedFlightId === flight.id
+            : selectedFlightId === flight.id;
+          const isPreviewed = activeView === 'flights' && previewFlightId === flight.id;
+          const activeOptionId = previewFlightId
+            ?? (activeView === 'overview' ? overviewHighlightedFlightId : selectedFlightId)
+            ?? sortedFlights[0]?.id
+            ?? null;
+          return (
+            <div key={flight.id} className="relative group/flightrow">
+              <div
+                id={`flight-option-${flight.id}`}
+                data-flight-id={flight.id}
+                role="option"
+                aria-selected={isSelectedOption}
+                tabIndex={activeOptionId === flight.id ? 0 : -1}
+                onContextMenu={(e) => handleContextMenu(e, flight.id)}
+                onClick={(e) => {
+                  setPreviewFlightId(null);
+                  // CTRL+click (or Cmd+click on Mac) always navigates to flight details
+                  if (e.ctrlKey || e.metaKey) {
+                    setOverviewHighlightedFlightId(null);
+                    selectFlight(flight.id);
+                    onSelectFlight?.(flight.id);
+                    return;
+                  }
+                  if (activeView === 'overview') {
+                    // Single click in overview mode: scroll to map then highlight
+                    const mapElement = document.getElementById('overview-cluster-map');
+                    if (mapElement) {
+                      smoothScrollToElement(mapElement, 800).then(() => {
+                        setOverviewHighlightedFlightId(flight.id);
+                        onHighlightFlight?.(flight.id);
+                      });
+                    } else {
+                      setOverviewHighlightedFlightId(flight.id);
+                      onHighlightFlight?.(flight.id);
+                    }
+                  } else {
+                    // Single click in flights mode: select and load flight
+                    selectFlight(flight.id);
+                    onSelectFlight?.(flight.id);
+                  }
+                }}
+                onDoubleClick={() => {
+                  if (activeView === 'overview') {
+                    // Double click in overview mode: navigate to flight details
+                    setOverviewHighlightedFlightId(null);
+                    selectFlight(flight.id);
+                    onSelectFlight?.(flight.id);
+                  }
+                  // In flights mode, double-click does nothing extra (single click already loads)
+                }}
+                onKeyDown={(event) => handleOptionKeyDown(event, flight)}
+                className={`w-full text-left cursor-pointer transition-colors duration-150 flex select-none outline-none focus-visible:shadow-[inset_0_0_0_1.5px_var(--skydra-focus)] ${(isSelectedOption || isPreviewed)
+                  ? 'bg-accent/10'
+                  : 'hover:bg-elevated/60'
+                  }`}
+              >
+                {/* Color bar — the flight color layer, separate from accent/status */}
+                <div
+                  className="w-1 flex-shrink-0 rounded-r-sm transition-colors"
+                  style={{ backgroundColor: flight.color ?? '#7dd3fc' }}
+                />
+                <div className="flex-1 min-w-0 pl-2.5 pr-7 py-1.5">
+                  {/* Rename mode */}
+                  {editingId === flight.id ? (
+                    <div>
+                      <input
+                        value={draftName}
+                        onChange={(e) => setDraftName(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="input h-7 text-sm px-2 w-full"
+                        placeholder={t('flightList.flightName')}
+                        aria-label={t('flightList.flightName')}
+                      />
+                      <div className="flex items-center gap-2 mt-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const name = draftName.trim();
+                            if (name.length > 0) {
+                              updateFlightName(flight.id, name);
+                            }
+                            setEditingId(null);
+                          }}
+                          className="text-xs text-accent"
+                        >
+                          {t('flightList.save')}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingId(null);
+                          }}
+                          className="text-xs text-muted"
+                        >
+                          {t('flightList.cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p
+                      className="text-[13px] leading-5 text-ink truncate min-w-0"
+                      onDoubleClick={(e) => {
                         e.stopPropagation();
                         setEditingId(flight.id);
                         setDraftName(flight.displayName || flight.fileName);
                         setConfirmDeleteId(null);
                       }}
-                      className="p-0.5 text-accent hover:text-accent"
-                      title={t('flightList.renameFlight')}
+                      title={[
+                        flight.displayName || flight.fileName,
+                        `Start: ${formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}`,
+                        `Duration: ${formatDuration(flight.durationSecs)}`,
+                        `Distance: ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}`,
+                        `Max Altitude: ${formatAltitude(flight.maxAltitude, unitPrefs.altitude, locale)}`,
+                        flight.notes ? `Notes: ${flight.notes}` : null
+                      ].filter(Boolean).join('\n')}
                     >
-                      <PencilIcon />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setConfirmDeleteId(flight.id);
-                      }}
-                      className="p-0.5 text-danger hover:text-danger"
-                      title={t('flightList.deleteFlight')}
-                    >
-                      <TrashIcon />
-                    </button>
-                  </div>
-                </div>
-              )}
+                      {flight.displayName || flight.fileName}
+                      {flight.notes && (
+                        <span
+                          className="inline-block ml-1.5 w-1.5 h-1.5 rounded-full bg-warning align-middle"
+                          title={flight.notes}
+                        />
+                      )}
+                    </p>
+                  )}
 
-              {/* Subtitle: date + duration */}
+                  {/* Subtitle: mono scan metrics (date · duration · distance · max alt) */}
+                  {editingId !== flight.id && (
+                    <p className="text-[11px] leading-4 text-muted mt-0.5 truncate font-mono tabular-nums">
+                      {formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}
+                      {flight.durationSecs ? ` · ${formatDuration(flight.durationSecs)}` : ''}
+                      {flight.totalDistance ? ` · ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}` : ''}
+                      {flight.maxAltitude ? ` · ${formatAltitude(flight.maxAltitude, unitPrefs.altitude, locale)}` : ''}
+                    </p>
+                  )}
+
+                  {/* Delete confirmation */}
+                  {confirmDeleteId === flight.id && editingId !== flight.id && (
+                    <div className="flex items-center gap-2 mt-1 text-xs">
+                      <span className="text-muted">{t('flightList.deleteConfirm')}</span>
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          // Add to blacklist before deleting (so sync won't re-import)
+                          if (flight.fileHash) {
+                            await addToBlacklist(flight.fileHash);
+                          }
+                          await deleteFlight(flight.id);
+                          setConfirmDeleteId(null);
+                        }}
+                        className="text-danger"
+                      >
+                        {t('flightList.yes')}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmDeleteId(null);
+                        }}
+                        className="text-muted"
+                      >
+                        {t('flightList.no')}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Per-row ⋯ actions — the keyboard/touch path to the full menu (B1) */}
               {editingId !== flight.id && (
-                <p className="text-xs text-muted mt-0.5 truncate font-mono">
-                  {formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}
-                  {flight.durationSecs ? ` · ${formatDuration(flight.durationSecs)}` : ''}
-                  {flight.totalDistance ? ` · ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}` : ''}
-                </p>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-haspopup="menu"
+                  aria-label={t('flightList.moreActions', 'More actions for {{name}}').replace('{{name}}', flight.displayName || flight.fileName)}
+                  title={t('flightList.moreActions', 'More actions')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    openContextMenu(
+                      flight.id,
+                      rect.right,
+                      rect.top,
+                      e.currentTarget as HTMLElement,
+                      e.currentTarget.closest('[data-flight-id]') as HTMLElement | null,
+                    );
+                  }}
+                  className="absolute right-1.5 top-1 p-1 rounded text-faint hover:text-ink hover:bg-elevated transition-colors"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <circle cx="3" cy="8" r="1.5" />
+                    <circle cx="8" cy="8" r="1.5" />
+                    <circle cx="13" cy="8" r="1.5" />
+                  </svg>
+                </button>
               )}
-
-              {/* Delete confirmation */}
-              {confirmDeleteId === flight.id && editingId !== flight.id && (
-                <div className="flex items-center gap-2 mt-1 text-xs">
-                  <span className="text-muted">{t('flightList.deleteConfirm')}</span>
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      // Add to blacklist before deleting (so sync won't re-import)
-                      if (flight.fileHash) {
-                        await addToBlacklist(flight.fileHash);
-                      }
-                      await deleteFlight(flight.id);
-                      setConfirmDeleteId(null);
-                    }}
-                    className="text-danger"
-                  >
-                    {t('flightList.yes')}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setConfirmDeleteId(null);
-                    }}
-                    className="text-muted"
-                  >
-                    {t('flightList.no')}
-                  </button>
-                </div>
-              )}
-            </div>{/* end of flex-1 inner content */}
-          </div>
-        ))}
+            </div>
+          );
+        })}
         {sortedFlights.length === 0 && (
           <div className="p-4 text-center text-muted text-xs">
             {t('flightList.noFlightsMatch')}
@@ -4331,21 +4529,51 @@ export function FlightList({
         )}
       </div>
 
-      {/* Right-click Context Menu */}
-      {contextMenu && (
+      {/* Flight actions menu (right-click / ⋯ / Shift+F10) — ARIA menu,
+          portaled to body so it renders even when the rail is hidden */}
+      {contextMenu && renderGlobalOverlay(
         <div
-          className="fixed z-[9999] min-w-[180px] py-1 rounded-lg border border-line bg-elevated shadow-xl"
+          ref={contextMenuRef}
+          role="menu"
+          aria-label={t('flightList.flightActions', 'Flight actions')}
+          className="fixed z-[9999] min-w-[180px] py-1 rounded-lg border border-line bg-elevated shadow-xl outline-none"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
           }}
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={handleActionsMenuKeyDown}
         >
+          {/* In overview mode expose the double-click action to keyboard/touch */}
+          {activeView === 'overview' && (
+            <button
+              type="button"
+              role="menuitem"
+              tabIndex={-1}
+              onClick={() => {
+                const id = contextMenu.flightId;
+                closeContextMenu(false);
+                setOverviewHighlightedFlightId(null);
+                selectFlight(id);
+                onSelectFlight?.(id);
+              }}
+              className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-surface focus:bg-surface focus:outline-none flex items-center gap-2"
+            >
+              <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {t('flightList.viewDetails', 'View flight details')}
+            </button>
+          )}
+
           {/* Rename */}
           <button
             type="button"
+            role="menuitem"
+            tabIndex={-1}
             onClick={() => handleContextRename(contextMenu.flightId)}
-            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none flex items-center gap-2"
           >
             <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -4356,8 +4584,10 @@ export function FlightList({
           {/* Add/Edit Notes */}
           <button
             type="button"
+            role="menuitem"
+            tabIndex={-1}
             onClick={() => handleContextAddNotes(contextMenu.flightId)}
-            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none flex items-center gap-2"
           >
             <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -4368,6 +4598,8 @@ export function FlightList({
           {/* Edit Color */}
           <button
             type="button"
+            role="menuitem"
+            tabIndex={-1}
             onClick={() => {
               setColorPickerFlightId(contextMenu.flightId);
               setColorPickerPosition({
@@ -4379,7 +4611,7 @@ export function FlightList({
               });
               setContextMenu(null);
             }}
-            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none flex items-center gap-2"
           >
             <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
@@ -4390,8 +4622,10 @@ export function FlightList({
           {/* Delete */}
           <button
             type="button"
+            role="menuitem"
+            tabIndex={-1}
             onClick={() => handleContextDelete(contextMenu.flightId)}
-            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none flex items-center gap-2"
           >
             <svg className="w-4 h-4 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -4400,14 +4634,17 @@ export function FlightList({
           </button>
 
           {/* Divider */}
-          <div className="my-1 border-t border-line" />
+          <div className="my-1 border-t border-line" role="separator" />
 
           {/* Regenerate Smart Tags */}
           <button
             type="button"
+            role="menuitem"
+            tabIndex={-1}
             onClick={() => handleContextRegenerateTags(contextMenu.flightId)}
             disabled={isRegeneratingTags}
-            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2 disabled:opacity-50"
+            aria-disabled={isRegeneratingTags || undefined}
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none flex items-center gap-2 disabled:opacity-50"
           >
             <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -4418,11 +4655,14 @@ export function FlightList({
           {/* Generate FlyCard */}
           <button
             type="button"
+            role="menuitem"
+            tabIndex={-1}
             onClick={() => activeView !== 'overview' && handleContextGenerateFlyCard(contextMenu.flightId)}
             disabled={activeView === 'overview'}
+            aria-disabled={activeView === 'overview' || undefined}
             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${activeView === 'overview'
               ? 'text-muted cursor-not-allowed'
-              : 'text-ink hover:bg-line/50'
+              : 'text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none'
               }`}
             title={activeView === 'overview' ? 'Select a flight first to generate FlyCard' : undefined}
           >
@@ -4433,55 +4673,43 @@ export function FlightList({
           </button>
 
           {/* Divider */}
-          <div className="my-1 border-t border-line" />
+          <div className="my-1 border-t border-line" role="separator" />
 
           {/* Export submenu */}
-          <div className="relative">
+          <div className="relative" data-context-submenu-root>
             {contextExportSubmenuOpen && (
-              <div className="absolute left-2 right-2 bottom-full mb-1 py-1 rounded-lg border border-line bg-elevated/95 backdrop-blur-sm shadow-xl z-10">
+              <div
+                role="menu"
+                aria-label={t('flightList.export')}
+                data-context-submenu
+                className="absolute left-2 right-2 bottom-full mb-1 py-1 rounded-lg border border-line bg-elevated/95 backdrop-blur-sm shadow-xl z-10"
+              >
+                {(['csv', 'json', 'gpx', 'kml', 'kml_relative'] as const).map((format) => (
+                  <button
+                    key={format}
+                    type="button"
+                    role="menuitem"
+                    tabIndex={-1}
+                    onClick={() => handleContextExport(contextMenu.flightId, format)}
+                    className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none"
+                  >
+                    {format === 'csv' && t('flightList.csv')}
+                    {format === 'json' && t('flightList.json')}
+                    {format === 'gpx' && t('flightList.gpx')}
+                    {format === 'kml' && t('flightList.kml')}
+                    {format === 'kml_relative' && t('flightList.kmlRelative')}
+                  </button>
+                ))}
                 <button
                   type="button"
-                  onClick={() => handleContextExport(contextMenu.flightId, 'csv')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
-                >
-                  {t('flightList.csv')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleContextExport(contextMenu.flightId, 'json')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
-                >
-                  {t('flightList.json')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleContextExport(contextMenu.flightId, 'gpx')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
-                >
-                  {t('flightList.gpx')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleContextExport(contextMenu.flightId, 'kml')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
-                >
-                  {t('flightList.kml')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleContextExport(contextMenu.flightId, 'kml_relative')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
-                >
-                  {t('flightList.kmlRelative')}
-                </button>
-                <button
-                  type="button"
+                  role="menuitem"
+                  tabIndex={-1}
                   onClick={() => {
                     setContextMenu(null);
                     setContextExportSubmenuOpen(false);
                     setContextHtmlReportFlightId(contextMenu.flightId);
                   }}
-                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none"
                 >
                   {t('flightList.htmlReport')}
                 </button>
@@ -4489,8 +4717,13 @@ export function FlightList({
             )}
             <button
               type="button"
+              role="menuitem"
+              tabIndex={-1}
+              data-submenu-trigger
+              aria-haspopup="menu"
+              aria-expanded={contextExportSubmenuOpen}
               onClick={() => setContextExportSubmenuOpen((open) => !open)}
-              className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center justify-between"
+              className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 focus:bg-line/50 focus:outline-none flex items-center justify-between"
             >
               <span className="flex items-center gap-2">
                 <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4498,7 +4731,7 @@ export function FlightList({
                 </svg>
                 {t('flightList.export')}
               </span>
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 {contextExportSubmenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 15l6-6 6 6" />
                 ) : (
@@ -4528,104 +4761,122 @@ export function FlightList({
 
       {/* Regenerating Tags Overlay */}
       {isRegeneratingTags && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[280px] shadow-2xl text-center">
-            <svg className="w-8 h-8 text-accent animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
-              <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
-            </svg>
-            <p className="text-sm text-ink">{t('flightList.regeneratingSmartTags')}</p>
-          </div>
-        </div>
+        <Modal isOpen onClose={() => {}} dismissable={false} label={t('flightList.regeneratingSmartTags')} className="bg-elevated border border-line rounded-xl p-6 min-w-[280px] shadow-2xl text-center">
+          <svg className="w-8 h-8 text-teal-400 animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+            <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
+          </svg>
+          <p className="text-sm text-ink">{t('flightList.regeneratingSmartTags')}</p>
+        </Modal>
       )}
 
       {/* Export Progress Overlay */}
-      {isExporting && renderGlobalOverlay(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
-            <h3 className="text-lg font-semibold mb-4">{t('flightList.exportingFlights')}</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm text-muted">
-                <span>{t('flightList.progress')}</span>
-                <span>{exportProgress.done} / {exportProgress.total}</span>
-              </div>
-              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full bg-accent transition-all duration-300"
-                  style={{ width: `${(exportProgress.done / exportProgress.total) * 100}%` }}
-                />
-              </div>
-              {exportProgress.currentFile && (
-                <div className="text-xs text-muted truncate">
-                  {t('flightList.current')} {exportProgress.currentFile}
-                </div>
-              )}
+      {isExporting && (
+        <Modal isOpen onClose={() => {}} dismissable={false} label={t('flightList.exportingFlights')} className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <h3 className="text-lg font-semibold mb-4">{t('flightList.exportingFlights')}</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm text-muted">
+              <span>{t('flightList.progress')}</span>
+              <span>{exportProgress.done} / {exportProgress.total}</span>
             </div>
+            <div
+              className="w-full bg-surface rounded-full h-2 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={exportProgress.total}
+              aria-valuenow={exportProgress.done}
+              aria-label={t('flightList.exportingFlights')}
+            >
+              <div
+                className="h-full bg-accent transition-all duration-300"
+                style={{ width: `${(exportProgress.done / exportProgress.total) * 100}%` }}
+              />
+            </div>
+            {exportProgress.currentFile && (
+              <div className="text-xs text-faint truncate">
+                {t('flightList.current')} {exportProgress.currentFile}
+              </div>
+            )}
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* Delete Progress Overlay */}
-      {isDeleting && renderGlobalOverlay(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
-            <h3 className="text-lg font-semibold mb-4">{t('flightList.deletingFlights')}</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm text-muted">
-                <span>{t('flightList.progress')}</span>
-                <span>{deleteProgress.done} / {deleteProgress.total}</span>
-              </div>
-              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full bg-danger transition-all duration-300"
-                  style={{ width: `${(deleteProgress.done / deleteProgress.total) * 100}%` }}
-                />
-              </div>
+      {isDeleting && (
+        <Modal isOpen onClose={() => {}} dismissable={false} label={t('flightList.deletingFlights')} className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <h3 className="text-lg font-semibold mb-4">{t('flightList.deletingFlights')}</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm text-muted">
+              <span>{t('flightList.progress')}</span>
+              <span>{deleteProgress.done} / {deleteProgress.total}</span>
+            </div>
+            <div
+              className="w-full bg-surface rounded-full h-2 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={deleteProgress.total}
+              aria-valuenow={deleteProgress.done}
+              aria-label={t('flightList.deletingFlights')}
+            >
+              <div
+                className="h-full bg-danger transition-all duration-300"
+                style={{ width: `${(deleteProgress.done / deleteProgress.total) * 100}%` }}
+              />
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* Untag Progress Overlay */}
-      {isUntagging && renderGlobalOverlay(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
-            <h3 className="text-lg font-semibold mb-4">{t('flightList.removingTags')}</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm text-muted">
-                <span>{t('flightList.progress')}</span>
-                <span>{untagProgress.done} / {untagProgress.total}</span>
-              </div>
-              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full bg-accent transition-all duration-300"
-                  style={{ width: `${untagProgress.total > 0 ? (untagProgress.done / untagProgress.total) * 100 : 0}%` }}
-                />
-              </div>
+      {isUntagging && (
+        <Modal isOpen onClose={() => {}} dismissable={false} label={t('flightList.removingTags')} className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <h3 className="text-lg font-semibold mb-4">{t('flightList.removingTags')}</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm text-muted">
+              <span>{t('flightList.progress')}</span>
+              <span>{untagProgress.done} / {untagProgress.total}</span>
+            </div>
+            <div
+              className="w-full bg-surface rounded-full h-2 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={untagProgress.total}
+              aria-valuenow={untagProgress.done}
+              aria-label={t('flightList.removingTags')}
+            >
+              <div
+                className="h-full bg-warning transition-all duration-300"
+                style={{ width: `${untagProgress.total > 0 ? (untagProgress.done / untagProgress.total) * 100 : 0}%` }}
+              />
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* Bulk Tag Progress Overlay */}
-      {isBulkTagging && renderGlobalOverlay(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
-            <h3 className="text-lg font-semibold mb-4">{t('flightList.addingTags')}</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm text-muted">
-                <span>{t('flightList.progress')}</span>
-                <span>{bulkTagProgress.done} / {bulkTagProgress.total}</span>
-              </div>
-              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full bg-accent transition-all duration-300"
-                  style={{ width: `${bulkTagProgress.total > 0 ? (bulkTagProgress.done / bulkTagProgress.total) * 100 : 0}%` }}
-                />
-              </div>
+      {isBulkTagging && (
+        <Modal isOpen onClose={() => {}} dismissable={false} label={t('flightList.addingTags')} className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <h3 className="text-lg font-semibold mb-4">{t('flightList.addingTags')}</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm text-muted">
+              <span>{t('flightList.progress')}</span>
+              <span>{bulkTagProgress.done} / {bulkTagProgress.total}</span>
+            </div>
+            <div
+              className="w-full bg-surface rounded-full h-2 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={bulkTagProgress.total}
+              aria-valuenow={bulkTagProgress.done}
+              aria-label={t('flightList.addingTags')}
+            >
+              <div
+                className="h-full bg-accent transition-all duration-300"
+                style={{ width: `${bulkTagProgress.total > 0 ? (bulkTagProgress.done / bulkTagProgress.total) * 100 : 0}%` }}
+              />
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* FlyCard Generator Modal */}
@@ -4643,66 +4894,62 @@ export function FlightList({
 
       {/* FlyCard Pending Overlay - shown while waiting for flight to load */}
       {flyCardPending && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-canvas rounded-xl p-6 shadow-xl border border-line text-center">
-            <svg className="w-10 h-10 text-accent animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
-              <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
-            </svg>
-            <p className="text-ink font-medium">{t('flightList.loadingFlightMap')}</p>
-            <p className="text-muted text-sm mt-1">{t('flightList.preparingFlyCard')}</p>
-          </div>
-        </div>
+        <Modal isOpen onClose={() => {}} dismissable={false} label={t('flightList.loadingFlightMap')} className="bg-elevated rounded-xl p-6 shadow-xl border border-line text-center">
+          <svg className="w-10 h-10 text-accent animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+            <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
+          </svg>
+          <p className="text-ink font-medium">{t('flightList.loadingFlightMap')}</p>
+          <p className="text-muted text-sm mt-1">{t('flightList.preparingFlyCard')}</p>
+        </Modal>
       )}
 
       {/* Notes Modal */}
       {notesModalFlightId !== null && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center p-4 overflow-y-auto bg-black/50 backdrop-blur-sm"
-          onClick={() => {
+        <Modal
+          isOpen
+          onClose={() => {
             setNotesModalFlightId(null);
             setNotesInput('');
           }}
+          label={flights.find(f => f.id === notesModalFlightId)?.notes ? t('flightList.editNotesHeading') : t('flightList.addNotesHeading')}
+          className="bg-elevated rounded-xl p-5 shadow-xl border border-line w-[400px] max-w-[90vw]"
         >
-          <div
-            className="bg-canvas rounded-xl p-5 shadow-xl border border-line w-[400px] max-w-[90vw] my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-ink font-medium mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              {flights.find(f => f.id === notesModalFlightId)?.notes ? t('flightList.editNotesHeading') : t('flightList.addNotesHeading')}
-            </h3>
-            <textarea
-              value={notesInput}
-              onChange={(e) => setNotesInput(e.target.value.slice(0, 500))}
-              placeholder={t('flightList.addNotePlaceholder')}
-              className={`w-full h-32 px-3 py-2 rounded-lg bg-elevated border border-line text-sm placeholder:text-faint resize-none focus:outline-none focus:border-accent text-ink`}
-              autoFocus
-            />
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-muted">{notesInput.length}/500</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    setNotesModalFlightId(null);
-                    setNotesInput('');
-                  }}
-                  className="px-3 py-1.5 text-sm text-muted hover:text-ink transition-colors"
-                >
-                  {t('flightList.cancel')}
-                </button>
-                <button
-                  onClick={handleSaveNotes}
-                  className="px-4 py-1.5 text-sm bg-accent text-accent-ink rounded-lg hover:bg-accent-hover transition-colors"
-                >
-                  {t('flightList.save')}
-                </button>
-              </div>
+          <h3 className="text-ink font-medium mb-3 flex items-center gap-2">
+            <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            {flights.find(f => f.id === notesModalFlightId)?.notes ? t('flightList.editNotesHeading') : t('flightList.addNotesHeading')}
+          </h3>
+          <textarea
+            value={notesInput}
+            onChange={(e) => setNotesInput(e.target.value.slice(0, 500))}
+            placeholder={t('flightList.addNotePlaceholder')}
+            aria-label={t('flightList.notes', 'Notes')}
+            className="w-full h-32 px-3 py-2 rounded-lg bg-surface border border-line text-sm text-ink placeholder-faint resize-none focus:outline-none focus:border-accent"
+            autoFocus
+          />
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-xs text-faint">{notesInput.length}/500</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setNotesModalFlightId(null);
+                  setNotesInput('');
+                }}
+                className="px-3 py-1.5 text-sm text-muted hover:text-ink transition-colors"
+              >
+                {t('flightList.cancel')}
+              </button>
+              <button
+                onClick={handleSaveNotes}
+                className="px-4 py-1.5 text-sm bg-accent text-accent-ink rounded-lg hover:bg-accent-hover transition-colors"
+              >
+                {t('flightList.save')}
+              </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* HTML Report Modal (bulk / export filtered) */}
@@ -4724,31 +4971,7 @@ export function FlightList({
   );
 }
 
-function TrashIcon() {
-  return (
-    <svg
-      className="w-3.5 h-3.5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-      />
-    </svg>
-  );
-}
 
-function PencilIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-    </svg>
-  );
-}
 
 function CalendarIcon() {
   return (

@@ -412,7 +412,10 @@ export function FlightMap({ track, homeLat, homeLon, durationSecs, telemetry, th
     height: number; speed: number; distance: number; progress: number;
     lat: number; lng: number; battery: number | null;
   } | null>(null);
-  const { unitPrefs, locale, mapSyncEnabled, setMapReplayProgress } = useFlightStore();
+  const unitPrefs = useFlightStore((s) => s.unitPrefs);
+  const locale = useFlightStore((s) => s.locale);
+  const mapSyncEnabled = useFlightStore((s) => s.mapSyncEnabled);
+  const setMapReplayProgress = useFlightStore((s) => s.setMapReplayProgress);
   const mapRef = useRef<MapRef | null>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -605,11 +608,18 @@ export function FlightMap({ track, homeLat, homeLon, durationSecs, telemetry, th
     return { lng, lat, alt: is3D ? alt : 0 };
   }, [track, replayProgress, is3D]);
 
-  // Sync replay progress to store for chart axis pointer
+  // Sync replay progress to store for chart axis pointer.
+  // Throttled to ~10Hz: per-frame writes would re-render every whole-store
+  // subscriber; a 100ms pointer still reads as continuous on the charts.
+  const lastProgressWriteRef = useRef(0);
   useEffect(() => {
-    if (mapSyncEnabled) {
-      setMapReplayProgress(replayProgress);
+    if (!mapSyncEnabled) return;
+    const now = performance.now();
+    if (replayProgress > 0 && replayProgress < 1 && now - lastProgressWriteRef.current < 100) {
+      return;
     }
+    lastProgressWriteRef.current = now;
+    setMapReplayProgress(replayProgress);
   }, [mapSyncEnabled, replayProgress, setMapReplayProgress]);
 
   // Clear store progress when sync is disabled
@@ -2069,6 +2079,7 @@ export function FlightMap({ track, homeLat, homeLon, durationSecs, telemetry, th
               onClick={handlePlayPause}
               className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-accent/20 text-accent hover:bg-accent/30 transition-colors"
               title={isPlaying ? t('map.pause') : t('map.play')}
+              aria-label={isPlaying ? t('map.pause') : t('map.play')}
             >
               {isPlaying ? (
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -2095,6 +2106,8 @@ export function FlightMap({ track, homeLat, homeLon, durationSecs, telemetry, th
               step="0.001"
               value={replayProgress}
               onChange={(e) => handleReplaySeek(Number(e.target.value))}
+              aria-label={t('map.replayProgress', 'Replay position')}
+              aria-valuetext={formatReplayTime(replayProgress)}
               className="flex-1 h-1.5 rounded-full appearance-none cursor-pointer replay-slider"
               style={{
                 background: `linear-gradient(to right, rgb(var(--skydra-track)) ${replayProgress * 100}%, rgb(var(--skydra-border)) ${replayProgress * 100}%)`,
@@ -2116,6 +2129,7 @@ export function FlightMap({ track, homeLat, homeLon, durationSecs, telemetry, th
               }}
               className="hidden md:inline-flex flex-shrink-0 text-[9px] text-muted border border-line rounded px-1.5 py-px cursor-pointer text-center min-w-[32px] hover:border-line-strong transition-colors themed-select-trigger"
               title={t('map.clickToCycleSpeed')}
+              aria-label={`${t('map.clickToCycleSpeed')} — ${replaySpeed}×`}
             >
               {replaySpeed === 0.5 ? '½×' : `${replaySpeed}×`}
             </button>

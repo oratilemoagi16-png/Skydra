@@ -176,7 +176,20 @@
     "csvHeaderTakeoffLat": "Takeoff Lat",
     "csvHeaderTakeoffLon": "Takeoff Lon",
     "csvHeaderTags": "Tags",
-    "csvHeaderNotes": "Notes"
+    "csvHeaderNotes": "Notes",
+    "moreActions": "More actions for {{name}}",
+    "notes": "Notes",
+    "flightActions": "Flight actions",
+    "flightList": "Flight list",
+    "viewDetails": "View details",
+    "dateFilter": "Filter by date",
+    "minDuration": "Minimum duration",
+    "maxDuration": "Maximum duration",
+    "minAltitude": "Minimum altitude",
+    "maxAltitude": "Maximum altitude",
+    "minDistance": "Minimum distance",
+    "maxDistance": "Maximum distance",
+    "minutes": "minutes"
   },
   "flightStats": {
     "duration": "Duration",
@@ -597,7 +610,8 @@
     "windDirection": "Wind Direction",
     "pressure": "Pressure",
     "attribution": "Weather data from Open-Meteo based on flight location and time",
-    "locationAttribution": "Location data from OpenStreetMap Nominatim"
+    "locationAttribution": "Location data from OpenStreetMap Nominatim",
+    "unavailable": "No takeoff location or time"
   },
   "report": {
     "title": "HTML Report",
@@ -737,7 +751,8 @@
     "pause": "Pause",
     "play": "Play",
     "clickToCycleSpeed": "Click to cycle speed",
-    "simplified": "Simplified"
+    "simplified": "Simplified",
+    "replayProgress": "Replay position"
   },
   "clusterMap": {
     "layers": "Layers",
@@ -870,5 +885,9 @@
     "cancelImport": "Cancel import/sync",
     "themeToLight": "Switch to light theme",
     "themeToDark": "Switch to dark theme"
+  },
+  "workspace": {
+    "statsTab": "Stats",
+    "detailTabs": "Flight details"
   }
 }
