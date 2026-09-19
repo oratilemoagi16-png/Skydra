@@ -1,16 +1,19 @@
 {
-  "sourceFingerprint": "07086d35ce6b0936a3b67fef09c7d3e1aa918e45f9aaae39870e9d284d5ab761",
+  "sourceFingerprint": "78e9e097a156e5bc1388e4d0ec0eb4c5afd677b3bd629f10a5f4e695eaeb0a7b",
   "packageName": "skydra",
   "projectVersion": "3.3.0",
   "dependencies": [
     "@deck.gl/layers",
     "@deck.gl/mapbox",
+    "@fontsource/geist",
+    "@fontsource/geist-mono",
     "@tauri-apps/api",
     "@tauri-apps/plugin-dialog",
     "@tauri-apps/plugin-fs",
     "@tauri-apps/plugin-log",
     "@tauri-apps/plugin-opener",
     "@tauri-apps/plugin-shell",
+    "clsx",
     "echarts",
     "echarts-for-react",
     "html2canvas",
@@ -24,6 +27,7 @@
     "react-i18next",
     "react-icons",
     "react-map-gl",
+    "tailwind-merge",
     "tauri-plugin-android-fs-api",
     "zustand"
   ],

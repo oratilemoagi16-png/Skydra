@@ -32,6 +32,7 @@ import {
 } from '@/lib/utils';
 import { useFlightStore } from '@/stores/flightStore';
 import { FlightClusterMap } from './FlightClusterMap';
+import { chartFontFamily } from '@/lib/chartFont';
 import { EmailSignatureModal } from './EmailSignatureModal';
 import { DatePickerPopover } from '@/components/ui/DatePickerPopover';
 
@@ -1444,6 +1445,7 @@ function DonutChart({
   const decommissionedByName = new Map(data.map((item) => [item.name, !!item.decommissioned]));
 
   const option = {
+    textStyle: { fontFamily: chartFontFamily() },
     tooltip: {
       trigger: 'item' as const,
       backgroundColor: 'rgba(22, 33, 62, 0.95)',
@@ -1589,6 +1591,7 @@ function FlightTimeRadialChart({
   };
 
   const option = {
+    textStyle: { fontFamily: chartFontFamily() },
     tooltip: {
       trigger: 'item' as const,
       backgroundColor: 'rgba(22, 33, 62, 0.95)',
@@ -1919,6 +1922,7 @@ function BatteryHealthList({
     : { background: 'rgba(22, 33, 62, 0.95)', border: '#374151', text: '#e5e7eb' };
 
   const chartOption = {
+    textStyle: { fontFamily: chartFontFamily() },
     title: {
       text: t('overview.batteryCapacityHistory'),
       left: 'center',

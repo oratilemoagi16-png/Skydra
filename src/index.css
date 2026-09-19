@@ -2,23 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   Skydra semantic design tokens
+   ----------------------------------------------------------------------------
+   Canonical theme is dark charcoal; light is an off-white counterpart. All
+   values are `R G B` triplets so Tailwind's `<alpha-value>` utilities work.
+   Legacy `--drone-*` variables are bridged onto these semantics — do not add
+   new consumers of `--drone-*`; use the `--skydra-*` tokens (or the matching
+   Tailwind utilities: canvas/surface/elevated/ink/muted/faint/line/accent/
+   danger/warning/success/focus/track) instead.
+   ========================================================================== */
 :root {
-  --drone-primary: 0 160 220;
-  --drone-secondary: 26 26 46;
-  --drone-accent: 0 212 170;
-  --drone-dark: 15 15 26;
-  --drone-surface: 22 33 62;
-  --drone-muted: 74 78 105;
+  /* Surfaces */
+  --skydra-bg: 25 26 28;             /* #191A1C charcoal page */
+  --skydra-surface: 34 35 38;        /* #222326 chrome panels (rail, top bar) */
+  --skydra-elevated: 44 46 50;       /* #2C2E32 raised: cards, dock, overlays */
 
+  /* Text */
+  --skydra-text: 237 236 231;        /* #EDECE7 off-white */
+  --skydra-muted: 154 154 148;       /* #9A9A94 secondary text (AA on bg) */
+  --skydra-faint: 107 108 104;       /* #6B6C68 tertiary/decorative only */
+
+  /* Borders */
+  --skydra-border: 58 60 65;         /* #3A3C41 hairline */
+  --skydra-border-strong: 74 77 83;  /* #4A4D53 emphasized border */
+
+  /* Brand accent — interaction/brand only, never a status color */
+  --skydra-accent: 224 99 44;        /* #E0632C signal orange */
+  --skydra-accent-hover: 233 117 62; /* #E9753E */
+  --skydra-accent-ink: 255 255 255;  /* text/icon on accent fill */
+
+  /* Status layer (aviation red/amber/green, distinct from accent) */
+  --skydra-danger: 229 72 77;        /* #E5484D */
+  --skydra-warning: 232 163 61;      /* #E8A33D */
+  --skydra-success: 63 169 122;      /* #3FA97A */
+
+  /* Focus ring */
+  --skydra-focus: 240 138 76;        /* #F08A4C focus ring */
+
+  /* Map/chart-adjacent */
+  --skydra-track: 45 190 143;        /* #2DBE8F flight path / replay cursor */
+  --skydra-grid: 62 65 70;           /* #3E4146 chart gridlines */
+
+  /* Type (wired via tailwind fontFamily + body) */
+  --skydra-font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --skydra-font-mono: 'Geist Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  /* Shape & elevation */
+  --skydra-radius-sm: 4px;
+  --skydra-radius: 8px;
+  --skydra-radius-lg: 12px;
+  --skydra-shadow-overlay: 0 8px 28px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --skydra-shadow-dock: 0 6px 24px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.25);
+
+  /* ------------------------------------------------------------------
+     Legacy bridge: keep `--drone-*` alive, fed from the semantic tokens.
+     Remove only when all consumers migrate (downstream work).
+     ------------------------------------------------------------------ */
+  --drone-primary: var(--skydra-accent);
+  --drone-secondary: var(--skydra-surface);
+  --drone-accent: var(--skydra-track);
+  --drone-dark: var(--skydra-bg);
+  --drone-surface: var(--skydra-elevated);
+  --drone-muted: var(--skydra-border);
 }
 
 body.theme-light {
-  --drone-primary: 0 122 204;
-  --drone-secondary: 244 247 250;
-  --drone-accent: 16 185 129;
-  --drone-dark: 248 250 252;
-  --drone-surface: 255 255 255;
-  --drone-muted: 148 163 184;
+  --skydra-bg: 243 242 238;          /* #F3F2EE off-white page */
+  --skydra-surface: 234 232 226;     /* #EAE8E2 chrome panels */
+  --skydra-elevated: 255 255 255;    /* #FFFFFF raised surfaces */
+
+  --skydra-text: 28 29 32;           /* #1C1D20 */
+  --skydra-muted: 107 105 99;        /* #6B6963 secondary text */
+  --skydra-faint: 156 153 145;       /* #9C9991 decorative only */
+
+  --skydra-border: 217 214 206;      /* #D9D6CE hairline */
+  --skydra-border-strong: 196 192 183; /* #C4C0B7 */
+
+  --skydra-accent: 194 79 30;        /* #C24F1E deep signal orange */
+  --skydra-accent-hover: 168 66 22;  /* #A84216 */
+  --skydra-accent-ink: 255 255 255;
+
+  --skydra-danger: 197 48 49;        /* #C53031 */
+  --skydra-warning: 158 100 6;       /* #9E6406 */
+  --skydra-success: 38 122 87;       /* #267A57 */
+
+  --skydra-focus: 194 79 30;
+
+  --skydra-track: 14 143 108;        /* #0E8F6C */
+  --skydra-grid: 228 226 220;        /* #E4E2DC */
+
+  --skydra-shadow-overlay: 0 10px 32px rgba(30, 28, 24, 0.18), 0 2px 8px rgba(30, 28, 24, 0.1);
+  --skydra-shadow-dock: 0 6px 20px rgba(30, 28, 24, 0.16), 0 1px 4px rgba(30, 28, 24, 0.08);
+
+  /* Bridge must be redeclared here: var() inside a custom property computes at
+     the declaring element, so the :root bridge would otherwise freeze the
+     dark values for the whole document in light mode. */
+  --drone-primary: var(--skydra-accent);
+  --drone-secondary: var(--skydra-surface);
+  --drone-accent: var(--skydra-track);
+  --drone-dark: var(--skydra-bg);
+  --drone-surface: var(--skydra-elevated);
+  --drone-muted: var(--skydra-border);
+
   scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
@@ -505,7 +591,7 @@ body.overlay-active .settings-scroll {
   }
 
   body {
-    @apply bg-drone-dark text-gray-100;
+    @apply bg-canvas text-ink font-sans;
   }
 
   body.theme-light {

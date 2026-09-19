@@ -10,6 +10,7 @@ import type { EChartsOption, ECharts, LineSeriesOption } from 'echarts';
 import type { TelemetryData } from '@/types';
 import type { UnitSystem, UnitPreferences, SpeedUnit } from '@/lib/utils';
 import { ensureAmPmUpperCase, speedMultiplierFromMs, speedUnitLabel } from '@/lib/utils';
+import { chartFontFamily } from '@/lib/chartFont';
 import { useFlightStore } from '@/stores/flightStore';
 import { useTranslation } from 'react-i18next';
 import ColorPickerModal from '@/components/dashboard/ColorPickerModal';
@@ -1471,9 +1472,11 @@ function createBaseChartConfig(theme: 'dark' | 'light'): Partial<EChartsOption> 
   const zoomBorder = isLight ? '#cbd5e1' : '#2a2a4e';
   const zoomFiller = isLight ? 'rgba(0, 122, 204, 0.15)' : 'rgba(0, 160, 220, 0.2)';
   const handleColor = isLight ? '#007acc' : '#00A0DC';
+  const chartFont = chartFontFamily();
 
   return {
     animation: false,
+    ...(chartFont ? { textStyle: { fontFamily: chartFont } } : {}),
     toolbox: {
       show: true,
       feature: {

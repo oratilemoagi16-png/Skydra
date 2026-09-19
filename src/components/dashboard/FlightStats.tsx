@@ -268,7 +268,7 @@ export function FlightStats({ data }: FlightStatsProps) {
             </p>
           )}
           <div className="text-sm text-gray-400 flex flex-wrap items-center gap-2 mt-2">
-            {formatDateTime(flight.startTime, dateLocale, appLanguage, timeFormat === '24h' ? false : true)}
+            <span className="font-mono text-[13px]">{formatDateTime(flight.startTime, dateLocale, appLanguage, timeFormat === '24h' ? false : true)}</span>
             {flight.aircraftName && (
               <span className={`px-2 py-0.5 rounded-full text-xs border ${flight.droneSerial && isDecommissioned(getDroneDisplayName(flight.droneSerial, flight.aircraftName || flight.droneModel || ''))
                 ? 'border-gray-500/40 text-gray-400 bg-gray-500/15'
@@ -278,7 +278,7 @@ export function FlightStats({ data }: FlightStatsProps) {
               </span>
             )}
             {flight.droneSerial && (
-              <span className={`px-2 py-0.5 rounded-full text-xs border ${isDecommissioned(getDroneDisplayName(flight.droneSerial, flight.aircraftName || flight.droneModel || ''))
+              <span className={`px-2 py-0.5 rounded-full text-xs border font-mono ${isDecommissioned(getDroneDisplayName(flight.droneSerial, flight.aircraftName || flight.droneModel || ''))
                 ? 'border-gray-500/40 text-gray-400 bg-gray-500/15'
                 : 'border-gray-600/60 text-gray-400 bg-drone-surface/60'
                 }`}>
@@ -286,7 +286,7 @@ export function FlightStats({ data }: FlightStatsProps) {
               </span>
             )}
             {flight.batterySerial && (
-              <span className={`px-2 py-0.5 rounded-full text-xs border ${batteryCapsuleIsDecommissioned
+              <span className={`px-2 py-0.5 rounded-full text-xs border font-mono ${batteryCapsuleIsDecommissioned
                 ? 'border-gray-500/40 text-gray-400 bg-gray-500/15'
                 : 'border-drone-accent/40 text-drone-accent bg-drone-accent/10'
                 }`}>
@@ -294,7 +294,7 @@ export function FlightStats({ data }: FlightStatsProps) {
               </span>
             )}
             {flight.rcSerial && (
-              <span className="px-2 py-0.5 rounded-full text-xs border border-purple-500/40 text-purple-400 bg-purple-500/10">
+              <span className="px-2 py-0.5 rounded-full text-xs border border-purple-500/40 text-purple-400 bg-purple-500/10 font-mono">
                 {t('flightStats.controller')} {getDisplaySerial(flight.rcSerial)}
               </span>
             )}

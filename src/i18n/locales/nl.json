@@ -785,5 +785,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "Gebruik de notatie JJJJ-MM-DD",
     "dateInFuture": "Datum kan niet in de toekomst liggen"
+  },
+  "nav": {
+    "overview": "Overzicht",
+    "flights": "Vluchten",
+    "import": "Importeren",
+    "settings": "Instellingen",
+    "primary": "Hoofdnavigatie",
+    "close": "Sluiten",
+    "cancelImport": "Import/synchronisatie annuleren",
+    "themeToLight": "Overschakelen naar licht thema",
+    "themeToDark": "Overschakelen naar donker thema"
   }
 }
