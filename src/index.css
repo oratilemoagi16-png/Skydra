@@ -95,6 +95,16 @@ body.theme-light {
   --skydra-shadow-overlay: 0 10px 32px rgba(30, 28, 24, 0.18), 0 2px 8px rgba(30, 28, 24, 0.1);
   --skydra-shadow-dock: 0 6px 20px rgba(30, 28, 24, 0.16), 0 1px 4px rgba(30, 28, 24, 0.08);
 
+  /* Bridge must be redeclared here: var() inside a custom property computes at
+     the declaring element, so the :root bridge would otherwise freeze the
+     dark values for the whole document in light mode. */
+  --drone-primary: var(--skydra-accent);
+  --drone-secondary: var(--skydra-surface);
+  --drone-accent: var(--skydra-track);
+  --drone-dark: var(--skydra-bg);
+  --drone-surface: var(--skydra-elevated);
+  --drone-muted: var(--skydra-border);
+
   scrollbar-color: #cbd5e1 #f1f5f9;
 }
 

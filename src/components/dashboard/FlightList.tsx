@@ -4300,7 +4300,7 @@ export function FlightList({
 
               {/* Subtitle: date + duration */}
               {editingId !== flight.id && (
-                <p className="text-xs text-gray-500 mt-0.5 truncate">
+                <p className="text-xs text-gray-500 mt-0.5 truncate font-mono">
                   {formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}
                   {flight.durationSecs ? ` · ${formatDuration(flight.durationSecs)}` : ''}
                   {flight.totalDistance ? ` · ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}` : ''}

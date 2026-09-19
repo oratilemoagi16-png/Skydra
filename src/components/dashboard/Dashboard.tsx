@@ -239,6 +239,9 @@ export function Dashboard() {
   const sidebarMinHeight = 620
     + (!isFiltersCollapsed ? 180 : 0);
   const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
+  // Rail stays mounted in Overview so FlightList keeps reporting the top flight
+  // (used to auto-select on first navigation); it collapses out of layout.
+  const railHidden = isSidebarHidden || activeView === 'overview';
 
   const goToView = (view: DockView) => {
     if (view === 'flights') {
@@ -275,12 +278,15 @@ export function Dashboard() {
       {/* Utility bar: wordmark, profile selector, theme toggle */}
       <TopBar />
 
-      <div className="relative flex min-h-0 flex-1">
-      {/* Flight list rail — the Flights workspace's browse surface */}
-      {activeView === 'flights' && (
-        <>
+      <div
+        className="relative flex min-h-0 flex-1"
+        style={{ paddingBottom: 'calc(74px + var(--mobile-safe-bottom, 0px))' }}
+      >
+      {/* Flight list rail — the Flights workspace's browse surface.
+          Mounted in both views so FlightList reports the top flight;
+          collapses out of layout when hidden or when in Overview. */}
       <aside
-        className={`bg-surface md:border-r border-line flex flex-col z-40 fixed inset-0 md:relative md:inset-auto mobile-safe-container h-full overflow-y-auto overflow-x-hidden transition-[width,min-width,opacity,transform] duration-300 ease-in-out ${isSidebarHidden ? 'opacity-0 pointer-events-none md:overflow-hidden' : 'opacity-100'
+        className={`bg-surface md:border-r border-line flex flex-col z-40 fixed inset-0 md:relative md:inset-auto mobile-safe-container h-full overflow-y-auto overflow-x-hidden transition-[width,min-width,opacity,transform] duration-300 ease-in-out ${railHidden ? 'opacity-0 pointer-events-none md:overflow-hidden' : 'opacity-100'
           }`}
         style={{
           // In desktop layout, avoid safe-area padding so width:0 truly collapses.
@@ -290,18 +296,18 @@ export function Dashboard() {
           paddingLeft: isDesktopLayout ? 0 : undefined,
           width: typeof window !== 'undefined' && window.innerWidth < 768
             ? '100%'
-            : (isSidebarHidden ? 0 : sidebarWidth),
+            : (railHidden ? 0 : sidebarWidth),
           minWidth: typeof window !== 'undefined' && window.innerWidth < 768
             ? '100%'
-            : (isSidebarHidden ? 0 : 340),
-          transform: isSidebarHidden
+            : (railHidden ? 0 : 340),
+          transform: railHidden
             ? (typeof window !== 'undefined' && window.innerWidth < 768
               ? 'translateX(-100%)'
               : `translateX(-${sidebarWidth}px)`)
             : 'translateX(0)',
         }}
       >
-          <div className={`flex h-full flex-col md:transition-opacity md:duration-150 ${isSidebarHidden ? 'md:opacity-0' : 'md:opacity-100'}`} style={{ minHeight: sidebarMinHeight }}>
+          <div className={`flex h-full flex-col md:transition-opacity md:duration-150 ${railHidden ? 'md:opacity-0' : 'md:opacity-100'}`} style={{ minHeight: sidebarMinHeight }}>
           {/* Rail header */}
           <div className="px-4 py-3 border-b border-line flex items-center justify-between">
             <h2 className="text-sm font-semibold text-ink">{t('nav.flights')}</h2>
@@ -363,6 +369,7 @@ export function Dashboard() {
           </div>
         </aside>
 
+      {activeView === 'flights' && (
         <aside
           className={`bg-surface border-r border-line items-start justify-center relative z-40 overflow-visible hidden md:flex md:transition-[width,min-width,opacity] md:duration-250 md:ease-in-out ${isSidebarHidden ? 'md:opacity-100 md:pointer-events-auto' : 'md:opacity-0 md:pointer-events-none'
             }`}
@@ -376,7 +383,6 @@ export function Dashboard() {
             ›
           </button>
         </aside>
-        </>
       )}
 
       {/* Main Content */}
@@ -394,9 +400,9 @@ export function Dashboard() {
             <div className="flex flex-col items-center gap-4">
               <div
                 className="w-12 h-12 rounded-full spinner"
-                style={{ border: '4px solid #38bdf8', borderTopColor: 'transparent' }}
+                style={{ border: '4px solid rgb(var(--skydra-accent))', borderTopColor: 'transparent' }}
               />
-              <p className="text-sm" style={{ color: '#64748b' }}>{t('dashboard.loadingFlightData')}</p>
+              <p className="text-sm text-muted">{t('dashboard.loadingFlightData')}</p>
             </div>
           </div>
         ) : activeView === 'overview' ? (

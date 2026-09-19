@@ -95,12 +95,12 @@ function InitializationOverlay() {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-drone-dark">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-canvas">
       <div className="flex flex-col items-center gap-6">
         {/* App icon/logo placeholder */}
-        <div className="w-16 h-16 rounded-2xl bg-drone-primary/20 flex items-center justify-center">
+        <div className="w-16 h-16 rounded-2xl bg-accent/15 flex items-center justify-center">
           <svg
-            className="w-10 h-10 text-drone-primary"
+            className="w-10 h-10 text-accent"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -117,13 +117,13 @@ function InitializationOverlay() {
         {!needsAuth ? (
           <>
             <div className="text-center">
-              <h2 className="text-lg font-medium text-white mb-2">{t('app.initializing')}</h2>
-              <p className="text-sm text-gray-400">{t('app.initProgress')}</p>
+              <h2 className="text-lg font-medium text-ink mb-2">{t('app.initializing')}</h2>
+              <p className="text-sm text-muted">{t('app.initProgress')}</p>
             </div>
 
             {/* Animated progress bar */}
-            <div className="w-64 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full w-1/2 bg-drone-primary rounded-full init-progress-bar" />
+            <div className="w-64 h-1.5 bg-line rounded-full overflow-hidden">
+              <div className="h-full w-1/2 bg-accent rounded-full init-progress-bar" />
             </div>
           </>
         ) : (
@@ -455,7 +455,7 @@ function App() {
   }, [isMobileRuntime]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-drone-dark overflow-hidden mobile-safe-container">
+    <div className="w-full h-full flex flex-col bg-canvas overflow-hidden mobile-safe-container">
       {/* Initialization overlay - shown during DB migration or auth required */}
       {(!isFlightsInitialized || needsAuth) && <InitializationOverlay />}
 
