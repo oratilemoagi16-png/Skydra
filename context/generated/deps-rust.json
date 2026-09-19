@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "e6299bd31c108ff50395f7fbf6d02a80228874cf9dccc3529af386f9ae0426e1",
+  "sourceFingerprint": "67e38837f1a81b66f68695bac83b771d8ef82cf55604f7040d1d4d7bc3a446ac",
   "crate": "skydra",
   "dependencies": [
     "anyhow",
