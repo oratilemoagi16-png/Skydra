@@ -94,8 +94,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     isRegenerating,
     isRemovingAutoTags,
     regenerationProgress,
-    updateStatus,
-    latestVersion,
     loadApiKeyType,
     hideSerialNumbers,
     setHideSerialNumbers,
@@ -1407,30 +1405,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <p className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
                   <strong className="text-gray-400">{t('settings.appVersion')}</strong>{' '}
                   <span className="text-gray-400">{appVersion || '...'}</span>
-                  {updateStatus === 'checking' && (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-400 border border-gray-600/50">
-                      <svg className="w-3 h-3 animate-spin" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="8" strokeLinecap="round" /></svg>
-                      {t('settings.checking')}
-                    </span>
-                  )}
-                  {updateStatus === 'latest' && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                      <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm3.354 4.646a.5.5 0 010 .708l-4 4a.5.5 0 01-.708 0l-2-2a.5.5 0 11.708-.708L7 9.293l3.646-3.647a.5.5 0 01.708 0z" /></svg>
-                      {t('settings.latest')}
-                    </span>
-                  )}
-                  {updateStatus === 'outdated' && latestVersion && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors cursor-pointer no-underline">
-                      <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 110 14A7 7 0 018 1zM7.5 4v5h1V4h-1zm0 6v1h1v-1h-1z" /></svg>
-                      {t('settings.updateToVersion', { version: latestVersion })}
-                    </span>
-                  )}
-                  {updateStatus === 'failed' && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">
-                      <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm-.5 3v5h1V4h-1zm0 6v1h1v-1h-1z" /></svg>
-                      {t('settings.checkFailed')}
-                    </span>
-                  )}
                 </p>
                 {!webMode && (
                   <p className="text-xs text-gray-500 mt-2">

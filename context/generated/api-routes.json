@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "9136893077a34239ace888d001440da9a690910ba85356c8a0fe58606d7f80f6",
+  "sourceFingerprint": "e5074471956473e15b158c049d8d428a5f003b6a34faafcc2ec1271373e6a03a",
   "sourceFile": "src-tauri/src/server.rs",
   "routes": [
     {
@@ -266,31 +266,6 @@
       "path": "/api/profiles/has_master_password",
       "method": "GET",
       "handler": "has_master_password"
-    },
-    {
-      "path": "/api/supporter/verify",
-      "method": "POST",
-      "handler": "verify_supporter_code"
-    },
-    {
-      "path": "/api/supporter/status",
-      "method": "GET",
-      "handler": "get_supporter_status"
-    },
-    {
-      "path": "/api/supporter/remove",
-      "method": "POST",
-      "handler": "remove_supporter_badge"
-    },
-    {
-      "path": "/api/supporter/donation",
-      "method": "GET",
-      "handler": "get_donation_acknowledged"
-    },
-    {
-      "path": "/api/supporter/donation",
-      "method": "POST",
-      "handler": "set_donation_acknowledged"
     }
   ]
 }

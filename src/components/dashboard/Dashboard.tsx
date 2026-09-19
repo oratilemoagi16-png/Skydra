@@ -35,7 +35,6 @@ export function Dashboard() {
     unitPrefs,
     themeMode,
     loadOverview,
-    checkForUpdates,
     isImporting,
     isBatchProcessing,
   } = useFlightStore();
@@ -94,15 +93,6 @@ export function Dashboard() {
       localStorage.setItem('sidebarWidth', String(sidebarWidth));
     }
   }, [sidebarWidth]);
-
-  // Check for app updates on mount.
-  // In web mode, also re-check on browser refresh (no dependency array change needed
-  // since the component remounts on page reload). Using a timestamp ensures fresh check.
-  useEffect(() => {
-    // For web/Docker mode, we want to check on every page load (browser refresh),
-    // not just on initial mount. The component remounts on refresh anyway.
-    checkForUpdates();
-  }, []);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
