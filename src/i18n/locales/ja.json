@@ -79,10 +79,6 @@
     "allTags": "全タグ",
     "searchDrones": "ドローンを検索…",
     "searchBatteries": "バッテリーを検索…",
-    "searchAircraft": "機体を検索…",
-    "noSearchResults": "該当なし",
-    "maintenanceOverdue": "{{days}}日超過",
-    "maintenanceOk": "期限内",
     "searchTags": "タグを検索…",
     "noMatchingDrones": "該当するドローンなし",
     "noMatchingBatteries": "該当するバッテリーなし",
@@ -305,7 +301,11 @@
     "never": "なし",
     "maintenanceDone": "✓ メンテナンス完了",
     "save": "保存",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "searchAircraft": "機体を検索…",
+    "noSearchResults": "該当なし",
+    "maintenanceOverdue": "{{days}}日超過",
+    "maintenanceOk": "期限内"
   },
   "importer": {
     "importFlightLog": "ドローンフライトログをインポート",

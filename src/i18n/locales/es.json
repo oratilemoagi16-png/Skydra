@@ -79,10 +79,6 @@
     "allTags": "Todas las etiquetas",
     "searchDrones": "Buscar drones…",
     "searchBatteries": "Buscar baterías…",
-    "searchAircraft": "Buscar aeronaves…",
-    "noSearchResults": "Sin resultados",
-    "maintenanceOverdue": "{{days}}d vencido",
-    "maintenanceOk": "Sin vencimiento",
     "searchTags": "Buscar etiquetas…",
     "noMatchingDrones": "No hay drones coincidentes",
     "noMatchingBatteries": "No hay baterías coincidentes",
@@ -305,7 +301,11 @@
     "never": "Nunca",
     "maintenanceDone": "✓ Mantenimiento Realizado",
     "save": "Guardar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "searchAircraft": "Buscar aeronaves…",
+    "noSearchResults": "Sin resultados",
+    "maintenanceOverdue": "{{days}}d vencido",
+    "maintenanceOk": "Sin vencimiento"
   },
   "importer": {
     "importFlightLog": "Importar un registro de vuelo de dron",

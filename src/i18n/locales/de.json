@@ -79,10 +79,6 @@
     "allTags": "Alle Tags",
     "searchDrones": "Drohnen suchen…",
     "searchBatteries": "Batterien suchen…",
-    "searchAircraft": "Fluggeräte suchen…",
-    "noSearchResults": "Keine Treffer",
-    "maintenanceOverdue": "{{days}}T überfällig",
-    "maintenanceOk": "Nicht überfällig",
     "searchTags": "Tags suchen…",
     "noMatchingDrones": "Keine passenden Drohnen",
     "noMatchingBatteries": "Keine passenden Batterien",
@@ -305,7 +301,11 @@
     "never": "Nie",
     "maintenanceDone": "✓ Wartung erledigt",
     "save": "Speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "searchAircraft": "Fluggeräte suchen…",
+    "noSearchResults": "Keine Treffer",
+    "maintenanceOverdue": "{{days}}T überfällig",
+    "maintenanceOk": "Nicht überfällig"
   },
   "importer": {
     "importFlightLog": "Drohnen-Flugprotokoll importieren",
