@@ -4,7 +4,7 @@
     "title": "Skydra Generated API Surface",
     "version": "generated",
     "description": "Generated from src-tauri/src/server.rs router declarations.",
-    "x-source-fingerprint": "9136893077a34239ace888d001440da9a690910ba85356c8a0fe58606d7f80f6"
+    "x-source-fingerprint": "e5074471956473e15b158c049d8d428a5f003b6a34faafcc2ec1271373e6a03a"
   },
   "paths": {
     "/api/import": {
@@ -518,54 +518,6 @@
     "/api/profiles/has_master_password": {
       "get": {
         "operationId": "has_master_password",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/supporter/verify": {
-      "post": {
-        "operationId": "verify_supporter_code",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/supporter/status": {
-      "get": {
-        "operationId": "get_supporter_status",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/supporter/remove": {
-      "post": {
-        "operationId": "remove_supporter_badge",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/supporter/donation": {
-      "get": {
-        "operationId": "get_donation_acknowledged",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      },
-      "post": {
-        "operationId": "set_donation_acknowledged",
         "responses": {
           "200": {
             "description": "Success"

@@ -3585,49 +3585,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "skydra"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "argon2",
- "axum",
- "base64 0.22.1",
- "chrono",
- "cron",
- "dirs 5.0.1",
- "dji-log-parser",
- "duckdb",
- "env_logger",
- "flate2",
- "log",
- "rand 0.8.5",
- "reqwest 0.12.28",
- "reverse_geocoder",
- "serde",
- "serde_json",
- "sha2",
- "tar",
- "tauri",
- "tauri-build",
- "tauri-plugin-android-fs",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-http",
- "tauri-plugin-log",
- "tauri-plugin-opener",
- "tauri-plugin-persisted-scope",
- "tauri-plugin-shell",
- "tauri-plugin-single-instance",
- "tauri-plugin-window-state",
- "tempfile",
- "thiserror 1.0.69",
- "tokio",
- "tokio-cron-scheduler",
- "tower-http 0.5.2",
- "uuid",
-]
-
-[[package]]
 name = "option-ext"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5029,6 +4986,49 @@ name = "siphasher"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
+
+[[package]]
+name = "skydra"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "argon2",
+ "axum",
+ "base64 0.22.1",
+ "chrono",
+ "cron",
+ "dirs 5.0.1",
+ "dji-log-parser",
+ "duckdb",
+ "env_logger",
+ "flate2",
+ "log",
+ "rand 0.8.5",
+ "reqwest 0.12.28",
+ "reverse_geocoder",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tar",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-android-fs",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-http",
+ "tauri-plugin-log",
+ "tauri-plugin-opener",
+ "tauri-plugin-persisted-scope",
+ "tauri-plugin-shell",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-window-state",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-cron-scheduler",
+ "tower-http 0.5.2",
+ "uuid",
+]
 
 [[package]]
 name = "slab"
