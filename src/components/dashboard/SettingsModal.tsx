@@ -1603,14 +1603,14 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         {/* Footer — legal/attribution entry point (About / Licenses / Source) */}
-        <div className={`shrink-0 flex items-center justify-between px-4 py-2.5 border-t ${isLight ? 'border-gray-200' : 'border-gray-700'}`}>
-          <span className={`text-[11px] ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+        <div className="shrink-0 flex items-center justify-between px-4 py-2.5 border-t border-line">
+          <span className="text-[11px] text-muted">
             {appVersion && <>v{appVersion} · </>}AGPL-3.0-only
           </span>
           <button
             type="button"
             onClick={() => setIsAboutOpen(true)}
-            className={`text-xs font-medium transition-colors ${isLight ? 'text-sky-700 hover:text-sky-800' : 'text-sky-400 hover:text-sky-300'}`}
+            className="text-xs font-medium transition-colors text-accent hover:text-accent-hover"
           >
             {t('settings.aboutSkydra', 'About Skydra')}
           </button>
