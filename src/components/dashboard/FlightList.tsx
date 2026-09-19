@@ -326,16 +326,6 @@ export function FlightList({
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortHighlightedIndex, setSortHighlightedIndex] = useState(0);
-  // Listen for collapseFilters event (accordion: importer expanded -> collapse filters)
-  useEffect(() => {
-    const handleCollapseFilters = () => {
-      setIsFiltersCollapsed(true);
-      localStorage.setItem('filtersCollapsed', 'true');
-    };
-    window.addEventListener('collapseFilters', handleCollapseFilters);
-    return () => window.removeEventListener('collapseFilters', handleCollapseFilters);
-  }, []);
-
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(() => {
     if (typeof localStorage !== 'undefined') {
       const stored = localStorage.getItem('filtersCollapsed');

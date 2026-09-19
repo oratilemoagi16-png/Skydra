@@ -7,24 +7,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFlightStore } from '@/stores/flightStore';
 import { FlightList } from './FlightList';
-import {
-  FlightImporter,
-  getSyncFolderPath,
-  normalizeSyncFolderPath,
-  setSyncFolderPath,
-} from './FlightImporter';
 import { FlightStats } from './FlightStats';
 import { SettingsModal } from './SettingsModal';
 import { TelemetryCharts } from '@/components/charts/TelemetryCharts';
 import { FlightMap } from '@/components/map/FlightMap';
 import { FlightMessagesModal } from './FlightMessagesModal';
 import { Overview } from './Overview';
-import { ProfileSelector } from './ProfileSelector';
-import { isWebMode } from '@/lib/api';
-import { useIsMobileRuntime } from '@/hooks/platform/useIsMobileRuntime';
+import { NavDock, type DockView } from '@/components/shell/NavDock';
+import { TopBar } from '@/components/shell/TopBar';
+import { ImportSheet } from '@/components/shell/ImportSheet';
 
 export function Dashboard() {
-  const isMobileRuntime = useIsMobileRuntime();
   const {
     currentFlightData,
     overviewStats,
@@ -41,8 +34,9 @@ export function Dashboard() {
   } = useFlightStore();
   const { t } = useTranslation();
   const [showSettings, setShowSettings] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [showMessagesModal, setShowMessagesModal] = useState(false);
-  const [activeView, setActiveView] = useState<'flights' | 'overview'>('overview');
+  const [activeView, setActiveView] = useState<DockView>('overview');
   const [topSidebarFlightId, setTopSidebarFlightId] = useState<number | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     if (typeof localStorage !== 'undefined') {
@@ -55,8 +49,6 @@ export function Dashboard() {
     return 340;
   });
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
-  // Start with null, determine collapsed state after flights are loaded from DB
-  const [isImporterCollapsed, setIsImporterCollapsed] = useState<boolean | null>(null);
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(() => {
     if (typeof localStorage !== 'undefined') {
       const stored = localStorage.getItem('filtersCollapsed');
@@ -79,15 +71,14 @@ export function Dashboard() {
   const MAP_STACK_TRIGGER_WIDTH = 420;
   const SIDE_BY_SIDE_MIN_WIDTH = TELEMETRY_MIN_NORMAL_WIDTH + MAP_STACK_TRIGGER_WIDTH + 48;
   const resizingRef = useRef<null | 'sidebar' | 'main'>(null);
-
-  // On initial load, collapse importer if there are flights, expand if empty
-  // Wait until isFlightsInitialized is true (flights have been loaded from DB)
+  // First-run affordance: with no flights yet, open the import sheet once.
+  const autoImportShownRef = useRef(false);
   useEffect(() => {
-    if (isFlightsInitialized && isImporterCollapsed === null) {
-      // Flights have been loaded from DB: collapse if flights exist, expand if empty
-      setIsImporterCollapsed(flights.length > 0);
+    if (isFlightsInitialized && flights.length === 0 && !autoImportShownRef.current) {
+      autoImportShownRef.current = true;
+      setShowImport(true);
     }
-  }, [isFlightsInitialized, flights.length, isImporterCollapsed]);
+  }, [isFlightsInitialized, flights.length]);
 
   useEffect(() => {
     if (typeof localStorage !== 'undefined') {
@@ -244,20 +235,52 @@ export function Dashboard() {
     }
   }, [activeView, loadOverview]);
 
-  const wordmarkImg = new URL('../../assets/skydra-wordmark.png', import.meta.url).href;
   const isImporterBusy = isImporting || isBatchProcessing || isImporterExternallyBusy;
   const sidebarMinHeight = 620
-    + (isImporterCollapsed === false ? 120 : 0)
     + (!isFiltersCollapsed ? 180 : 0);
+  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  const goToView = (view: DockView) => {
+    if (view === 'flights') {
+      const alreadyFlights = activeView === 'flights';
+      if (activeView === 'overview' && selectedFlightId === null && topSidebarFlightId !== null) {
+        useFlightStore.getState().selectFlight(topSidebarFlightId);
+      }
+      setActiveView('flights');
+      // Clear highlighted flight when switching to flights view
+      useFlightStore.getState().setOverviewHighlightedFlightId(null);
+      if (isMobileViewport) {
+        if (alreadyFlights) {
+          // In the flights view, the dock item reopens the list rail
+          setIsSidebarHidden(false);
+        } else {
+          // Entering flights: land on the list when nothing is selected,
+          // otherwise go straight to the selected flight's workspace
+          setIsSidebarHidden(useFlightStore.getState().selectedFlightId !== null);
+        }
+      }
+    } else {
+      setActiveView('overview');
+    }
+  };
 
   return (
-    <div className={`flex h-full ${showSettings ? 'modal-open' : ''}`}>
+    <div className={`flex h-full flex-col ${showSettings ? 'modal-open' : ''}`}>
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
-      {/* Left Sidebar - Flight List */}
+      {/* Import sheet — importer stays mounted; opens from the dock action */}
+      <ImportSheet open={showImport} onClose={() => setShowImport(false)} />
+
+      {/* Utility bar: wordmark, profile selector, theme toggle */}
+      <TopBar />
+
+      <div className="relative flex min-h-0 flex-1">
+      {/* Flight list rail — the Flights workspace's browse surface */}
+      {activeView === 'flights' && (
+        <>
       <aside
-        className={`bg-drone-secondary md:border-r border-gray-700 flex flex-col z-50 fixed inset-0 md:relative md:inset-auto mobile-safe-container h-full overflow-y-auto overflow-x-hidden transition-[width,min-width,opacity,transform] duration-300 ease-in-out ${isSidebarHidden ? 'opacity-0 pointer-events-none md:overflow-hidden' : 'opacity-100'
+        className={`bg-surface md:border-r border-line flex flex-col z-40 fixed inset-0 md:relative md:inset-auto mobile-safe-container h-full overflow-y-auto overflow-x-hidden transition-[width,min-width,opacity,transform] duration-300 ease-in-out ${isSidebarHidden ? 'opacity-0 pointer-events-none md:overflow-hidden' : 'opacity-100'
           }`}
         style={{
           // In desktop layout, avoid safe-area padding so width:0 truly collapses.
@@ -279,200 +302,23 @@ export function Dashboard() {
         }}
       >
           <div className={`flex h-full flex-col md:transition-opacity md:duration-150 ${isSidebarHidden ? 'md:opacity-0' : 'md:opacity-100'}`} style={{ minHeight: sidebarMinHeight }}>
-          <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2 bg-slate-950 rounded-lg px-3 py-1.5 w-fit">
-                <img
-                  src={wordmarkImg}
-                  alt="Skydra"
-                  className="h-7 w-auto"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </h1>
-              <p className="text-xs text-gray-400 mt-1">
-                {t('app.subtitle')}
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {/* Settings Button */}
-              <button
-                onClick={() => setShowSettings(true)}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-                title={t('dashboard.settings')}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setIsSidebarHidden(true)}
-                className="ml-1 bg-drone-secondary border border-gray-700 rounded-full w-6 h-6 flex items-center justify-center text-gray-300 hover:text-white hidden md:flex"
-                title={t('dashboard.hideSidebar')}
-              >
-                <span className="leading-none pb-[2px] text-lg">‹</span>
-              </button>
-            </div>
-          </div>
-
-          {/* View Toggle */}
-          <div className="px-4 py-2 border-b border-gray-700">
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  if (activeView === 'overview' && selectedFlightId === null && topSidebarFlightId !== null) {
-                    useFlightStore.getState().selectFlight(topSidebarFlightId);
-                  }
-                  setActiveView('flights');
-                  // Clear highlighted flight when switching to flights view
-                  useFlightStore.getState().setOverviewHighlightedFlightId(null);
-                  if (typeof window !== 'undefined' && window.innerWidth < 768) {
-                    setIsSidebarHidden(true);
-                  }
-                }}
-                className={`flex-1 text-xs py-1.5 rounded-lg border transition-colors ${activeView === 'flights'
-                  ? 'bg-drone-primary/20 border-drone-primary text-white'
-                  : 'border-gray-700 text-gray-400 hover:text-white'
-                  }`}
-              >
-                {t('dashboard.individual')}
-              </button>
-              <button
-                onClick={() => {
-                  setActiveView('overview');
-                  if (typeof window !== 'undefined' && window.innerWidth < 768) {
-                    setIsSidebarHidden(true);
-                  }
-                }}
-                className={`flex-1 text-xs py-1.5 rounded-lg border transition-colors ${activeView === 'overview'
-                  ? 'bg-drone-primary/20 border-drone-primary text-white'
-                  : 'border-gray-700 text-gray-400 hover:text-white'
-                  }`}
-              >
-                {t('dashboard.overview')}
-              </button>
-              <ProfileSelector />
-            </div>
-          </div>
-
-          {/* Flight Importer */}
-          <div className="border-b border-gray-700 flex-shrink-0">
-            <div className="flex items-center justify-between px-3 py-2">
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setIsImporterCollapsed((v) => {
-                    const next = !v;
-                    if (!next) window.dispatchEvent(new CustomEvent('collapseFilters'));
-                    return next;
-                  })}
-                  className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"
-                >
-                  <span className={`font-medium ${isImporterBusy ? 'text-emerald-400' : ''}`}>
-                    {isImporterBusy
-                      ? (isImporterCollapsed !== false ? t('dashboard.importingExpand') : t('dashboard.importing'))
-                      : (isImporterCollapsed !== false ? t('dashboard.importExpand') : t('dashboard.import'))}
-                  </span>
-                </button>
-                {isImporterBusy && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.dispatchEvent(new CustomEvent('cancelImporterAction'));
-                    }}
-                    className="w-4 h-4 rounded-full text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center justify-center"
-                    title="Cancel import/sync"
-                    aria-label="Cancel import/sync"
-                  >
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                {/* Sync Folder Config Button (desktop only) */}
-                {!isWebMode() && (
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (isMobileRuntime) {
-                        window.dispatchEvent(new CustomEvent('requestMobileSyncFolderSelection'));
-                        return;
-                      }
-                      try {
-                        const { open } = await import('@tauri-apps/plugin-dialog');
-                        const selected = await open({
-                          directory: true,
-                          multiple: false,
-                          title: t('dashboard.selectSyncFolder'),
-                        });
-                        const selectedFolder =
-                          typeof selected === 'string'
-                            ? selected
-                            : Array.isArray(selected) && typeof selected[0] === 'string'
-                            ? selected[0]
-                            : null;
-                        if (selectedFolder) {
-                          setSyncFolderPath(normalizeSyncFolderPath(selectedFolder));
-                          // Force re-render by triggering a state update
-                          window.dispatchEvent(new CustomEvent('syncFolderChanged'));
-                        }
-                      } catch (e) {
-                        console.error('Failed to select sync folder:', e);
-                      }
-                    }}
-                    className={`p-1.5 rounded transition-colors ${getSyncFolderPath()
-                      ? 'text-emerald-500 hover:text-emerald-400 dark:text-emerald-400 dark:hover:text-emerald-300 hover:bg-emerald-500/10'
-                      : 'text-red-400 hover:text-red-300 dark:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10'
-                      }`}
-                    title={getSyncFolderPath() ? `Sync folder: ${getSyncFolderPath()}` : t('dashboard.configureSyncFolder')}
-                  >
-                    {getSyncFolderPath() ? (
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                      </svg>
-                    )}
-                  </button>
-                )}
-                {/* Collapse/Expand Button */}
-                <span
-                  onClick={() => setIsImporterCollapsed((v) => {
-                    const next = !v;
-                    if (!next) window.dispatchEvent(new CustomEvent('collapseFilters'));
-                    return next;
-                  })}
-                  className={`w-5 h-5 rounded-full border border-gray-600 flex items-center justify-center transition-transform duration-200 cursor-pointer hover:border-gray-500 ${isImporterCollapsed !== false ? 'rotate-180' : ''
-                    }`}
-                  title={isImporterCollapsed !== false ? 'Expand' : 'Collapse'}
-                >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
-                </span>
-              </div>
-            </div>
-            <div
-              className={`transition-all duration-200 ease-in-out ${isImporterCollapsed !== false ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[300px] overflow-visible opacity-100'
-                }`}
+          {/* Rail header */}
+          <div className="px-4 py-3 border-b border-line flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-ink">{t('nav.flights')}</h2>
+            <button
+              onClick={() => setIsSidebarHidden(true)}
+              className="ml-1 bg-elevated border border-line rounded-full w-6 h-6 items-center justify-center text-muted hover:text-ink hidden md:flex"
+              title={t('dashboard.hideSidebar')}
             >
-              <div className="px-3 pb-3">
-                <FlightImporter />
-              </div>
-            </div>
+              <span className="leading-none pb-[2px] text-lg">‹</span>
+            </button>
           </div>
 
           {/* Flight List */}
-          <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 flex flex-col pb-[76px] md:pb-0">
             <FlightList
               activeView={activeView}
               onTopFlightChange={setTopSidebarFlightId}
-              onFiltersExpanded={() => setIsImporterCollapsed(true)}
               onSelectFlight={(flightId) => {
                 // Clear the overview highlight when navigating to a flight
                 useFlightStore.getState().setOverviewHighlightedFlightId(null);
@@ -491,8 +337,8 @@ export function Dashboard() {
           </div>
 
           {/* Flight Count */}
-          <div className="p-3 border-t border-gray-700 flex items-center justify-center gap-3">
-            <span className="text-xs text-gray-400">
+          <div className="p-3 mb-[72px] md:mb-0 border-t border-line flex items-center justify-center gap-3">
+            <span className="text-xs text-muted">
               {t('dashboard.flightsImported', { count: flights.length })}
             </span>
 
@@ -500,16 +346,6 @@ export function Dashboard() {
 
           {/* Mobile close + settings buttons for sidebar */}
           <div className="absolute right-4 mobile-safe-fixed-top flex items-center gap-2 z-50 md:hidden">
-            <button
-              onClick={() => { setIsSidebarHidden(true); setShowSettings(true); }}
-              className="sidebar-mobile-btn border rounded-lg p-2 transition-colors"
-              title={t('dashboard.settings')}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
             <button
               onClick={() => setIsSidebarHidden(true)}
               className="sidebar-mobile-btn border rounded-lg p-2 transition-colors"
@@ -527,32 +363,20 @@ export function Dashboard() {
           </div>
         </aside>
 
-      <aside
-        className={`bg-drone-secondary border-r border-gray-700 items-start justify-center relative z-40 overflow-visible hidden md:flex md:transition-[width,min-width,opacity] md:duration-250 md:ease-in-out ${isSidebarHidden ? 'md:opacity-100 md:pointer-events-auto' : 'md:opacity-0 md:pointer-events-none'
-          }`}
-        style={{ width: isSidebarHidden ? '1.8rem' : 0, minWidth: isSidebarHidden ? '1.8rem' : 0 }}
-      >
-        <button
-          onClick={() => setIsSidebarHidden(false)}
-          className="sidebar-collapsed-toggle-btn relative z-50 mt-4 translate-x-1/2 border rounded-full w-[4rem] h-[3rem] text-lg leading-none flex items-center justify-center"
-          title={t('dashboard.showSidebar')}
+        <aside
+          className={`bg-surface border-r border-line items-start justify-center relative z-40 overflow-visible hidden md:flex md:transition-[width,min-width,opacity] md:duration-250 md:ease-in-out ${isSidebarHidden ? 'md:opacity-100 md:pointer-events-auto' : 'md:opacity-0 md:pointer-events-none'
+            }`}
+          style={{ width: isSidebarHidden ? '1.8rem' : 0, minWidth: isSidebarHidden ? '1.8rem' : 0 }}
         >
-          ›
-        </button>
-      </aside>
-
-      {/* Mobile Show Sidebar Button */}
-      {isSidebarHidden && (
-        <div className="fixed right-6 mobile-safe-fixed-bottom z-40 md:hidden">
           <button
             onClick={() => setIsSidebarHidden(false)}
-            className="p-4 bg-drone-primary text-white rounded-full shadow-lg flex items-center justify-center hover:bg-sky-400 transition-colors"
+            className="sidebar-collapsed-toggle-btn relative z-50 mt-4 translate-x-1/2 border border-line rounded-full w-[4rem] h-[3rem] text-lg leading-none flex items-center justify-center"
             title={t('dashboard.showSidebar')}
-            style={{ boxShadow: '0 4px 14px 0 rgba(14, 165, 233, 0.39)' }}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            ›
           </button>
-        </div>
+        </aside>
+        </>
       )}
 
       {/* Main Content */}
@@ -786,6 +610,16 @@ export function Dashboard() {
           </div>
         )}
       </main>
+      </div>
+
+      {/* Floating bottom dock — primary navigation */}
+      <NavDock
+        view={activeView}
+        importBusy={isImporterBusy}
+        onNavigate={goToView}
+        onImport={() => setShowImport(true)}
+        onSettings={() => setShowSettings(true)}
+      />
     </div>
   );
 }

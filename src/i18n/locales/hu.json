@@ -788,5 +788,16 @@
     "dateJumpPlaceholder": "ÉÉÉÉ-HH-NN",
     "useDateFormat": "Használjon ÉÉÉÉ-HH-NN formátumot",
     "dateInFuture": "A dátum nem lehet a jövőbeni"
+  },
+  "nav": {
+    "overview": "Áttekintés",
+    "flights": "Repülések",
+    "import": "Importálás",
+    "settings": "Beállítások",
+    "primary": "Elsődleges navigáció",
+    "close": "Bezárás",
+    "cancelImport": "Importálás/szinkronizálás megszakítása",
+    "themeToLight": "Váltás világos témára",
+    "themeToDark": "Váltás sötét témára"
   }
 }

@@ -785,5 +785,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "YYYY-MM-DD 형식을 사용하세요",
     "dateInFuture": "날짜는 미래일 수 없습니다"
+  },
+  "nav": {
+    "overview": "개요",
+    "flights": "비행",
+    "import": "가져오기",
+    "settings": "설정",
+    "primary": "기본 탐색",
+    "close": "닫기",
+    "cancelImport": "가져오기/동기화 취소",
+    "themeToLight": "밝은 테마로 전환",
+    "themeToDark": "어두운 테마로 전환"
   }
 }

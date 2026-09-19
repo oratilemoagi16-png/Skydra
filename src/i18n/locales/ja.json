@@ -785,5 +785,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "YYYY-MM-DD形式で入力してください",
     "dateInFuture": "日付は未来にできません"
+  },
+  "nav": {
+    "overview": "",
+    "flights": "フライト",
+    "import": "インポート",
+    "settings": "",
+    "primary": "メインナビゲーション",
+    "close": "じる",
+    "cancelImport": "インポート/をキャンセル",
+    "themeToLight": "ライトテーマにりえ",
+    "themeToDark": "ダークテーマにりえ"
   }
 }

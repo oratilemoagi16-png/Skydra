@@ -785,5 +785,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "请使用 YYYY-MM-DD 格式",
     "dateInFuture": "日期不能是未来时间"
+  },
+  "nav": {
+    "overview": "",
+    "flights": "",
+    "import": "",
+    "settings": "",
+    "primary": "",
+    "close": "",
+    "cancelImport": "/",
+    "themeToLight": "",
+    "themeToDark": ""
   }
 }

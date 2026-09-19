@@ -2,6 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { isWebMode } from '@/lib/api';
 import App from './App';
+// Self-hosted fonts (CSP: no external font CDNs). All unicode subsets included;
+// the browser fetches only the ranges actually rendered.
+import '@fontsource/geist/400.css';
+import '@fontsource/geist/500.css';
+import '@fontsource/geist/600.css';
+import '@fontsource/geist/700.css';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
+import '@fontsource/geist-mono/600.css';
+// Kept during the Geist-vs-Inter evaluation; pruned if Geist wins.
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
 import './index.css';
 import './styles/mobile.css';
 import './i18n';

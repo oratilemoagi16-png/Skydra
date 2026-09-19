@@ -785,5 +785,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "Verwende das Format JJJJ-MM-TT",
     "dateInFuture": "Das Datum darf nicht in der Zukunft liegen"
+  },
+  "nav": {
+    "overview": "Übersicht",
+    "flights": "Flüge",
+    "import": "Importieren",
+    "settings": "Einstellungen",
+    "primary": "Hauptnavigation",
+    "close": "Schließen",
+    "cancelImport": "Import/Sync abbrechen",
+    "themeToLight": "Zum hellen Design wechseln",
+    "themeToDark": "Zum dunklen Design wechseln"
   }
 }

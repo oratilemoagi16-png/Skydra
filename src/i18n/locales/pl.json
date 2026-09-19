@@ -781,5 +781,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "Uzyj formatu RRRR-MM-DD",
     "dateInFuture": "Data nie moze byc z przyszlosci"
+  },
+  "nav": {
+    "overview": "Przegląd",
+    "flights": "Loty",
+    "import": "Importuj",
+    "settings": "Ustawienia",
+    "primary": "Nawigacja główna",
+    "close": "Zamknij",
+    "cancelImport": "Anuluj import/synchronizację",
+    "themeToLight": "Przełącz na jasny motyw",
+    "themeToDark": "Przełącz na ciemny motyw"
   }
 }

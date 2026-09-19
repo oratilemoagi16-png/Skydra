@@ -788,5 +788,16 @@
     "dateJumpPlaceholder": "YYYY-MM-DD",
     "useDateFormat": "YYYY-MM-DD formatını kullanın",
     "dateInFuture": "Tarih gelecekte olamaz."
+  },
+  "nav": {
+    "overview": "Genel bakış",
+    "flights": "Uçuşlar",
+    "import": "İçe aktar",
+    "settings": "Ayarlar",
+    "primary": "Birincil gezinme",
+    "close": "Kapat",
+    "cancelImport": "İçe aktarmayı/senkronizasyonu iptal et",
+    "themeToLight": "Açık temaya geç",
+    "themeToDark": "Koyu temaya geç"
   }
 }
