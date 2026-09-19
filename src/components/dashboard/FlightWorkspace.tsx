@@ -406,6 +406,8 @@ export function FlightWorkspace({ data, stale = false, onBackToList, isMobileVie
         />
       )}
       {railTab === 'notes' && <FlightNotesPanel flightId={flight.id} notes={flight.notes ?? null} />}
+      {/* Dock clearance: last panel row stays above the floating dock at scroll end */}
+      <div className="shrink-0" style={{ height: 'calc(74px + var(--mobile-safe-bottom, 0px))' }} aria-hidden="true" />
     </div>
   );
 
@@ -474,6 +476,8 @@ export function FlightWorkspace({ data, stale = false, onBackToList, isMobileVie
             startTime={flight.startTime}
           />
         </div>
+        {/* Dock clearance: last chart's axis/legend clears the floating dock at scroll end */}
+        <div className="shrink-0" style={{ height: 'calc(74px + var(--mobile-safe-bottom, 0px))' }} aria-hidden="true" />
       </div>
     </section>
   );
@@ -494,6 +498,8 @@ export function FlightWorkspace({ data, stale = false, onBackToList, isMobileVie
           <div className="min-h-[200px]">{railPanel}</div>
         </div>
         {telemetryBand}
+        {/* Dock clearance for the stacked scroll column */}
+        <div className="shrink-0" style={{ height: 'calc(74px + var(--mobile-safe-bottom, 0px))' }} aria-hidden="true" />
       </div>
     );
   }
