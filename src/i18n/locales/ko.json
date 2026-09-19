@@ -79,10 +79,6 @@
     "allTags": "모든 태그",
     "searchDrones": "드론 검색…",
     "searchBatteries": "배터리 검색…",
-    "searchAircraft": "기체 검색…",
-    "noSearchResults": "결과 없음",
-    "maintenanceOverdue": "{{days}}일 초과",
-    "maintenanceOk": "정상",
     "searchTags": "태그 검색…",
     "noMatchingDrones": "일치하는 드론 없음",
     "noMatchingBatteries": "일치하는 배터리 없음",
@@ -305,7 +301,11 @@
     "never": "없음",
     "maintenanceDone": "✓ 정비 완료",
     "save": "저장",
-    "cancel": "취소"
+    "cancel": "취소",
+    "searchAircraft": "기체 검색…",
+    "noSearchResults": "결과 없음",
+    "maintenanceOverdue": "{{days}}일 초과",
+    "maintenanceOk": "정상"
   },
   "importer": {
     "importFlightLog": "드론 비행 로그 가져오기",

@@ -79,10 +79,6 @@
     "allTags": "Wszystkie tagi",
     "searchDrones": "Szukaj dronów…",
     "searchBatteries": "Szukaj baterii…",
-    "searchAircraft": "Szukaj statków powietrznych…",
-    "noSearchResults": "Brak wyników",
-    "maintenanceOverdue": "{{days}}d po terminie",
-    "maintenanceOk": "W terminie",
     "searchTags": "Szukaj tagów…",
     "noMatchingDrones": "Brak pasujących dronów",
     "noMatchingBatteries": "Brak pasujących baterii",
@@ -303,7 +299,11 @@
     "never": "Nigdy",
     "maintenanceDone": "✓ Konserwacja Wykonana",
     "save": "Zapisz",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "searchAircraft": "Szukaj statków powietrznych…",
+    "noSearchResults": "Brak wyników",
+    "maintenanceOverdue": "{{days}}d po terminie",
+    "maintenanceOk": "W terminie"
   },
   "importer": {
     "importFlightLog": "Importuj dziennik lotu drona",
