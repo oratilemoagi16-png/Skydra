@@ -264,14 +264,14 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
       />
 
       {/* Modal */}
-      <div className="relative bg-drone-secondary rounded-xl border border-gray-700 shadow-2xl w-full max-w-2xl max-h-[calc(100vh-2rem)] modal-mobile-max flex flex-col my-auto">
+      <div className="relative bg-surface rounded-xl border border-line shadow-2xl w-full max-w-2xl max-h-[calc(100vh-2rem)] modal-mobile-max flex flex-col my-auto">
         {/* Header */}
-        <div className="shrink-0 flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold text-white">{t('manual.title')}</h2>
+        <div className="shrink-0 flex items-center justify-between p-4 border-b border-line">
+          <h2 className="text-lg font-semibold text-ink">{t('manual.title')}</h2>
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="text-gray-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-muted hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -285,8 +285,8 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           {message && (
             <div
               className={`p-3 rounded-lg text-sm ${message.type === 'success'
-                  ? 'bg-green-900/50 text-green-300 border border-green-700'
-                  : 'bg-red-900/50 text-red-300 border border-red-700'
+                  ? 'bg-success/15 text-success border border-success/40'
+                  : 'bg-danger/15 text-danger border border-danger/60'
                 }`}
             >
               {message.text}
@@ -297,7 +297,7 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           <div className="grid grid-cols-2 gap-3">
             {/* Flight Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink mb-1">
                 {t('manual.flightTitle')}
               </label>
               <input
@@ -305,24 +305,24 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 value={formData.flightTitle}
                 onChange={(e) => handleFieldChange('flightTitle', e.target.value)}
                 placeholder={t('manual.placeholderTitle')}
-                className="w-full px-3 py-2 bg-drone-dark border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary"
+                className="w-full px-3 py-2 bg-canvas border border-line-strong rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus"
               />
             </div>
 
             {/* Aircraft Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.aircraftName')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.aircraftName')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
                 value={formData.aircraftName}
                 onChange={(e) => handleFieldChange('aircraftName', e.target.value)}
                 placeholder={t('manual.placeholderAircraft')}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.aircraftName ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.aircraftName ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.aircraftName && <p className="mt-1 text-xs text-red-400">{errors.aircraftName}</p>}
+              {errors.aircraftName && <p className="mt-1 text-xs text-danger">{errors.aircraftName}</p>}
             </div>
           </div>
 
@@ -330,34 +330,34 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           <div className="grid grid-cols-2 gap-3">
             {/* Drone Serial */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.aircraftSN')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.aircraftSN')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
                 value={formData.droneSerial}
                 onChange={(e) => handleFieldChange('droneSerial', e.target.value)}
                 placeholder={t('manual.placeholderAircraftSN')}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.droneSerial ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.droneSerial ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.droneSerial && <p className="mt-1 text-xs text-red-400">{errors.droneSerial}</p>}
+              {errors.droneSerial && <p className="mt-1 text-xs text-danger">{errors.droneSerial}</p>}
             </div>
 
             {/* Battery Serial */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.batterySN')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.batterySN')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
                 value={formData.batterySerial}
                 onChange={(e) => handleFieldChange('batterySerial', e.target.value)}
                 placeholder={t('manual.placeholderBatterySN')}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.batterySerial ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.batterySerial ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.batterySerial && <p className="mt-1 text-xs text-red-400">{errors.batterySerial}</p>}
+              {errors.batterySerial && <p className="mt-1 text-xs text-danger">{errors.batterySerial}</p>}
             </div>
           </div>
 
@@ -365,16 +365,16 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           <div className="grid grid-cols-2 gap-3">
             {/* Date */}
             <div className="relative" ref={datePickerRef}>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.date')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.date')} <span className="text-danger">*</span>
               </label>
               <button
                 type="button"
                 onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white text-left focus:outline-none focus:ring-1 focus:ring-drone-primary flex items-center justify-between ${errors.date ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink text-left focus:outline-none focus:ring-1 focus:ring-focus flex items-center justify-between ${errors.date ? 'border-danger' : 'border-line-strong'
                   }`}
               >
-                <span className={formData.date ? '' : 'text-gray-500'}>
+                <span className={formData.date ? '' : 'text-muted'}>
                   {formatDateDisplay(formData.date)}
                 </span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 opacity-60">
@@ -404,13 +404,13 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 position="absolute"
                 popoverClassName="left-0 top-full mt-1"
               />
-              {errors.date && <p className="mt-1 text-xs text-red-400">{errors.date}</p>}
+              {errors.date && <p className="mt-1 text-xs text-danger">{errors.date}</p>}
             </div>
 
             {/* Time */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.takeoffTime')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.takeoffTime')} <span className="text-danger">*</span>
               </label>
               <input
                 type="time"
@@ -425,11 +425,11 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                     handleFieldChange('time', val);
                   }
                 }}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.time ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink focus:outline-none focus:ring-1 focus:ring-focus ${errors.time ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.time && <p className="mt-1 text-xs text-red-400">{errors.time}</p>}
-              <p className="mt-1 text-xs text-gray-500">{t('manual.hint24h')}</p>
+              {errors.time && <p className="mt-1 text-xs text-danger">{errors.time}</p>}
+              <p className="mt-1 text-xs text-muted">{t('manual.hint24h')}</p>
             </div>
           </div>
 
@@ -437,7 +437,7 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           <div className="grid grid-cols-2 gap-3">
             {/* Total Distance */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink mb-1">
                 {t('manual.travelledDistance', { unit: distanceUnit })}
               </label>
               <input
@@ -446,15 +446,15 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 value={formData.totalDistance}
                 onChange={(e) => handleFieldChange('totalDistance', filterNumericInput(e.target.value, false))}
                 placeholder={t('manual.placeholderOptional', { defaultValue: 'Optional' })}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.totalDistance ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.totalDistance ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.totalDistance && <p className="mt-1 text-xs text-red-400">{errors.totalDistance}</p>}
+              {errors.totalDistance && <p className="mt-1 text-xs text-danger">{errors.totalDistance}</p>}
             </div>
 
             {/* Max Altitude */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink mb-1">
                 {t('manual.maxAltitude', { unit: altitudeUnit })}
               </label>
               <input
@@ -463,10 +463,10 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 value={formData.maxAltitude}
                 onChange={(e) => handleFieldChange('maxAltitude', filterNumericInput(e.target.value, false))}
                 placeholder={t('manual.placeholderOptional', { defaultValue: 'Optional' })}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.maxAltitude ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.maxAltitude ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.maxAltitude && <p className="mt-1 text-xs text-red-400">{errors.maxAltitude}</p>}
+              {errors.maxAltitude && <p className="mt-1 text-xs text-danger">{errors.maxAltitude}</p>}
             </div>
           </div>
 
@@ -474,8 +474,8 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           <div className="grid grid-cols-2 gap-3">
             {/* Latitude */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.takeoffLatitude')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.takeoffLatitude')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -483,17 +483,17 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 value={formData.homeLat}
                 onChange={(e) => handleFieldChange('homeLat', filterNumericInput(e.target.value, true))}
                 placeholder={t('manual.placeholderLat')}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.homeLat ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.homeLat ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.homeLat && <p className="mt-1 text-xs text-red-400">{errors.homeLat}</p>}
-              <p className="mt-1 text-xs text-gray-500">-90 to 90</p>
+              {errors.homeLat && <p className="mt-1 text-xs text-danger">{errors.homeLat}</p>}
+              <p className="mt-1 text-xs text-muted">-90 to 90</p>
             </div>
 
             {/* Longitude */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.takeoffLongitude')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.takeoffLongitude')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -501,11 +501,11 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 value={formData.homeLon}
                 onChange={(e) => handleFieldChange('homeLon', filterNumericInput(e.target.value, true))}
                 placeholder={t('manual.placeholderLon')}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.homeLon ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.homeLon ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.homeLon && <p className="mt-1 text-xs text-red-400">{errors.homeLon}</p>}
-              <p className="mt-1 text-xs text-gray-500">-180 to 180</p>
+              {errors.homeLon && <p className="mt-1 text-xs text-danger">{errors.homeLon}</p>}
+              <p className="mt-1 text-xs text-muted">-180 to 180</p>
             </div>
           </div>
 
@@ -513,8 +513,8 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
           <div className="grid grid-cols-2 gap-3">
             {/* Duration */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                {t('manual.durationSeconds')} <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-ink mb-1">
+                {t('manual.durationSeconds')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -522,41 +522,41 @@ export function ManualEntryModal({ isOpen, onClose }: ManualEntryModalProps) {
                 value={formData.durationSecs}
                 onChange={(e) => handleFieldChange('durationSecs', filterNumericInput(e.target.value, false))}
                 placeholder={t('manual.placeholderDuration')}
-                className={`w-full px-3 py-2 bg-drone-dark border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary ${errors.durationSecs ? 'border-red-500' : 'border-gray-600'
+                className={`w-full px-3 py-2 bg-canvas border rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus ${errors.durationSecs ? 'border-danger' : 'border-line-strong'
                   }`}
               />
-              {errors.durationSecs && <p className="mt-1 text-xs text-red-400">{errors.durationSecs}</p>}
+              {errors.durationSecs && <p className="mt-1 text-xs text-danger">{errors.durationSecs}</p>}
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">{t('manual.notes')}</label>
+              <label className="block text-sm font-medium text-ink mb-1">{t('manual.notes')}</label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => handleFieldChange('notes', e.target.value)}
                 placeholder={t('manual.placeholderNotes')}
                 rows={2}
                 maxLength={500}
-                className="w-full px-3 py-2 bg-drone-dark border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-drone-primary resize-none"
+                className="w-full px-3 py-2 bg-canvas border border-line-strong rounded-lg text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-focus resize-none"
               />
-              <p className="mt-1 text-xs text-gray-500">{t('manual.charCount', { n: formData.notes.length })}</p>
+              <p className="mt-1 text-xs text-muted">{t('manual.charCount', { n: formData.notes.length })}</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 flex justify-end gap-3 p-4 border-t border-gray-700">
+        <div className="shrink-0 flex justify-end gap-3 p-4 border-t border-line">
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm text-ink hover:text-ink transition-colors disabled:opacity-50"
           >
             {t('manual.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="px-4 py-2 text-sm bg-drone-primary text-white rounded-lg hover:bg-drone-primary/80 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm bg-accent text-accent-ink rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {isSubmitting && (
               <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">

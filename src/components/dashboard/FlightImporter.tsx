@@ -1415,8 +1415,8 @@ export function FlightImporter() {
 
       {isImporting || isBatchProcessing || isSyncing ? (
         <div className="flex flex-col items-center gap-2">
-          <div className="w-6 h-6 border-2 border-drone-primary border-t-transparent rounded-full spinner" />
-          <span className="text-xs text-gray-400 break-all text-center w-full px-2">
+          <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full spinner" />
+          <span className="text-xs text-muted break-all text-center w-full px-2">
             {cooldownRemaining > 0
               ? t('importer.coolingDown', { n: cooldownRemaining })
               : isSyncing
@@ -1426,7 +1426,7 @@ export function FlightImporter() {
               : t('importer.importingGeneric')}
           </span>
           {batchTotal > 0 && (
-            <span className="text-xs text-drone-primary font-medium">
+            <span className="text-xs text-accent font-medium">
               {t('importer.filesProgress', { n: batchIndex, total: batchTotal })}
             </span>
           )}
@@ -1435,7 +1435,7 @@ export function FlightImporter() {
         <>
           <div className="mb-2">
             <svg
-              className="w-8 h-8 mx-auto text-gray-500"
+              className="w-8 h-8 mx-auto text-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -1448,7 +1448,7 @@ export function FlightImporter() {
               />
             </svg>
           </div>
-          <p className="text-xs text-gray-400 mb-3">
+          <p className="text-xs text-muted mb-3">
             {isDragActive
               ? t('importer.dropFileHere')
               : t('importer.importFlightLog')}
@@ -1499,12 +1499,12 @@ export function FlightImporter() {
           
           {/* Sync folder status */}
           {!isWebMode() && syncFolderPath && (
-            <p className="mt-2 text-[10px] text-gray-500 truncate max-w-full" title={syncFolderPath}>
+            <p className="mt-2 text-[10px] text-muted truncate max-w-full" title={syncFolderPath}>
               Sync: {getSyncFolderDisplayName()}
             </p>
           )}
           {isWebMode() && webSyncPath && (
-            <p className="mt-2 text-[10px] text-gray-500 truncate max-w-full" title={webSyncPath}>
+            <p className="mt-2 text-[10px] text-muted truncate max-w-full" title={webSyncPath}>
               Sync: {webSyncPath} (auto-sync on cron)
             </p>
           )}
@@ -1520,69 +1520,69 @@ export function FlightImporter() {
                   setAutoscanEnabledState(enabled);
                   setAutoscanEnabled(enabled);
                 }}
-                className="w-3 h-3 rounded border-gray-500 bg-drone-dark text-drone-primary focus:ring-1 focus:ring-drone-primary focus:ring-offset-0 cursor-pointer"
+                className="w-3 h-3 rounded border-line-strong bg-canvas text-accent focus:ring-1 focus:ring-focus focus:ring-offset-0 cursor-pointer"
               />
-              <span className="text-[10px] text-gray-500 group-hover:text-gray-400 transition-colors">{t('importer.autoscanOnStartup')}</span>
+              <span className="text-[10px] text-muted group-hover:text-muted transition-colors">{t('importer.autoscanOnStartup')}</span>
             </label>
           )}
           
           {/* Background sync indicator (passive, non-blocking) */}
           {isBackgroundSyncing && (
-            <div className="mt-2 flex items-center justify-center gap-2 text-[10px] text-gray-500">
-              <div className="w-3 h-3 border border-gray-500 border-t-transparent rounded-full animate-spin" />
+            <div className="mt-2 flex items-center justify-center gap-2 text-[10px] text-muted">
+              <div className="w-3 h-3 border border-line-strong border-t-transparent rounded-full animate-spin" />
               <span>{t('importer.autoSyncChecking')}</span>
             </div>
           )}
           
           {/* Background sync result hint */}
           {backgroundSyncResult && !isBackgroundSyncing && (
-            <p className="mt-2 text-[10px] text-emerald-400">{backgroundSyncResult}</p>
+            <p className="mt-2 text-[10px] text-success">{backgroundSyncResult}</p>
           )}
           
           {batchMessage && (
             batchMessage === 'NO_SYNC_FOLDER' ? (
-              <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                <div className="flex items-center gap-2 text-amber-400">
+              <div className="mt-2 p-2 rounded-lg bg-warning/10 border border-warning/30">
+                <div className="flex items-center gap-2 text-warning">
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                   </svg>
                   <span className="text-xs font-medium">{t('importer.noSyncFolder')}</span>
                 </div>
-                <p className="mt-1 text-[10px] text-amber-300">
+                <p className="mt-1 text-[10px] text-warning">
                   {t('importer.clickFolderIcon')}
                 </p>
               </div>
             ) : batchMessage === 'NO_SYNC_FOLDER_WEB' ? (
-              <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                <div className="flex items-center gap-2 text-amber-400">
+              <div className="mt-2 p-2 rounded-lg bg-warning/10 border border-warning/30">
+                <div className="flex items-center gap-2 text-warning">
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                   </svg>
                   <span className="text-xs font-medium">{t('importer.syncNotConfigured')}</span>
                 </div>
-                <p className="mt-1 text-[10px] text-amber-300">
+                <p className="mt-1 text-[10px] text-warning">
                   {t('importer.setSyncPath')}
                 </p>
               </div>
             ) : (
-              <p className="mt-2 text-xs text-gray-400">{batchMessage}</p>
+              <p className="mt-2 text-xs text-muted">{batchMessage}</p>
             )
           )}
 
           {/* Desktop tip for quick ODL sync via Litchi Hub Bridge */}
           {!isWebMode() && !isMobileRuntime && (
-            <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-gray-400">
-              <svg className="w-3.5 h-3.5 flex-shrink-0 text-amber-400/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-muted">
+              <svg className="w-3.5 h-3.5 flex-shrink-0 text-warning/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3a6 6 0 00-3.6 10.8c.4.3.6.8.6 1.3V16a1 1 0 001 1h4a1 1 0 001-1v-.9c0-.5.2-1 .6-1.3A6 6 0 0012 3zm-2 16h4m-3 2h2" />
               </svg>
-              <span className="font-medium text-amber-300/90">Tip:</span>
+              <span className="font-medium text-warning/90">Tip:</span>
               <span>
                 {' '}
                 <a
                   href={litchiHubBridgeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber-300/90 underline underline-offset-2 decoration-amber-300/60 hover:text-amber-200"
+                  className="text-warning/90 underline underline-offset-2 decoration-warning/60 hover:text-warning"
                 >
                   Litchi Hub Bridge
                 </a>{' '}

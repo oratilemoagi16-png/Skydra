@@ -130,30 +130,30 @@ function InitializationOverlay() {
           /* Auth prompt for locked profile */
           <div className="w-80 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              <h2 className="text-lg font-medium text-white">{t('app.profileLocked')}</h2>
+              <h2 className="text-lg font-medium text-ink">{t('app.profileLocked')}</h2>
             </div>
-            <p className="text-sm text-gray-400 mb-4">{t('app.profileLockedDesc')}</p>
+            <p className="text-sm text-muted mb-4">{t('app.profileLockedDesc')}</p>
 
             {/* Profile selector dropdown (custom, so we can show SVG lock icons) */}
             <div ref={dropdownRef} className="relative w-full mb-2">
               <button
                 type="button"
                 onClick={() => setDropdownOpen((o) => !o)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-sm text-white flex items-center justify-between focus:outline-none focus:border-drone-primary cursor-pointer"
+                className="w-full px-3 py-2 bg-canvas border border-line-strong rounded-lg text-sm text-ink flex items-center justify-between focus:outline-none focus:border-accent cursor-pointer"
               >
                 <span className="flex items-center gap-1.5 truncate">
                   {selectedProfile === 'default' ? t('profile.default') : selectedProfile}
-                  {profilePasswords[selectedProfile] && <LockIcon className="w-3.5 h-3.5 text-amber-400" />}
+                  {profilePasswords[selectedProfile] && <LockIcon className="w-3.5 h-3.5 text-warning" />}
                 </span>
                 <svg className={`w-3.5 h-3.5 ml-1 flex-shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <polyline points="6 9 12 15 18 9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
               {dropdownOpen && (
-                <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-600 bg-gray-800 shadow-xl max-h-48 overflow-y-auto">
+                <div className="absolute z-50 mt-1 w-full rounded-lg border border-line-strong bg-canvas shadow-xl max-h-48 overflow-y-auto">
                   {profiles.map((name) => (
                     <div
                       key={name}
@@ -166,12 +166,12 @@ function InitializationOverlay() {
                           handleSwitchToUnprotected(name);
                         }
                       }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm cursor-pointer hover:bg-drone-primary/20 ${
-                        name === selectedProfile ? 'text-white font-medium bg-drone-primary/10' : 'text-gray-300'
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm cursor-pointer hover:bg-accent/15 ${
+                        name === selectedProfile ? 'text-ink font-medium bg-accent/10' : 'text-accent-ink'
                       }`}
                     >
                       {name === 'default' ? t('profile.default') : name}
-                      {profilePasswords[name] && <LockIcon className="w-3.5 h-3.5 text-amber-400" />}
+                      {profilePasswords[name] && <LockIcon className="w-3.5 h-3.5 text-warning" />}
                     </div>
                   ))}
                 </div>
@@ -186,16 +186,16 @@ function InitializationOverlay() {
                   onChange={(e) => { setAuthPassword(e.target.value); setAuthError(null); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAuth(); }}
                   placeholder={t('profile.passwordPlaceholder')}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-drone-primary"
+                  className="w-full px-3 py-2 bg-canvas border border-line-strong rounded-lg text-sm text-ink placeholder:text-faint focus:outline-none focus:border-accent"
                   autoFocus
                 />
                 {authError && (
-                  <p className="text-xs text-red-400 mb-2">{authError}</p>
+                  <p className="text-xs text-danger mb-2">{authError}</p>
                 )}
                 <button
                   onClick={handleAuth}
                   disabled={authBusy || !authPassword.trim()}
-                  className="w-full py-2 rounded-lg bg-drone-primary text-white text-sm font-medium hover:bg-drone-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 rounded-lg bg-accent text-accent-ink text-sm font-medium hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 >
                   {authBusy && (
                     <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -209,12 +209,12 @@ function InitializationOverlay() {
             ) : (
               <>
                 {authError && (
-                  <p className="text-xs text-red-400 mb-2">{authError}</p>
+                  <p className="text-xs text-danger mb-2">{authError}</p>
                 )}
                 <button
                   onClick={handleAuth}
                   disabled={authBusy}
-                  className="w-full py-2 rounded-lg bg-drone-primary text-white text-sm font-medium hover:bg-drone-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 rounded-lg bg-accent text-accent-ink text-sm font-medium hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 >
                   {authBusy && (
                     <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -292,34 +292,34 @@ class AppErrorBoundary extends React.Component<
     if (this.state.hasError) {
       const report = this.buildReport();
       return (
-        <div className="w-full h-full bg-drone-dark text-gray-200 flex items-center justify-center p-6">
+        <div className="w-full h-full bg-canvas text-ink flex items-center justify-center p-6">
           <div className="max-w-2xl w-full text-center space-y-4">
             {/* Error icon */}
             <div className="flex justify-center">
-              <svg className="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
               </svg>
             </div>
 
-            <h2 className="text-xl font-semibold text-white">{i18n.t('app.errorTitle')}</h2>
-            <p className="text-sm text-gray-400">
+            <h2 className="text-xl font-semibold text-ink">{i18n.t('app.errorTitle')}</h2>
+            <p className="text-sm text-muted">
               {i18n.t('app.errorDescription')}
             </p>
-            <p className="text-sm text-amber-400/90">
+            <p className="text-sm text-warning/90">
               {i18n.t('app.errorContactDev')}
             </p>
 
             {/* Scrollable error report */}
-            <div className="relative text-left bg-black/40 border border-gray-700 rounded-lg">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700">
-                <span className="text-xs font-medium text-gray-400">{i18n.t('app.errorReportLabel')}</span>
+            <div className="relative text-left bg-black/40 border border-line rounded-lg">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-line">
+                <span className="text-xs font-medium text-muted">{i18n.t('app.errorReportLabel')}</span>
                 <button
                   onClick={this.handleCopy}
-                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md transition-colors bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md transition-colors bg-line hover:bg-line-strong text-ink hover:text-ink"
                 >
                   {this.state.copied ? (
                     <>
-                      <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" /></svg>
+                      <svg className="w-3.5 h-3.5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" /></svg>
                       {i18n.t('app.errorCopied')}
                     </>
                   ) : (
@@ -332,7 +332,7 @@ class AppErrorBoundary extends React.Component<
               </div>
               <pre
                 id="error-report-pre"
-                className="text-[11px] leading-relaxed text-gray-400 whitespace-pre-wrap break-words p-3 max-h-[40vh] overflow-y-auto select-text"
+                className="text-[11px] leading-relaxed text-muted whitespace-pre-wrap break-words p-3 max-h-[40vh] overflow-y-auto select-text"
               >
                 {report}
               </pre>
@@ -341,7 +341,7 @@ class AppErrorBoundary extends React.Component<
             {/* Restart button */}
             <button
               onClick={() => window.location.reload()}
-              className="mt-2 px-4 py-2 text-sm font-medium rounded-lg bg-drone-primary hover:bg-drone-primary/80 text-white transition-colors"
+              className="mt-2 px-4 py-2 text-sm font-medium rounded-lg bg-accent hover:bg-accent-hover text-accent-ink transition-colors"
             >
               {i18n.t('app.errorRestart')}
             </button>
@@ -461,11 +461,11 @@ function App() {
 
       {/* Error Toast */}
       {error && (
-        <div className="fixed top-4 right-4 z-50 bg-red-500/90 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md">
+        <div className="fixed top-4 right-4 z-50 bg-danger/90 text-accent-ink px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md">
           <span className="text-sm">{error}</span>
           <button
             onClick={clearError}
-            className="text-white/80 hover:text-white"
+            className="text-ink/80 hover:text-ink"
           >
             ✕
           </button>

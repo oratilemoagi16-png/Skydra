@@ -88,16 +88,16 @@ export function WeatherModal({ isOpen, onClose, lat, lon, startTime, temperature
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-drone-secondary rounded-xl border border-gray-700 shadow-2xl w-full max-w-sm mx-4 overflow-hidden modal-mobile-max flex flex-col my-auto">
+      <div className="relative bg-surface rounded-xl border border-line shadow-2xl w-full max-w-sm mx-4 overflow-hidden modal-mobile-max flex flex-col my-auto">
         {/* Header */}
-        <div className="shrink-0 flex items-center justify-between p-4 border-b border-gray-700">
+        <div className="shrink-0 flex items-center justify-between p-4 border-b border-line">
           <div className="flex items-center gap-2">
             <img src={weatherIcon} alt="Weather" className="w-5 h-5" />
-            <h2 className="text-lg font-semibold text-white">{t('weather.title')}</h2>
+            <h2 className="text-lg font-semibold text-ink">{t('weather.title')}</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-muted hover:text-ink transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -109,18 +109,18 @@ export function WeatherModal({ isOpen, onClose, lat, lon, startTime, temperature
         <div className="flex-1 p-5 min-h-0 overflow-y-auto">
           {loading && (
             <div className="flex flex-col items-center justify-center py-10">
-              <svg className="w-8 h-8 text-sky-400 animate-spin" viewBox="0 0 24 24" fill="none">
+              <svg className="w-8 h-8 text-accent animate-spin" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
                 <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
               </svg>
-              <p className="mt-3 text-sm text-gray-400">{t('weather.fetching')}</p>
+              <p className="mt-3 text-sm text-muted">{t('weather.fetching')}</p>
             </div>
           )}
 
           {error && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <ErrorIcon className="w-8 h-8 text-red-400 mb-3" />
-              <p className="text-sm text-red-400">{error}</p>
+              <ErrorIcon className="w-8 h-8 text-danger mb-3" />
+              <p className="text-sm text-danger">{error}</p>
             </div>
           )}
 
@@ -141,17 +141,17 @@ export function WeatherModal({ isOpen, onClose, lat, lon, startTime, temperature
               <>
                 {/* Condition summary */}
                 <div className="text-center mb-5">
-                  <p className="text-3xl font-bold text-white">{fmtTemp(weather.temperature)}</p>
-                  <p className="text-sm text-gray-400 mt-1">{weather.conditionLabel}</p>
+                  <p className="text-3xl font-bold text-ink">{fmtTemp(weather.temperature)}</p>
+                  <p className="text-sm text-muted mt-1">{weather.conditionLabel}</p>
                 </div>
 
                 {/* Reverse-geocoded home-point location */}
-                <div className="mb-4 rounded-lg bg-drone-surface/40 border border-gray-700/50 px-3 py-2.5">
+                <div className="mb-4 rounded-lg bg-elevated/40 border border-line px-3 py-2.5">
                   <div className="flex items-start gap-2.5">
-                    <LocationPinIcon className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
+                    <LocationPinIcon className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500">{t('weather.location')}</p>
-                      <p className="text-sm text-gray-200 leading-snug break-words">
+                      <p className="text-xs text-muted">{t('weather.location')}</p>
+                      <p className="text-sm text-ink leading-snug break-words">
                         {locationLoading
                           ? t('weather.locationFetching')
                           : (locationLabel ?? `${fmtNum(lat, 4, locale)}, ${fmtNum(lon, 4, locale)}`)}
@@ -163,32 +163,32 @@ export function WeatherModal({ isOpen, onClose, lat, lon, startTime, temperature
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-3">
                   <WeatherStat
-                    icon={<ThermometerIcon className="w-5 h-5 text-orange-400" />}
+                    icon={<ThermometerIcon className="w-5 h-5 text-accent" />}
                     label={t('weather.feelsLike')}
                     value={fmtTemp(weather.apparentTemperature)}
                   />
                   <WeatherStat
-                    icon={<WindIcon className="w-5 h-5 text-cyan-400" />}
+                    icon={<WindIcon className="w-5 h-5 text-accent" />}
                     label={t('weather.windSpeed')}
                     value={fmtSpeed(weather.windSpeed)}
                   />
                   <WeatherStat
-                    icon={<WindSockIcon className="w-5 h-5 text-teal-400" />}
+                    icon={<WindSockIcon className="w-5 h-5 text-accent" />}
                     label={t('weather.windGusts')}
                     value={fmtSpeed(weather.windGusts)}
                   />
                   <WeatherStat
-                    icon={<DropletIcon className="w-5 h-5 text-blue-400" />}
+                    icon={<DropletIcon className="w-5 h-5 text-accent" />}
                     label={t('weather.humidity')}
                     value={`${weather.humidity}%`}
                   />
                   <WeatherStat
-                    icon={<CloudIcon className="w-5 h-5 text-gray-400" />}
+                    icon={<CloudIcon className="w-5 h-5 text-muted" />}
                     label={t('weather.cloudCover')}
                     value={`${weather.cloudCover}%`}
                   />
                   <WeatherStat
-                    icon={<RainIcon className="w-5 h-5 text-indigo-400" />}
+                    icon={<RainIcon className="w-5 h-5 text-accent" />}
                     label={t('weather.precipitation')}
                     value={fmtPrecip(weather.precipitation)}
                   />
@@ -197,22 +197,22 @@ export function WeatherModal({ isOpen, onClose, lat, lon, startTime, temperature
                 {/* Wind direction + pressure row */}
                 <div className="grid grid-cols-2 gap-3 mt-3">
                   <WeatherStat
-                    icon={<CompassIcon className="w-5 h-5 text-emerald-400" />}
+                    icon={<CompassIcon className="w-5 h-5 text-success" />}
                     label={t('weather.windDirection')}
                     value={`${weather.windDirection}\u00B0 ${degToCardinal(weather.windDirection)}`}
                   />
                   <WeatherStat
-                    icon={<GaugeIcon className="w-5 h-5 text-purple-400" />}
+                    icon={<GaugeIcon className="w-5 h-5 text-accent" />}
                     label={t('weather.pressure')}
                     value={fmtPressure(weather.pressure)}
                   />
                 </div>
 
                 {/* Footer */}
-                <p className="text-[10px] text-gray-600 text-center mt-4">
+                <p className="text-[10px] text-muted text-center mt-4">
                   {t('weather.attribution')}
                 </p>
-                <p className="text-[10px] text-gray-600 text-center mt-1">
+                <p className="text-[10px] text-muted text-center mt-1">
                   {t('weather.locationAttribution')}
                 </p>
               </>
@@ -231,11 +231,11 @@ export function WeatherModal({ isOpen, onClose, lat, lon, startTime, temperature
 
 function WeatherStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-drone-surface/50 border border-gray-700/50 px-3 py-2.5">
+    <div className="flex items-center gap-3 rounded-lg bg-elevated/50 border border-line px-3 py-2.5">
       {icon}
       <div className="min-w-0">
-        <p className="text-xs text-gray-500 truncate">{label}</p>
-        <p className="text-sm font-semibold text-white truncate">{value}</p>
+        <p className="text-xs text-muted truncate">{label}</p>
+        <p className="text-sm font-semibold text-ink truncate">{value}</p>
       </div>
     </div>
   );

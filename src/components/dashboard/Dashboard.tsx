@@ -55,7 +55,8 @@ export function Dashboard() {
     }
     return true;
   });
-  const [mainSplit, setMainSplit] = useState(50);
+  // Default split favors the map — it is the dominant working surface.
+  const [mainSplit, setMainSplit] = useState(45);
   const [mainPanelsWidth, setMainPanelsWidth] = useState(0);
   // Track if telemetry panel is collapsed (slider pulled past minimum width)
   const [isTelemetryCollapsed, setIsTelemetryCollapsed] = useState(false);
@@ -63,12 +64,15 @@ export function Dashboard() {
   const [isImporterExternallyBusy, setIsImporterExternallyBusy] = useState(false);
   // Width of telemetry panel when collapsed (minimum visible width)
   const TELEMETRY_MIN_VISIBLE_WIDTH = 40;
-  const TELEMETRY_MIN_NORMAL_WIDTH = 560;
-  const TELEMETRY_SCROLL_MIN_WIDTH = 560;
-  const TELEMETRY_CARD_MIN_WIDTH = 520;
+  const TELEMETRY_MIN_NORMAL_WIDTH = 520;
+  const TELEMETRY_SCROLL_MIN_WIDTH = 520;
+  const TELEMETRY_CARD_MIN_WIDTH = 480;
   const MAP_MIN_WIDTH = 320;
-  const MAP_STACK_TRIGGER_WIDTH = 420;
+  const MAP_STACK_TRIGGER_WIDTH = 400;
   const SIDE_BY_SIDE_MIN_WIDTH = TELEMETRY_MIN_NORMAL_WIDTH + MAP_STACK_TRIGGER_WIDTH + 48;
+  // Below this desktop viewport width, selecting a flight collapses the rail
+  // so the map keeps ≥50–60% of the view at 1280px-class laptops.
+  const RAIL_AUTOCOLLAPSE_MAX_VIEWPORT = 1440;
   const resizingRef = useRef<null | 'sidebar' | 'main'>(null);
   // First-run affordance: with no flights yet, open the import sheet once.
   const autoImportShownRef = useRef(false);
@@ -160,6 +164,15 @@ export function Dashboard() {
   const shouldStackPanels = isDesktopLayout && mainPanelsWidth > 0
     ? mainPanelsWidth < SIDE_BY_SIDE_MIN_WIDTH
     : !isDesktopLayout;
+
+  // On <1440px desktops the 340px rail + telemetry would push the map under
+  // the fold; collapse the rail on selection (user can reopen via the edge tab).
+  useEffect(() => {
+    if (selectedFlightId === null) return;
+    if (window.innerWidth >= 768 && window.innerWidth < RAIL_AUTOCOLLAPSE_MAX_VIEWPORT) {
+      setIsSidebarHidden(true);
+    }
+  }, [selectedFlightId]);
   const splitCardsViewportHeight = isDesktopLayout && !shouldStackPanels
     ? 'calc(100dvh - 200px)'
     : undefined;
@@ -306,7 +319,7 @@ export function Dashboard() {
               className="ml-1 bg-elevated border border-line rounded-full w-6 h-6 items-center justify-center text-muted hover:text-ink hidden md:flex"
               title={t('dashboard.hideSidebar')}
             >
-              <span className="leading-none pb-[2px] text-lg">‹</span>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             </button>
           </div>
 
@@ -370,7 +383,7 @@ export function Dashboard() {
             className="sidebar-collapsed-toggle-btn relative z-50 mt-4 translate-x-1/2 border border-line rounded-full w-[4rem] h-[3rem] text-lg leading-none flex items-center justify-center"
             title={t('dashboard.showSidebar')}
           >
-            ›
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
         </aside>
       )}
@@ -413,7 +426,7 @@ export function Dashboard() {
               />
             ) : (
               <div className="flex-1 flex items-center justify-center h-full">
-                <p className="text-gray-500">{t('dashboard.noOverviewData')}</p>
+                <p className="text-muted">{t('dashboard.noOverviewData')}</p>
               </div>
             )}
           </div>
@@ -438,10 +451,10 @@ export function Dashboard() {
                       maxHeight: splitCardsViewportHeight ?? '720px',
                     }}
                   >
-                    <div className={`border-b border-gray-700 flex items-center ${isTelemetryCollapsed ? 'justify-center p-2' : 'justify-between p-3'}`}>
+                    <div className={`border-b border-line flex items-center ${isTelemetryCollapsed ? 'justify-center p-2' : 'justify-between p-3'}`}>
                       {!isTelemetryCollapsed && (
                         <div className="flex items-center gap-2">
-                          <h2 className="font-semibold text-white">
+                          <h2 className="font-semibold text-ink">
                             {t('dashboard.telemetryData')}
                           </h2>
                         </div>
@@ -463,16 +476,16 @@ export function Dashboard() {
                           } else {
                             // Expand it
                             setIsTelemetryCollapsed(false);
-                            // Restore previous split or default to 50%
+                            // Restore previous split or default to the map-dominant split
                             const minNormalPercent = (TELEMETRY_MIN_NORMAL_WIDTH / rect.width) * 100;
                             if (preCollapseSplit !== null && preCollapseSplit > minNormalPercent) {
                               setMainSplit(preCollapseSplit);
                             } else {
-                              setMainSplit(50);
+                              setMainSplit(45);
                             }
                           }
                         }}
-                        className={`rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/60 transition-colors ${isTelemetryCollapsed ? 'p-1' : 'p-1.5'}`}
+                        className={`rounded-lg text-muted hover:text-ink hover:bg-line/60 transition-colors ${isTelemetryCollapsed ? 'p-1' : 'p-1.5'}`}
                         title={isTelemetryCollapsed ? t('dashboard.expandPanel') : t('dashboard.collapsePanel')}
                         aria-label={isTelemetryCollapsed ? t('dashboard.expandPanel') : t('dashboard.collapsePanel')}
                       >
@@ -508,7 +521,7 @@ export function Dashboard() {
                     onMouseDown={() => {
                       resizingRef.current = 'main';
                     }}
-                    className={`${shouldStackPanels ? 'hidden' : 'block'} w-2 shrink-0 self-stretch cursor-col-resize bg-gray-500/50 rounded hover:bg-drone-primary/80 transition-colors`}
+                    className={`${shouldStackPanels ? 'hidden' : 'block'} w-2 shrink-0 self-stretch cursor-col-resize bg-line rounded hover:bg-accent/80 transition-colors`}
                     title={t('dashboard.dragToResize')}
                   />
 
@@ -524,13 +537,13 @@ export function Dashboard() {
                       maxHeight: splitCardsViewportHeight ?? '720px',
                     }}
                   >
-                    <div className="px-3 py-2.5 border-b border-gray-700 flex items-center justify-between">
-                      <h2 className="font-semibold text-white">{t('dashboard.flightPath')}</h2>
+                    <div className="px-3 py-2.5 border-b border-line flex items-center justify-between">
+                      <h2 className="font-semibold text-ink">{t('dashboard.flightPath')}</h2>
                       {currentFlightData?.messages && currentFlightData.messages.length > 0 && (
                         <button
                           type="button"
                           onClick={() => setShowMessagesModal(true)}
-                          className="relative p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/60 transition-colors"
+                          className="relative p-1.5 rounded-lg text-muted hover:text-ink hover:bg-line/60 transition-colors"
                           title={t('dashboard.viewFlightMessages')}
                           aria-label={t('dashboard.viewFlightMessages')}
                         >
@@ -549,7 +562,7 @@ export function Dashboard() {
                             />
                           </svg>
                           {/* Red badge with count */}
-                          <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-0.5 flex items-center justify-center rounded-full bg-red-600 text-white msg-badge-count text-[11px] font-bold leading-none border border-drone-dark">
+                          <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-0.5 flex items-center justify-center rounded-full bg-danger text-canvas msg-badge-count text-[11px] font-bold leading-none border border-canvas">
                             {currentFlightData.messages.length > 99 ? '99+' : currentFlightData.messages.length}
                           </span>
                         </button>
@@ -583,7 +596,7 @@ export function Dashboard() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center max-w-md">
-              <div className="w-24 h-24 mx-auto mb-6 text-gray-600">
+              <div className="w-24 h-24 mx-auto mb-6 text-faint">
                 <svg
                   fill="none"
                   stroke="currentColor"
@@ -597,10 +610,10 @@ export function Dashboard() {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold text-gray-300 mb-2">
+              <h2 className="text-xl font-semibold text-ink mb-2">
                 {t('dashboard.noFlightSelected')}
               </h2>
-              <p className="text-gray-500">
+              <p className="text-muted">
                 {t('dashboard.noFlightDescription')}
               </p>
             </div>

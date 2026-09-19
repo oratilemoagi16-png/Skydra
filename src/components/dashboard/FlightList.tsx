@@ -241,7 +241,6 @@ export function FlightList({
     locale,
     dateLocale,
     appLanguage,
-    themeMode,
     timeFormat,
     getBatteryDisplayName,
     getDroneDisplayName,
@@ -265,10 +264,6 @@ export function FlightList({
   const batteryPairIndex = useBatteryPairIndex();
 
   // Resolve theme mode for styling
-  const resolvedTheme = themeMode === 'system'
-    ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    : themeMode;
-  const isLight = resolvedTheme === 'light';
   const hour12 = timeFormat !== '24h';
   const heatmapDateFilter = useFlightStore((s) => s.heatmapDateFilter);
   const setHeatmapDateFilter = useFlightStore((s) => s.setHeatmapDateFilter);
@@ -2618,7 +2613,7 @@ export function FlightList({
 
   if (flights.length === 0) {
     return (
-      <div className="p-4 text-center text-gray-500">
+      <div className="p-4 text-center text-muted">
         <p className="text-sm">{t('flightList.noFlightsImported')}</p>
         <p className="text-xs mt-1">
           {t('flightList.dragAndDrop')}
@@ -2632,7 +2627,7 @@ export function FlightList({
       setConfirmDeleteId(null);
       setConfirmBulkDelete(false);
     }}>
-      <div className="border-b border-gray-700 flex-shrink-0">
+      <div className="border-b border-line flex-shrink-0">
         {/* Collapsible filter header */}
         <button
           type="button"
@@ -2642,10 +2637,10 @@ export function FlightList({
             if (!next) onFiltersExpanded?.();
             return next;
           })}
-          className="w-full flex items-center justify-between px-3 py-2 text-xs text-gray-400 hover:text-white transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-xs text-muted hover:text-ink transition-colors"
         >
           <span className="flex items-center gap-1.5">
-            <span className={`font-medium ${hasAnySidebarFilter ? (isFilterInverted ? 'text-red-400' : 'text-emerald-400') : ''}`}>
+            <span className={`font-medium ${hasAnySidebarFilter ? (isFilterInverted ? 'text-danger' : 'text-success') : ''}`}>
               {hasAnySidebarFilter
                 ? isFilterInverted ? t('flightList.filtersActiveInverted') : t('flightList.filtersActive')
                 : isFiltersCollapsed ? t('flightList.filtersExpand') : t('flightList.filters')}
@@ -2659,8 +2654,8 @@ export function FlightList({
                 }}
                 title={isFilterInverted ? t('flightList.switchToNormal') : t('flightList.invertFilter')}
                 className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${isFilterInverted
-                  ? 'text-red-400 bg-red-500/20 hover:bg-red-500/30'
-                  : 'text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10'
+                  ? 'text-danger bg-danger/20 hover:bg-danger/30'
+                  : 'text-muted hover:text-success hover:bg-success/10'
                   }`}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -2677,7 +2672,7 @@ export function FlightList({
                 }}
                 title={t('flightList.clearFilters')}
                 aria-label={t('flightList.clearFilters')}
-                className="w-5 h-5 rounded flex items-center justify-center text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                className="w-5 h-5 rounded flex items-center justify-center text-danger hover:text-danger hover:bg-danger/10 transition-colors"
               >
                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -2687,7 +2682,7 @@ export function FlightList({
             )}
           </span>
           <span
-            className={`w-5 h-5 rounded-full border border-gray-600 flex items-center justify-center transition-transform duration-200 ${isFiltersCollapsed ? 'rotate-180' : ''
+            className={`w-5 h-5 rounded-full border border-line-strong flex items-center justify-center transition-transform duration-200 ${isFiltersCollapsed ? 'rotate-180' : ''
               }`}
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
@@ -2702,7 +2697,7 @@ export function FlightList({
           <div className="px-3 pb-3 space-y-3">
             {/* Map area filter toggle */}
             <div className="flex items-center justify-between">
-              <label className="text-xs text-gray-400">{t('flightList.overviewMapFilter')}</label>
+              <label className="text-xs text-muted">{t('flightList.overviewMapFilter')}</label>
               <button
                 type="button"
                 onClick={() => setMapAreaFilterEnabled(!mapAreaFilterEnabled)}
@@ -2711,8 +2706,8 @@ export function FlightList({
               >
                 <span
                   className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${mapAreaFilterEnabled
-                    ? 'bg-drone-primary/90 border-drone-primary'
-                    : 'bg-drone-surface border-gray-600 toggle-track-off'
+                    ? 'bg-accent/90 border-accent'
+                    : 'bg-elevated border-line-strong toggle-track-off'
                     }`}
                 >
                   <span
@@ -2724,13 +2719,13 @@ export function FlightList({
             </div>
 
             {/* Scrollable filter fields container */}
-            <div className={`relative rounded-lg border-2 transition-all duration-200 ${hasScrollboxFilter ? 'border-emerald-400/70 shadow-[0_0_12px_rgba(52,211,153,0.35),0_0_4px_rgba(52,211,153,0.2)]' : 'border-sky-400/50 shadow-[0_0_10px_rgba(56,189,248,0.25),0_0_4px_rgba(56,189,248,0.15)]'}`}>
+            <div className={`relative rounded-lg border-2 transition-all duration-200 ${hasScrollboxFilter ? 'border-success/60 shadow-[0_0_12px_rgb(var(--skydra-success)_/_0.30),0_0_4px_rgb(var(--skydra-success)_/_0.18)]' : 'border-accent/50 shadow-[0_0_10px_rgb(var(--skydra-accent)_/_0.25),0_0_4px_rgb(var(--skydra-accent)_/_0.15)]'}`}>
               <div className="max-h-[190px] overflow-y-auto overflow-x-hidden space-y-3 py-2.5 pl-2.5 pr-4 filter-scroll-area">
 
                     {/* Filter profile row */}
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.savedFilterLabel')}</label>
+                        <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.savedFilterLabel')}</label>
                         <div className="relative flex-1 min-w-0">
                           <button
                             ref={filterProfileBtnRef}
@@ -2741,7 +2736,7 @@ export function FlightList({
                             }}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
-                            <span className={`truncate ${selectedFilterProfileName !== 'none' ? 'text-gray-100' : 'text-gray-400'}`}>
+                            <span className={`truncate ${selectedFilterProfileName !== 'none' ? 'text-ink' : 'text-muted'}`}>
                               {selectedFilterProfileName === 'none' ? t('none') : selectedFilterProfileName}
                             </span>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><polyline points="6 9 12 15 18 9" /></svg>
@@ -2757,40 +2752,40 @@ export function FlightList({
                               />
                               <div
                                 ref={filterProfileDropdownRef}
-                                className="fixed z-50 h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                                className="fixed z-50 h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                                 style={(() => { const r = filterProfileBtnRef.current?.getBoundingClientRect(); return r ? { top: r.bottom + 4, left: r.left, width: r.width } : {}; })()}
                               >
                                 <div className="overflow-y-auto overflow-x-hidden flex-1">
                                   <button
                                     type="button"
                                     onClick={() => handleSelectFilterProfile('none')}
-                                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${selectedFilterProfileName === 'none' ? 'bg-drone-primary/20 text-drone-primary' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'}`}
+                                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${selectedFilterProfileName === 'none' ? 'bg-accent/15 text-accent' : 'text-ink hover:bg-line/50'}`}
                                   >
                                     {t('none')}
                                   </button>
                                   {savedFilterProfiles.length === 0 && (
-                                    <p className="px-3 py-2 text-xs text-gray-500">{t('flightList.filterProfiles.noneSaved')}</p>
+                                    <p className="px-3 py-2 text-xs text-muted">{t('flightList.filterProfiles.noneSaved')}</p>
                                   )}
                                   {savedFilterProfiles.map((profile) => {
                                     const isPendingDelete = pendingDeleteFilterProfile === profile.name;
                                     const isProtectedProfile = profile.name === selectedFilterProfileName || profile.name.toLowerCase() === 'none';
                                     return (
-                                      <div key={profile.name} className="border-t border-gray-700/60">
+                                      <div key={profile.name} className="border-t border-line/60">
                                         {isPendingDelete ? (
-                                          <div className="px-3 py-2 text-xs text-gray-300 space-y-1">
+                                          <div className="px-3 py-2 text-xs text-ink space-y-1">
                                             <p>{t('flightList.filterProfiles.deletePrompt', { name: profile.name })}</p>
                                             <div className="flex items-center gap-2">
                                               <button
                                                 type="button"
                                                 onClick={() => handleDeleteFilterProfile(profile.name)}
-                                                className="text-xs text-red-400 hover:text-red-300"
+                                                className="text-xs text-danger hover:text-danger"
                                               >
                                                 {t('flightList.delete')}
                                               </button>
                                               <button
                                                 type="button"
                                                 onClick={() => setPendingDeleteFilterProfile(null)}
-                                                className="text-xs text-gray-400 hover:text-gray-200"
+                                                className="text-xs text-muted hover:text-ink"
                                               >
                                                 {t('profile.cancel')}
                                               </button>
@@ -2801,17 +2796,17 @@ export function FlightList({
                                             <button
                                               type="button"
                                               onClick={() => handleSelectFilterProfile(profile.name)}
-                                              className={`flex-1 text-left px-3 py-2 text-xs transition-colors ${selectedFilterProfileName === profile.name ? 'bg-drone-primary/20 text-drone-primary' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'}`}
+                                              className={`flex-1 text-left px-3 py-2 text-xs transition-colors ${selectedFilterProfileName === profile.name ? 'bg-accent/15 text-accent' : 'text-ink hover:bg-line/50'}`}
                                             >
                                               {profile.name}
                                             </button>
                                             {isProtectedProfile ? (
-                                              <span className="px-2 py-2 text-xs text-gray-600">-</span>
+                                              <span className="px-2 py-2 text-xs text-muted">-</span>
                                             ) : (
                                               <button
                                                 type="button"
                                                 onClick={() => setPendingDeleteFilterProfile(profile.name)}
-                                                className="px-2 py-2 text-xs text-gray-400 hover:text-red-300"
+                                                className="px-2 py-2 text-xs text-muted hover:text-danger"
                                                 aria-label={t('flightList.filterProfiles.deleteAria', { name: profile.name })}
                                               >
                                                 x
@@ -2838,8 +2833,8 @@ export function FlightList({
                             setPendingDeleteFilterProfile(null);
                           }}
                           className={`h-8 px-2.5 rounded-lg text-xs font-medium border transition-colors whitespace-nowrap ${hasScrollboxFilter
-                            ? 'border-drone-primary/50 text-drone-primary hover:bg-drone-primary/15'
-                            : 'border-gray-700 text-gray-500 cursor-not-allowed'}`}
+                            ? 'border-accent/50 text-accent hover:bg-accent/15'
+                            : 'border-line text-muted cursor-not-allowed'}`}
                         >
                           {t('flightList.filterProfiles.saveSelectionButton')}
                         </button>
@@ -2848,8 +2843,8 @@ export function FlightList({
                       {showCreateFilterProfileInline && (
                         <div className="grid grid-cols-[52px_minmax(0,1fr)] items-start gap-2">
                           <div />
-                          <div className="rounded-md border border-gray-700 bg-black/20 p-2 space-y-1.5">
-                            <p className="text-[11px] text-gray-400">{t('flightList.filterProfiles.createDescription')}</p>
+                          <div className="rounded-md border border-line bg-black/20 p-2 space-y-1.5">
+                            <p className="text-[11px] text-muted">{t('flightList.filterProfiles.createDescription')}</p>
                             <div className="flex items-center gap-2">
                               <input
                                 type="text"
@@ -2878,7 +2873,7 @@ export function FlightList({
                               <button
                                 type="button"
                                 onClick={handleCreateOrOverwriteFilterProfile}
-                                className="text-xs text-drone-primary hover:text-cyan-300"
+                                className="text-xs text-accent hover:text-accent"
                               >
                                 {t('profile.create')}
                               </button>
@@ -2888,22 +2883,22 @@ export function FlightList({
                                   setShowCreateFilterProfileInline(false);
                                   setNewFilterProfileError(null);
                                 }}
-                                className="text-xs text-gray-400 hover:text-gray-200"
+                                className="text-xs text-muted hover:text-ink"
                               >
                                 {t('profile.cancel')}
                               </button>
                             </div>
-                            {newFilterProfileError && <p className="text-[11px] text-red-400">{newFilterProfileError}</p>}
+                            {newFilterProfileError && <p className="text-[11px] text-danger">{newFilterProfileError}</p>}
                           </div>
                         </div>
                       )}
 
-                      <div className="border-b border-gray-700/70" />
+                      <div className="border-b border-line/70" />
                     </div>
 
                     {/* Duration range slider */}
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0 text-center">{t('flightList.duration')}</label>
+                      <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0 text-center">{t('flightList.duration')}</label>
                       <div className="flex-1 flex items-center gap-2 min-w-0">
                         <div className="flex-1 min-w-0">
                           {(() => {
@@ -2946,7 +2941,7 @@ export function FlightList({
                             );
                           })()}
                         </div>
-                        <span className={`text-xs font-medium whitespace-nowrap min-w-[60px] flex items-center justify-center flex-shrink-0 ${isLight ? 'text-gray-700' : 'text-gray-200'}`}>
+                        <span className={`text-xs font-medium whitespace-nowrap min-w-[60px] flex items-center justify-center flex-shrink-0 text-ink`}>
                           {(() => {
                             const lo = durationFilterMin ?? durationRange.minMins;
                             const hi = durationFilterMax ?? durationRange.maxMins;
@@ -2960,7 +2955,7 @@ export function FlightList({
 
                     {/* Max Altitude range slider */}
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0 text-center">{t('flightList.altitude')}</label>
+                      <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0 text-center">{t('flightList.altitude')}</label>
                       <div className="flex-1 flex items-center gap-2 min-w-0">
                         <div className="flex-1 min-w-0">
                           {(() => {
@@ -3003,7 +2998,7 @@ export function FlightList({
                             );
                           })()}
                         </div>
-                        <span className={`text-xs font-medium whitespace-nowrap min-w-[60px] flex items-center justify-center flex-shrink-0 ${isLight ? 'text-gray-700' : 'text-gray-200'}`}>
+                        <span className={`text-xs font-medium whitespace-nowrap min-w-[60px] flex items-center justify-center flex-shrink-0 text-ink`}>
                           {(() => {
                             const lo = altitudeFilterMin ?? altitudeRange.min;
                             const hi = altitudeFilterMax ?? altitudeRange.max;
@@ -3017,7 +3012,7 @@ export function FlightList({
 
                     {/* Total Distance range slider */}
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0 text-center">{t('flightList.distance')}</label>
+                      <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0 text-center">{t('flightList.distance')}</label>
                       <div className="flex-1 flex items-center gap-2 min-w-0">
                         <div className="flex-1 min-w-0">
                           {(() => {
@@ -3060,7 +3055,7 @@ export function FlightList({
                             );
                           })()}
                         </div>
-                        <span className={`text-xs font-medium whitespace-nowrap min-w-[60px] flex items-center justify-center flex-shrink-0 ${isLight ? 'text-gray-700' : 'text-gray-200'}`}>
+                        <span className={`text-xs font-medium whitespace-nowrap min-w-[60px] flex items-center justify-center flex-shrink-0 text-ink`}>
                           {(() => {
                             const lo = distanceFilterMin ?? distanceRange.min;
                             const hi = distanceFilterMax ?? distanceRange.max;
@@ -3079,7 +3074,7 @@ export function FlightList({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.date')}</label>
+                      <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.date')}</label>
                       <button
                         ref={dateButtonRef}
                         type="button"
@@ -3088,7 +3083,7 @@ export function FlightList({
                       >
                         <span
                           className={
-                            dateRange?.from || dateRange?.to ? 'text-gray-100' : 'text-gray-400'
+                            dateRange?.from || dateRange?.to ? 'text-ink' : 'text-muted'
                           }
                         >
                           {dateRangeLabel}
@@ -3123,14 +3118,14 @@ export function FlightList({
                             <button
                               type="button"
                               onClick={() => setDateRange(undefined)}
-                              className="text-xs text-gray-400 hover:text-white"
+                              className="text-xs text-muted hover:text-ink"
                             >
                               {t('flightList.clearRange')}
                             </button>
                             <button
                               type="button"
                               onClick={() => setIsDateOpen(false)}
-                              className="text-xs text-gray-200 hover:text-white"
+                              className="text-xs text-ink hover:text-ink"
                             >
                               {t('flightList.done')}
                             </button>
@@ -3140,7 +3135,7 @@ export function FlightList({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.drone')}</label>
+                      <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.drone')}</label>
                       <div className="relative flex-1 min-w-0">
                         <button
                           ref={droneBtnRef}
@@ -3148,7 +3143,7 @@ export function FlightList({
                           onClick={() => setIsDroneDropdownOpen((v) => !v)}
                           className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                         >
-                          <span className={`truncate ${selectedDrones.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
+                          <span className={`truncate ${selectedDrones.length > 0 ? 'text-ink' : 'text-muted'}`}>
                             {selectedDrones.length > 0
                               ? selectedDrones.map((k) => droneOptions.find((d) => d.key === k)?.label ?? k).join(', ')
                               : t('flightList.allDrones')}
@@ -3163,11 +3158,11 @@ export function FlightList({
                             />
                             <div
                               ref={droneDropdownRef}
-                              className="fixed z-50 max-h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                              className="fixed z-50 max-h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                               style={(() => { const r = droneBtnRef.current?.getBoundingClientRect(); return r ? { top: r.bottom + 4, left: r.left, width: r.width } : {}; })()}
                             >
                               {droneOptions.length > 4 && (
-                                <div className="px-2 pt-2 pb-1 border-b border-gray-700 flex-shrink-0">
+                                <div className="px-2 pt-2 pb-1 border-b border-line flex-shrink-0">
                                   <input
                                     type="text"
                                     value={droneSearch}
@@ -3184,14 +3179,14 @@ export function FlightList({
                                     }}
                                     placeholder={t('flightList.searchDrones')}
                                     autoFocus
-                                    className="w-full bg-drone-dark text-xs text-gray-200 rounded px-2 py-1 border border-gray-600 focus:border-drone-primary focus:outline-none placeholder-gray-500"
+                                    className="w-full bg-canvas text-xs text-ink rounded px-2 py-1 border border-line-strong focus:border-accent focus:outline-none placeholder:text-faint"
                                   />
                                 </div>
                               )}
                               <div className="overflow-auto flex-1">
                                 {(() => {
                                   const sorted = getDroneSorted();
-                                  if (sorted.length === 0) return <p className="text-xs text-gray-500 px-3 py-2">{t('flightList.noMatchingDrones')}</p>;
+                                  if (sorted.length === 0) return <p className="text-xs text-muted px-3 py-2">{t('flightList.noMatchingDrones')}</p>;
                                   return sorted.map((drone, index) => {
                                     const isSelected = selectedDrones.includes(drone.key);
                                     const isAvailable = availableDroneKeys.has(drone.key);
@@ -3202,10 +3197,10 @@ export function FlightList({
                                         type="button"
                                         onClick={() => !isDisabled && setSelectedDrones((prev) => isSelected ? prev.filter((k) => k !== drone.key) : [...prev, drone.key])}
                                         onMouseEnter={() => !isDisabled && setDroneHighlightedIndex(index)}
-                                        className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected ? 'bg-sky-500/20 text-gray-800 dark:text-sky-200' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                          } ${!isDisabled && index === droneHighlightedIndex && !isSelected ? 'bg-gray-200/50 dark:bg-gray-700/50' : ''}`}
+                                        className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected ? 'bg-accent/20 text-accent' : 'text-ink hover:bg-line/50'
+                                          } ${!isDisabled && index === droneHighlightedIndex && !isSelected ? 'bg-line/50' : ''}`}
                                       >
-                                        <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-sky-500 bg-sky-500' : 'border-gray-400 dark:border-gray-600'
+                                        <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-accent bg-accent' : 'border-line-strong'
                                           }`}>
                                           {isSelected && (
                                             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -3220,7 +3215,7 @@ export function FlightList({
                                   <button
                                     type="button"
                                     onClick={() => { setSelectedDrones([]); setDroneSearch(''); setIsDroneDropdownOpen(false); }}
-                                    className="w-full text-left px-3 py-1.5 text-xs text-gray-400 hover:text-white border-t border-gray-700"
+                                    className="w-full text-left px-3 py-1.5 text-xs text-muted hover:text-ink border-t border-line"
                                   >
                                     {t('flightList.clearDroneFilter')}
                                   </button>
@@ -3233,7 +3228,7 @@ export function FlightList({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.battery')}</label>
+                      <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.battery')}</label>
                       <div className="relative flex-1 min-w-0">
                         <button
                           ref={batteryBtnRef}
@@ -3241,7 +3236,7 @@ export function FlightList({
                           onClick={() => setIsBatteryDropdownOpen((v) => !v)}
                           className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                         >
-                          <span className={`truncate ${selectedBatteries.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
+                          <span className={`truncate ${selectedBatteries.length > 0 ? 'text-ink' : 'text-muted'}`}>
                             {selectedBatteries.length > 0
                               ? selectedBatteries.map((key) => batteryLabelByKey.get(key) ?? key).join(', ')
                               : t('flightList.allBatteries')}
@@ -3256,11 +3251,11 @@ export function FlightList({
                             />
                             <div
                               ref={batteryDropdownRef}
-                              className="fixed z-50 max-h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                              className="fixed z-50 max-h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                               style={(() => { const r = batteryBtnRef.current?.getBoundingClientRect(); return r ? { top: r.bottom + 4, left: r.left, width: r.width } : {}; })()}
                             >
                               {batteryOptions.length > 4 && (
-                                <div className="px-2 pt-2 pb-1 border-b border-gray-700 flex-shrink-0">
+                                <div className="px-2 pt-2 pb-1 border-b border-line flex-shrink-0">
                                   <input
                                     type="text"
                                     value={batterySearch}
@@ -3277,14 +3272,14 @@ export function FlightList({
                                     }}
                                     placeholder={t('flightList.searchBatteries')}
                                     autoFocus
-                                    className="w-full bg-drone-dark text-xs text-gray-200 rounded px-2 py-1 border border-gray-600 focus:border-drone-primary focus:outline-none placeholder-gray-500"
+                                    className="w-full bg-canvas text-xs text-ink rounded px-2 py-1 border border-line-strong focus:border-accent focus:outline-none placeholder:text-faint"
                                   />
                                 </div>
                               )}
                               <div className="overflow-auto flex-1">
                                 {(() => {
                                   const sorted = getBatterySorted();
-                                  if (sorted.length === 0) return <p className="text-xs text-gray-500 px-3 py-2">{t('flightList.noMatchingBatteries')}</p>;
+                                  if (sorted.length === 0) return <p className="text-xs text-muted px-3 py-2">{t('flightList.noMatchingBatteries')}</p>;
                                   return sorted.map((bat, index) => {
                                     const isSelected = selectedBatteries.includes(bat.value);
                                     const isAvailable = availableBatteryGroups.has(bat.value);
@@ -3295,10 +3290,10 @@ export function FlightList({
                                         type="button"
                                         onClick={() => !isDisabled && setSelectedBatteries((prev) => isSelected ? prev.filter((k) => k !== bat.value) : [...prev, bat.value])}
                                         onMouseEnter={() => !isDisabled && setBatteryHighlightedIndex(index)}
-                                        className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected ? 'bg-amber-500/20 text-gray-800 dark:text-amber-200' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                          } ${!isDisabled && index === batteryHighlightedIndex && !isSelected ? 'bg-gray-200/50 dark:bg-gray-700/50' : ''}`}
+                                        className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected ? 'bg-warning/15 text-warning' : 'text-ink hover:bg-line/50'
+                                          } ${!isDisabled && index === batteryHighlightedIndex && !isSelected ? 'bg-line/50' : ''}`}
                                       >
-                                        <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-amber-500 bg-amber-500' : 'border-gray-400 dark:border-gray-600'
+                                        <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-warning bg-warning' : 'border-line-strong'
                                           }`}>
                                           {isSelected && (
                                             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -3313,7 +3308,7 @@ export function FlightList({
                                   <button
                                     type="button"
                                     onClick={() => { setSelectedBatteries([]); setBatterySearch(''); setIsBatteryDropdownOpen(false); }}
-                                    className="w-full text-left px-3 py-1.5 text-xs text-gray-400 hover:text-white border-t border-gray-700"
+                                    className="w-full text-left px-3 py-1.5 text-xs text-muted hover:text-ink border-t border-line"
                                   >
                                     {t('flightList.clearBatteryFilter')}
                                   </button>
@@ -3328,7 +3323,7 @@ export function FlightList({
                     {/* Controller filter */}
                     {controllerOptions.length > 0 && (
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.controller')}</label>
+                        <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.controller')}</label>
                         <div className="relative flex-1 min-w-0">
                           <button
                             ref={controllerBtnRef}
@@ -3336,7 +3331,7 @@ export function FlightList({
                             onClick={() => setIsControllerDropdownOpen((v) => !v)}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
-                            <span className={`truncate ${selectedControllers.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
+                            <span className={`truncate ${selectedControllers.length > 0 ? 'text-ink' : 'text-muted'}`}>
                               {selectedControllers.length > 0
                                 ? selectedControllers.map((s) => getDisplaySerial(s)).join(', ')
                                 : t('flightList.allControllers')}
@@ -3351,11 +3346,11 @@ export function FlightList({
                               />
                               <div
                                 ref={controllerDropdownRef}
-                                className="fixed z-50 max-h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                                className="fixed z-50 max-h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                                 style={(() => { const r = controllerBtnRef.current?.getBoundingClientRect(); return r ? { top: r.bottom + 4, left: r.left, width: r.width } : {}; })()}
                               >
                                 {controllerOptions.length > 4 && (
-                                  <div className="px-2 pt-2 pb-1 border-b border-gray-700 flex-shrink-0">
+                                  <div className="px-2 pt-2 pb-1 border-b border-line flex-shrink-0">
                                     <input
                                       type="text"
                                       value={controllerSearch}
@@ -3372,14 +3367,14 @@ export function FlightList({
                                       }}
                                       placeholder={t('flightList.searchControllers')}
                                       autoFocus
-                                      className="w-full bg-drone-dark text-xs text-gray-200 rounded px-2 py-1 border border-gray-600 focus:border-drone-primary focus:outline-none placeholder-gray-500"
+                                      className="w-full bg-canvas text-xs text-ink rounded px-2 py-1 border border-line-strong focus:border-accent focus:outline-none placeholder:text-faint"
                                     />
                                   </div>
                                 )}
                                 <div className="overflow-auto flex-1">
                                   {(() => {
                                     const sorted = getControllerSorted();
-                                    if (sorted.length === 0) return <p className="text-xs text-gray-500 px-3 py-2">{t('flightList.noMatchingControllers')}</p>;
+                                    if (sorted.length === 0) return <p className="text-xs text-muted px-3 py-2">{t('flightList.noMatchingControllers')}</p>;
                                     return sorted.map((ctrl, index) => {
                                       const isSelected = selectedControllers.includes(ctrl.value);
                                       const isAvailable = availableControllerSerials.has(ctrl.value);
@@ -3390,10 +3385,10 @@ export function FlightList({
                                           type="button"
                                           onClick={() => !isDisabled && setSelectedControllers((prev) => isSelected ? prev.filter((k) => k !== ctrl.value) : [...prev, ctrl.value])}
                                           onMouseEnter={() => !isDisabled && setControllerHighlightedIndex(index)}
-                                          className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected ? 'bg-purple-500/20 text-gray-800 dark:text-purple-200' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                            } ${!isDisabled && index === controllerHighlightedIndex && !isSelected ? 'bg-gray-200/50 dark:bg-gray-700/50' : ''}`}
+                                          className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected ? 'bg-accent/20 text-accent' : 'text-ink hover:bg-line/50'
+                                            } ${!isDisabled && index === controllerHighlightedIndex && !isSelected ? 'bg-line/50' : ''}`}
                                         >
-                                          <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-purple-500 bg-purple-500' : 'border-gray-400 dark:border-gray-600'
+                                          <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-accent bg-accent' : 'border-line-strong'
                                             }`}>
                                             {isSelected && (
                                               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -3408,7 +3403,7 @@ export function FlightList({
                                     <button
                                       type="button"
                                       onClick={() => { setSelectedControllers([]); setControllerSearch(''); setIsControllerDropdownOpen(false); }}
-                                      className="w-full text-left px-3 py-1.5 text-xs text-gray-400 hover:text-white border-t border-gray-700"
+                                      className="w-full text-left px-3 py-1.5 text-xs text-muted hover:text-ink border-t border-line"
                                     >
                                       {t('flightList.clearControllerFilter')}
                                     </button>
@@ -3424,7 +3419,7 @@ export function FlightList({
                     {/* Tag filter */}
                     {allTags.length > 0 && (
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.tags')}</label>
+                        <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.tags')}</label>
                         <div className="relative flex-1 min-w-0">
                           <button
                             ref={tagBtnRef}
@@ -3432,7 +3427,7 @@ export function FlightList({
                             onClick={() => setIsTagDropdownOpen((v) => !v)}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
-                            <span className={`truncate ${selectedTags.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
+                            <span className={`truncate ${selectedTags.length > 0 ? 'text-ink' : 'text-muted'}`}>
                               {selectedTags.length > 0 ? selectedTags.join(', ') : t('flightList.allTags')}
                             </span>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><polyline points="6 9 12 15 18 9" /></svg>
@@ -3445,11 +3440,11 @@ export function FlightList({
                               />
                               <div
                                 ref={tagDropdownRef}
-                                className="fixed z-50 max-h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                                className="fixed z-50 max-h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                                 style={(() => { const r = tagBtnRef.current?.getBoundingClientRect(); return r ? { top: r.bottom + 4, left: r.left, width: r.width } : {}; })()}
                               >
                                 {/* Search input */}
-                                <div className="px-2 pt-2 pb-1 border-b border-gray-700 flex-shrink-0">
+                                <div className="px-2 pt-2 pb-1 border-b border-line flex-shrink-0">
                                   <input
                                     type="text"
                                     value={tagSearch}
@@ -3491,14 +3486,14 @@ export function FlightList({
                                     }}
                                     placeholder={t('flightList.searchTags')}
                                     autoFocus
-                                    className="w-full bg-drone-dark text-xs text-gray-200 rounded px-2 py-1 border border-gray-600 focus:border-drone-primary focus:outline-none placeholder-gray-500"
+                                    className="w-full bg-canvas text-xs text-ink rounded px-2 py-1 border border-line-strong focus:border-accent focus:outline-none placeholder:text-faint"
                                   />
                                 </div>
                                 <div className="overflow-auto flex-1">
                                   {(() => {
                                     const filtered = allTags.filter((tag) => tag.toLowerCase().includes(tagSearch.toLowerCase()));
                                     if (filtered.length === 0) {
-                                      return <p className="text-xs text-gray-500 px-3 py-2">{t('flightList.noMatchingTags')}</p>;
+                                      return <p className="text-xs text-muted px-3 py-2">{t('flightList.noMatchingTags')}</p>;
                                     }
                                     // Sort: selected first, then available, then unavailable at bottom
                                     const sorted = [...filtered].sort((a, b) => {
@@ -3530,11 +3525,11 @@ export function FlightList({
                                           }}
                                           onMouseEnter={() => !isDisabled && setTagHighlightedIndex(index)}
                                           className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected
-                                            ? 'bg-violet-500/20 text-gray-800 dark:text-violet-200'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                            } ${!isDisabled && index === tagHighlightedIndex && !isSelected ? 'bg-gray-200/50 dark:bg-gray-700/50' : ''}`}
+                                            ? 'bg-accent/20 text-accent'
+                                            : 'text-ink hover:bg-line/50'
+                                            } ${!isDisabled && index === tagHighlightedIndex && !isSelected ? 'bg-line/50' : ''}`}
                                         >
-                                          <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-violet-500 bg-violet-500' : 'border-gray-400 dark:border-gray-600'
+                                          <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-accent bg-accent' : 'border-line-strong'
                                             }`}>
                                             {isSelected && (
                                               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -3553,7 +3548,7 @@ export function FlightList({
                                         setTagSearch('');
                                         setIsTagDropdownOpen(false);
                                       }}
-                                      className="w-full text-left px-3 py-1.5 text-xs text-gray-400 hover:text-white border-t border-gray-700"
+                                      className="w-full text-left px-3 py-1.5 text-xs text-muted hover:text-ink border-t border-line"
                                     >
                                       {t('flightList.clearTagFilter')}
                                     </button>
@@ -3565,10 +3560,7 @@ export function FlightList({
                           </div>
 
                           <div
-                            className={`h-8 rounded-lg border p-0.5 flex items-center gap-0.5 flex-shrink-0 ${isLight
-                              ? 'border-gray-300 bg-transparent'
-                              : 'border-gray-600/80 bg-gray-900/60'
-                              }`}
+                            className={`h-8 rounded-lg border p-0.5 flex items-center gap-0.5 flex-shrink-0 border-line-strong/80 bg-canvas/60`}
                             role="group"
                             aria-label={t('flightList.tagMatchMode', 'Tag match mode')}
                           >
@@ -3576,10 +3568,8 @@ export function FlightList({
                               type="button"
                               onClick={() => setTagFilterMode('and')}
                               className={`h-full min-w-[2.25rem] px-2 rounded-md text-[10px] font-semibold transition-colors ${tagFilterMode === 'and'
-                                ? 'bg-sky-500 text-white'
-                                : isLight
-                                  ? 'text-gray-700 hover:bg-gray-200/70'
-                                  : 'text-gray-300 hover:bg-gray-700/70'
+                                ? 'bg-accent text-accent-ink'
+                                : 'text-ink hover:bg-line/60'
                                 }`}
                               title={t('flightList.tagMatchAll', 'Require all selected tags')}
                               aria-pressed={tagFilterMode === 'and'}
@@ -3590,10 +3580,8 @@ export function FlightList({
                               type="button"
                               onClick={() => setTagFilterMode('or')}
                               className={`h-full min-w-[2.25rem] px-2 rounded-md text-[10px] font-semibold transition-colors ${tagFilterMode === 'or'
-                                ? 'bg-sky-500 text-white'
-                                : isLight
-                                  ? 'text-gray-700 hover:bg-gray-200/70'
-                                  : 'text-gray-300 hover:bg-gray-700/70'
+                                ? 'bg-accent text-accent-ink'
+                                : 'text-ink hover:bg-line/60'
                                 }`}
                               title={t('flightList.tagMatchAny', 'Match any selected tag')}
                               aria-pressed={tagFilterMode === 'or'}
@@ -3604,13 +3592,10 @@ export function FlightList({
                       </div>
                     )}
 
-                    <div className={`rounded-md border px-2 py-2 space-y-2 ${isLight
-                      ? 'border-gray-300 bg-transparent'
-                      : 'border-gray-700/70 bg-black/15'
-                      }`}>
-                      <p className="text-[11px] uppercase tracking-wide text-gray-400">{t('flightList.mediaGroup', 'Media')}</p>
+                    <div className={`rounded-md border px-2 py-2 space-y-2 border-line/70 bg-black/15`}>
+                      <p className="text-[11px] uppercase tracking-wide text-muted">{t('flightList.mediaGroup', 'Media')}</p>
                       <div className="grid grid-cols-[minmax(0,1fr)_82px_auto] items-center gap-2">
-                        <label className="text-xs text-gray-300" htmlFor="photo-filter-min">{t('flightList.photos', 'Photos')}</label>
+                        <label className="text-xs text-ink" htmlFor="photo-filter-min">{t('flightList.photos', 'Photos')}</label>
                         <input
                           id="photo-filter-min"
                           type="number"
@@ -3625,10 +3610,10 @@ export function FlightList({
                           }}
                           className="input text-xs h-7 px-2"
                         />
-                        <span className="text-xs text-gray-400 whitespace-nowrap">{t('flightList.orMore', 'or more')}</span>
+                        <span className="text-xs text-muted whitespace-nowrap">{t('flightList.orMore', 'or more')}</span>
                       </div>
                       <div className="grid grid-cols-[minmax(0,1fr)_82px_auto] items-center gap-2">
-                        <label className="text-xs text-gray-300" htmlFor="video-filter-min">{t('flightList.videos', 'Videos')}</label>
+                        <label className="text-xs text-ink" htmlFor="video-filter-min">{t('flightList.videos', 'Videos')}</label>
                         <input
                           id="video-filter-min"
                           type="number"
@@ -3643,14 +3628,14 @@ export function FlightList({
                           }}
                           className="input text-xs h-7 px-2"
                         />
-                        <span className="text-xs text-gray-400 whitespace-nowrap">{t('flightList.orMore', 'or more')}</span>
+                        <span className="text-xs text-muted whitespace-nowrap">{t('flightList.orMore', 'or more')}</span>
                       </div>
                     </div>
 
                     {/* Color filter */}
                     {allFlightColors.length > 1 && (
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.color', 'Color')}</label>
+                        <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.color', 'Color')}</label>
                         <div className="relative flex-1 min-w-0">
                           <button
                             ref={colorBtnRef}
@@ -3658,11 +3643,11 @@ export function FlightList({
                             onClick={() => setIsColorDropdownOpen((v) => !v)}
                             className="input w-full text-xs h-8 px-3 py-1.5 flex items-center justify-between gap-2"
                           >
-                            <span className={`truncate flex items-center gap-1 ${selectedColors.length > 0 ? 'text-gray-100' : 'text-gray-400'}`}>
+                            <span className={`truncate flex items-center gap-1 ${selectedColors.length > 0 ? 'text-ink' : 'text-muted'}`}>
                               {selectedColors.length > 0 ? (
                                 <>
                                   {selectedColors.map((c) => (
-                                    <span key={c} className="inline-block w-3 h-3 rounded-sm border border-gray-600 flex-shrink-0" style={{ backgroundColor: c }} />
+                                    <span key={c} className="inline-block w-3 h-3 rounded-sm border border-line-strong flex-shrink-0" style={{ backgroundColor: c }} />
                                   ))}
                                   <span className="ml-1">{selectedColors.length} {t('flightList.selected', 'selected')}</span>
                                 </>
@@ -3678,7 +3663,7 @@ export function FlightList({
                               />
                               <div
                                 ref={colorDropdownRef}
-                                className="fixed z-50 max-h-56 rounded-lg border border-gray-700 bg-drone-surface shadow-xl flex flex-col overflow-hidden"
+                                className="fixed z-50 max-h-56 rounded-lg border border-line bg-elevated shadow-xl flex flex-col overflow-hidden"
                                 style={(() => { const r = colorBtnRef.current?.getBoundingClientRect(); return r ? { top: r.bottom + 4, left: r.left, width: r.width } : {}; })()}
                               >
                                 <div className="overflow-auto flex-1">
@@ -3713,17 +3698,17 @@ export function FlightList({
                                           }}
                                           onMouseEnter={() => !isDisabled && setColorHighlightedIndex(index)}
                                           className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${isDisabled ? 'opacity-35 cursor-default' : isSelected
-                                            ? 'bg-sky-500/20 text-gray-800 dark:text-sky-200'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
-                                            } ${!isDisabled && index === colorHighlightedIndex && !isSelected ? 'bg-gray-200/50 dark:bg-gray-700/50' : ''}`}
+                                            ? 'bg-accent/20 text-accent'
+                                            : 'text-ink hover:bg-line/50'
+                                            } ${!isDisabled && index === colorHighlightedIndex && !isSelected ? 'bg-line/50' : ''}`}
                                         >
-                                          <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-sky-500 bg-sky-500' : 'border-gray-400 dark:border-gray-600'
+                                          <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-accent bg-accent' : 'border-line-strong'
                                             }`}>
                                             {isSelected && (
                                               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                             )}
                                           </span>
-                                          <span className="w-4 h-4 rounded-sm border border-gray-600 flex-shrink-0" style={{ backgroundColor: color }} />
+                                          <span className="w-4 h-4 rounded-sm border border-line-strong flex-shrink-0" style={{ backgroundColor: color }} />
                                           <span className="font-mono">{color.toUpperCase()}</span>
                                         </button>
                                       );
@@ -3736,7 +3721,7 @@ export function FlightList({
                                         setSelectedColors([]);
                                         setIsColorDropdownOpen(false);
                                       }}
-                                      className="w-full text-left px-3 py-1.5 text-xs text-gray-400 hover:text-white border-t border-gray-700"
+                                      className="w-full text-left px-3 py-1.5 text-xs text-muted hover:text-ink border-t border-line"
                                     >
                                       {t('flightList.clearColorFilter', 'Clear color filter')}
                                     </button>
@@ -3753,11 +3738,11 @@ export function FlightList({
             </div>{/* End scrollable filter fields container */}
 
             {/* Separator */}
-            <div className="border-t border-gray-700/40 -mx-1" />
+            <div className="border-t border-line/40 -mx-1" />
 
             {/* Search filter and Sort */}
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-400 whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.search')}</label>
+              <label className="text-xs text-muted whitespace-nowrap w-[52px] flex-shrink-0">{t('flightList.search')}</label>
               <div className="relative flex-1 min-w-0">
                 <input
                   value={searchQuery}
@@ -3770,7 +3755,7 @@ export function FlightList({
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
                     aria-label={t('flightList.clearSearch')}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -3783,7 +3768,7 @@ export function FlightList({
                   ref={sortButtonRef}
                   type="button"
                   onClick={() => setIsSortOpen((open) => !open)}
-                  className="h-8 w-8 rounded-l-md border border-gray-700/70 bg-drone-dark text-gray-300 hover:text-white hover:border-gray-600 transition-colors flex items-center justify-center"
+                  className="h-8 w-8 rounded-l-md border border-line/70 bg-canvas text-ink hover:text-ink hover:border-line-strong transition-colors flex items-center justify-center"
                   aria-label={`Sort flights: ${activeSortLabel}`}
                 >
                   <SortIcon />
@@ -3791,7 +3776,7 @@ export function FlightList({
                 <button
                   type="button"
                   onClick={() => setSortDirection((dir) => (dir === 'asc' ? 'desc' : 'asc'))}
-                  className="h-8 w-7 rounded-r-md border border-l-0 border-gray-700/70 bg-drone-dark text-gray-300 hover:text-white hover:border-gray-600 transition-colors flex items-center justify-center"
+                  className="h-8 w-7 rounded-r-md border border-l-0 border-line/70 bg-canvas text-ink hover:text-ink hover:border-line-strong transition-colors flex items-center justify-center"
                   aria-label={`Toggle sort direction: ${sortDirection === 'asc' ? 'ascending' : 'descending'}`}
                 >
                   <SortDirectionIcon direction={sortDirection} />
@@ -3821,7 +3806,7 @@ export function FlightList({
                           setIsSortOpen(false);
                         }
                       }}
-                      className="themed-select-dropdown absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-gray-700 p-1 shadow-xl outline-none"
+                      className="themed-select-dropdown absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-line p-1 shadow-xl outline-none"
                     >
                       {sortOptions.map((option, index) => (
                         <button
@@ -3833,7 +3818,7 @@ export function FlightList({
                           }}
                           onMouseEnter={() => setSortHighlightedIndex(index)}
                           className={`themed-select-option w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${sortOption === option.value ? 'font-medium' : ''
-                            } ${index === sortHighlightedIndex ? 'bg-drone-primary/20' : ''}`}
+                            } ${index === sortHighlightedIndex ? 'bg-accent/15' : ''}`}
                         >
                           {option.label}
                         </button>
@@ -3846,12 +3831,12 @@ export function FlightList({
 
             {/* Filtered count and Clear filters on same line */}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-muted">
                 {t('flightList.logsSelected', { n: filteredFlights.length, total: flights.length })}
               </span>
               <button
                 onClick={clearAllFilters}
-                className="text-xs text-gray-400 hover:text-white"
+                className="text-xs text-muted hover:text-ink"
               >
                 {t('flightList.clearFilters')}
               </button>
@@ -3865,8 +3850,8 @@ export function FlightList({
                   onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
                   disabled={filteredFlights.length === 0}
                   className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors w-full ${filteredFlights.length > 0
-                    ? 'bg-drone-primary/20 text-drone-primary hover:bg-drone-primary/30'
-                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    ? 'bg-accent/15 text-accent hover:bg-accent/25'
+                    : 'bg-canvas text-muted cursor-not-allowed'
                     }`}
                 >
                   {t('flightList.exportFiltered')}
@@ -3937,7 +3922,7 @@ export function FlightList({
                           setIsExportDropdownOpen(false);
                         }
                       }}
-                      className={`themed-select-dropdown absolute left-0 ${isMobileRuntime ? 'bottom-full mb-2' : 'top-full mt-2'} w-full border border-gray-700 rounded-lg shadow-xl z-50 outline-none`}
+                      className={`themed-select-dropdown absolute left-0 ${isMobileRuntime ? 'bottom-full mb-2' : 'top-full mt-2'} w-full border border-line rounded-lg shadow-xl z-50 outline-none`}
                     >
                       <div className="p-2">
                         {[
@@ -3972,8 +3957,8 @@ export function FlightList({
                             disabled={opt.disabled}
                             title={opt.tooltip}
                             className={`themed-select-option w-full text-left px-3 py-2 text-sm rounded transition-colors ${opt.disabled
-                              ? 'text-gray-500 cursor-not-allowed'
-                              : index === exportHighlightedIndex ? 'bg-drone-primary/20' : ''
+                              ? 'text-muted cursor-not-allowed'
+                              : index === exportHighlightedIndex ? 'bg-accent/15' : ''
                               }`}
                           >
                             {opt.label}
@@ -3993,8 +3978,8 @@ export function FlightList({
                 }}
                 disabled={filteredFlights.length === 0}
                 className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors flex-1 ${filteredFlights.length > 0
-                  ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                  ? 'bg-danger/20 text-danger hover:bg-danger/30'
+                  : 'bg-canvas text-muted cursor-not-allowed'
                   }`}
               >
                 {t('flightList.deleteFiltered')}
@@ -4007,7 +3992,7 @@ export function FlightList({
                 className="flex items-center gap-2 text-xs"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span className="text-gray-400">
+                <span className="text-muted">
                   {t('flightList.deleteFilteredConfirm', { n: filteredFlights.length })}
                 </span>
                 <button
@@ -4015,7 +4000,7 @@ export function FlightList({
                     e.stopPropagation();
                     handleBulkDelete();
                   }}
-                  className="text-xs text-red-400 hover:text-red-300"
+                  className="text-xs text-danger hover:text-danger"
                 >
                   {t('flightList.yes')}
                 </button>
@@ -4024,7 +4009,7 @@ export function FlightList({
                     e.stopPropagation();
                     setConfirmBulkDelete(false);
                   }}
-                  className="text-xs text-gray-400 hover:text-gray-200"
+                  className="text-xs text-muted hover:text-ink"
                 >
                   {t('flightList.cancel')}
                 </button>
@@ -4041,8 +4026,8 @@ export function FlightList({
                 }}
                 disabled={filteredFlights.length === 0 || selectedTags.length === 0}
                 className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors flex-1 ${filteredFlights.length > 0 && selectedTags.length > 0
-                  ? 'bg-orange-500/20 text-orange-600 hover:bg-orange-500/30'
-                  : 'bg-gray-500/10 text-gray-400 cursor-not-allowed'
+                  ? 'bg-accent/15 text-accent hover:bg-accent/25'
+                  : 'bg-line/40 text-muted cursor-not-allowed'
                   }`}
               >
                 {t('flightList.untagFiltered')}
@@ -4056,8 +4041,8 @@ export function FlightList({
                 }}
                 disabled={filteredFlights.length === 0}
                 className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors flex-1 ${filteredFlights.length > 0
-                  ? 'bg-violet-500/20 text-violet-600 hover:bg-violet-500/30'
-                  : 'bg-gray-500/10 text-gray-400 cursor-not-allowed'
+                  ? 'bg-accent/20 text-accent hover:bg-accent/30'
+                  : 'bg-line/40 text-muted cursor-not-allowed'
                   }`}
               >
                 {t('flightList.bulkTagFiltered')}
@@ -4070,7 +4055,7 @@ export function FlightList({
                 className="flex items-center gap-2 text-xs"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span className="text-gray-400">
+                <span className="text-muted">
                   {t('flightList.removeTagConfirm', { tags: selectedTags.join(', ') })}
                 </span>
                 <button
@@ -4078,7 +4063,7 @@ export function FlightList({
                     e.stopPropagation();
                     handleBulkUntag();
                   }}
-                  className="text-xs text-orange-400 hover:text-orange-300"
+                  className="text-xs text-accent hover:text-accent"
                 >
                   {t('flightList.yes')}
                 </button>
@@ -4087,7 +4072,7 @@ export function FlightList({
                     e.stopPropagation();
                     setConfirmUntag(false);
                   }}
-                  className="text-xs text-gray-400 hover:text-gray-200"
+                  className="text-xs text-muted hover:text-ink"
                 >
                   {t('flightList.cancel')}
                 </button>
@@ -4123,7 +4108,7 @@ export function FlightList({
                     e.stopPropagation();
                     handleBulkTag();
                   }}
-                  className="text-xs text-violet-400 hover:text-violet-300"
+                  className="text-xs text-accent hover:text-accent-hover"
                 >
                   {t('flightList.ok')}
                 </button>
@@ -4133,7 +4118,7 @@ export function FlightList({
                     setShowBulkTagInput(false);
                     setBulkTagInput('');
                   }}
-                  className="text-xs text-gray-400 hover:text-gray-200"
+                  className="text-xs text-muted hover:text-ink"
                 >
                   {t('flightList.cancel')}
                 </button>
@@ -4145,7 +4130,7 @@ export function FlightList({
       </div>
 
       {/* Scrollable flight list */}
-      <div className="flex-1 overflow-y-auto divide-y divide-gray-700/50">
+      <div className="flex-1 overflow-y-auto divide-y divide-line/50">
         {sortedFlights.map((flight) => (
           <div
             key={flight.id}
@@ -4202,8 +4187,8 @@ export function FlightList({
             className={`w-full text-left cursor-pointer transition-colors duration-150 flex select-none ${(activeView === 'overview'
               ? overviewHighlightedFlightId === flight.id
               : (selectedFlightId === flight.id || previewFlightId === flight.id))
-              ? 'bg-drone-primary/20'
-              : 'hover:bg-gray-700/30'
+              ? 'bg-accent/15'
+              : 'hover:bg-line/30'
               }`}
           >
             {/* Color bar */}
@@ -4235,7 +4220,7 @@ export function FlightList({
                         }
                         setEditingId(null);
                       }}
-                      className="text-xs text-drone-primary"
+                      className="text-xs text-accent"
                     >
                       {t('flightList.save')}
                     </button>
@@ -4244,7 +4229,7 @@ export function FlightList({
                         e.stopPropagation();
                         setEditingId(null);
                       }}
-                      className="text-xs text-gray-400"
+                      className="text-xs text-muted"
                     >
                       {t('flightList.cancel')}
                     </button>
@@ -4253,7 +4238,7 @@ export function FlightList({
               ) : (
                 <div className="flex items-center justify-between gap-1">
                   <p
-                    className="text-sm text-gray-300 truncate flex-1 min-w-0"
+                    className="text-sm text-ink truncate flex-1 min-w-0"
                     onDoubleClick={(e) => {
                       e.stopPropagation();
                       setEditingId(flight.id);
@@ -4279,7 +4264,7 @@ export function FlightList({
                         setDraftName(flight.displayName || flight.fileName);
                         setConfirmDeleteId(null);
                       }}
-                      className="p-0.5 text-sky-400 hover:text-sky-300"
+                      className="p-0.5 text-accent hover:text-accent"
                       title={t('flightList.renameFlight')}
                     >
                       <PencilIcon />
@@ -4289,7 +4274,7 @@ export function FlightList({
                         e.stopPropagation();
                         setConfirmDeleteId(flight.id);
                       }}
-                      className="p-0.5 text-red-400 hover:text-red-300"
+                      className="p-0.5 text-danger hover:text-danger"
                       title={t('flightList.deleteFlight')}
                     >
                       <TrashIcon />
@@ -4300,7 +4285,7 @@ export function FlightList({
 
               {/* Subtitle: date + duration */}
               {editingId !== flight.id && (
-                <p className="text-xs text-gray-500 mt-0.5 truncate font-mono">
+                <p className="text-xs text-muted mt-0.5 truncate font-mono">
                   {formatDateTime(flight.startTime, dateLocale, appLanguage, hour12)}
                   {flight.durationSecs ? ` · ${formatDuration(flight.durationSecs)}` : ''}
                   {flight.totalDistance ? ` · ${formatDistance(flight.totalDistance, unitPrefs.distance, locale)}` : ''}
@@ -4310,7 +4295,7 @@ export function FlightList({
               {/* Delete confirmation */}
               {confirmDeleteId === flight.id && editingId !== flight.id && (
                 <div className="flex items-center gap-2 mt-1 text-xs">
-                  <span className="text-gray-400">{t('flightList.deleteConfirm')}</span>
+                  <span className="text-muted">{t('flightList.deleteConfirm')}</span>
                   <button
                     onClick={async (e) => {
                       e.stopPropagation();
@@ -4321,7 +4306,7 @@ export function FlightList({
                       await deleteFlight(flight.id);
                       setConfirmDeleteId(null);
                     }}
-                    className="text-red-400"
+                    className="text-danger"
                   >
                     {t('flightList.yes')}
                   </button>
@@ -4330,7 +4315,7 @@ export function FlightList({
                       e.stopPropagation();
                       setConfirmDeleteId(null);
                     }}
-                    className="text-gray-400"
+                    className="text-muted"
                   >
                     {t('flightList.no')}
                   </button>
@@ -4340,7 +4325,7 @@ export function FlightList({
           </div>
         ))}
         {sortedFlights.length === 0 && (
-          <div className="p-4 text-center text-gray-500 text-xs">
+          <div className="p-4 text-center text-muted text-xs">
             {t('flightList.noFlightsMatch')}
           </div>
         )}
@@ -4349,7 +4334,7 @@ export function FlightList({
       {/* Right-click Context Menu */}
       {contextMenu && (
         <div
-          className="fixed z-[9999] min-w-[180px] py-1 rounded-lg border border-gray-700 bg-drone-surface shadow-xl"
+          className="fixed z-[9999] min-w-[180px] py-1 rounded-lg border border-line bg-elevated shadow-xl"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
@@ -4360,9 +4345,9 @@ export function FlightList({
           <button
             type="button"
             onClick={() => handleContextRename(contextMenu.flightId)}
-            className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
           >
-            <svg className="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
             {t('flightList.rename')}
@@ -4372,9 +4357,9 @@ export function FlightList({
           <button
             type="button"
             onClick={() => handleContextAddNotes(contextMenu.flightId)}
-            className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
           >
-            <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             {flights.find(f => f.id === contextMenu.flightId)?.notes ? t('flightList.editNotes') : t('flightList.addNotes')}
@@ -4394,9 +4379,9 @@ export function FlightList({
               });
               setContextMenu(null);
             }}
-            className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
           >
-            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>
             {t('flightList.editColor', 'Edit Color')}
@@ -4406,25 +4391,25 @@ export function FlightList({
           <button
             type="button"
             onClick={() => handleContextDelete(contextMenu.flightId)}
-            className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700/50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2"
           >
-            <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
             {t('flightList.delete')}
           </button>
 
           {/* Divider */}
-          <div className="my-1 border-t border-gray-700" />
+          <div className="my-1 border-t border-line" />
 
           {/* Regenerate Smart Tags */}
           <button
             type="button"
             onClick={() => handleContextRegenerateTags(contextMenu.flightId)}
             disabled={isRegeneratingTags}
-            className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700/50 flex items-center gap-2 disabled:opacity-50"
+            className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center gap-2 disabled:opacity-50"
           >
-            <svg className="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             {t('flightList.regenerateSmartTags')}
@@ -4436,56 +4421,56 @@ export function FlightList({
             onClick={() => activeView !== 'overview' && handleContextGenerateFlyCard(contextMenu.flightId)}
             disabled={activeView === 'overview'}
             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${activeView === 'overview'
-              ? 'text-gray-500 cursor-not-allowed'
-              : 'text-gray-300 hover:bg-gray-700/50'
+              ? 'text-muted cursor-not-allowed'
+              : 'text-ink hover:bg-line/50'
               }`}
             title={activeView === 'overview' ? 'Select a flight first to generate FlyCard' : undefined}
           >
-            <svg className={`w-4 h-4 ${activeView === 'overview' ? 'text-gray-600' : 'text-orange-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 ${activeView === 'overview' ? 'text-muted' : 'text-accent'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             {t('flightList.generateFlyCard')}
           </button>
 
           {/* Divider */}
-          <div className="my-1 border-t border-gray-700" />
+          <div className="my-1 border-t border-line" />
 
           {/* Export submenu */}
           <div className="relative">
             {contextExportSubmenuOpen && (
-              <div className="absolute left-2 right-2 bottom-full mb-1 py-1 rounded-lg border border-gray-700 bg-drone-surface/95 backdrop-blur-sm shadow-xl z-10">
+              <div className="absolute left-2 right-2 bottom-full mb-1 py-1 rounded-lg border border-line bg-elevated/95 backdrop-blur-sm shadow-xl z-10">
                 <button
                   type="button"
                   onClick={() => handleContextExport(contextMenu.flightId, 'csv')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-300 hover:bg-gray-700/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
                 >
                   {t('flightList.csv')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleContextExport(contextMenu.flightId, 'json')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-300 hover:bg-gray-700/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
                 >
                   {t('flightList.json')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleContextExport(contextMenu.flightId, 'gpx')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-300 hover:bg-gray-700/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
                 >
                   {t('flightList.gpx')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleContextExport(contextMenu.flightId, 'kml')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-300 hover:bg-gray-700/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
                 >
                   {t('flightList.kml')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleContextExport(contextMenu.flightId, 'kml_relative')}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-300 hover:bg-gray-700/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
                 >
                   {t('flightList.kmlRelative')}
                 </button>
@@ -4496,7 +4481,7 @@ export function FlightList({
                     setContextExportSubmenuOpen(false);
                     setContextHtmlReportFlightId(contextMenu.flightId);
                   }}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-300 hover:bg-gray-700/50"
+                  className="w-full px-3 py-1.5 text-left text-sm text-ink hover:bg-line/50"
                 >
                   {t('flightList.htmlReport')}
                 </button>
@@ -4505,10 +4490,10 @@ export function FlightList({
             <button
               type="button"
               onClick={() => setContextExportSubmenuOpen((open) => !open)}
-              className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700/50 flex items-center justify-between"
+              className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-line/50 flex items-center justify-between"
             >
               <span className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 {t('flightList.export')}
@@ -4544,12 +4529,12 @@ export function FlightList({
       {/* Regenerating Tags Overlay */}
       {isRegeneratingTags && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-drone-surface border border-gray-700 rounded-xl p-6 min-w-[280px] shadow-2xl text-center">
-            <svg className="w-8 h-8 text-teal-400 animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[280px] shadow-2xl text-center">
+            <svg className="w-8 h-8 text-accent animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
               <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
             </svg>
-            <p className="text-sm text-gray-300">{t('flightList.regeneratingSmartTags')}</p>
+            <p className="text-sm text-ink">{t('flightList.regeneratingSmartTags')}</p>
           </div>
         </div>
       )}
@@ -4557,21 +4542,21 @@ export function FlightList({
       {/* Export Progress Overlay */}
       {isExporting && renderGlobalOverlay(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-drone-surface border border-gray-700 rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
             <h3 className="text-lg font-semibold mb-4">{t('flightList.exportingFlights')}</h3>
             <div className="space-y-3">
-              <div className="flex justify-between text-sm text-gray-400">
+              <div className="flex justify-between text-sm text-muted">
                 <span>{t('flightList.progress')}</span>
                 <span>{exportProgress.done} / {exportProgress.total}</span>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-full bg-drone-primary transition-all duration-300"
+                  className="h-full bg-accent transition-all duration-300"
                   style={{ width: `${(exportProgress.done / exportProgress.total) * 100}%` }}
                 />
               </div>
               {exportProgress.currentFile && (
-                <div className="text-xs text-gray-500 truncate">
+                <div className="text-xs text-muted truncate">
                   {t('flightList.current')} {exportProgress.currentFile}
                 </div>
               )}
@@ -4583,16 +4568,16 @@ export function FlightList({
       {/* Delete Progress Overlay */}
       {isDeleting && renderGlobalOverlay(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-drone-surface border border-gray-700 rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
             <h3 className="text-lg font-semibold mb-4">{t('flightList.deletingFlights')}</h3>
             <div className="space-y-3">
-              <div className="flex justify-between text-sm text-gray-400">
+              <div className="flex justify-between text-sm text-muted">
                 <span>{t('flightList.progress')}</span>
                 <span>{deleteProgress.done} / {deleteProgress.total}</span>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-full bg-red-500 transition-all duration-300"
+                  className="h-full bg-danger transition-all duration-300"
                   style={{ width: `${(deleteProgress.done / deleteProgress.total) * 100}%` }}
                 />
               </div>
@@ -4604,16 +4589,16 @@ export function FlightList({
       {/* Untag Progress Overlay */}
       {isUntagging && renderGlobalOverlay(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-drone-surface border border-gray-700 rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
             <h3 className="text-lg font-semibold mb-4">{t('flightList.removingTags')}</h3>
             <div className="space-y-3">
-              <div className="flex justify-between text-sm text-gray-400">
+              <div className="flex justify-between text-sm text-muted">
                 <span>{t('flightList.progress')}</span>
                 <span>{untagProgress.done} / {untagProgress.total}</span>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-full bg-orange-500 transition-all duration-300"
+                  className="h-full bg-accent transition-all duration-300"
                   style={{ width: `${untagProgress.total > 0 ? (untagProgress.done / untagProgress.total) * 100 : 0}%` }}
                 />
               </div>
@@ -4625,16 +4610,16 @@ export function FlightList({
       {/* Bulk Tag Progress Overlay */}
       {isBulkTagging && renderGlobalOverlay(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-drone-surface border border-gray-700 rounded-xl p-6 min-w-[320px] shadow-2xl">
+          <div className="bg-elevated border border-line rounded-xl p-6 min-w-[320px] shadow-2xl">
             <h3 className="text-lg font-semibold mb-4">{t('flightList.addingTags')}</h3>
             <div className="space-y-3">
-              <div className="flex justify-between text-sm text-gray-400">
+              <div className="flex justify-between text-sm text-muted">
                 <span>{t('flightList.progress')}</span>
                 <span>{bulkTagProgress.done} / {bulkTagProgress.total}</span>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-line rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-full bg-violet-500 transition-all duration-300"
+                  className="h-full bg-accent transition-all duration-300"
                   style={{ width: `${bulkTagProgress.total > 0 ? (bulkTagProgress.done / bulkTagProgress.total) * 100 : 0}%` }}
                 />
               </div>
@@ -4659,13 +4644,13 @@ export function FlightList({
       {/* FlyCard Pending Overlay - shown while waiting for flight to load */}
       {flyCardPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-drone-dark rounded-xl p-6 shadow-xl border border-gray-700 text-center">
-            <svg className="w-10 h-10 text-drone-primary animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+          <div className="bg-canvas rounded-xl p-6 shadow-xl border border-line text-center">
+            <svg className="w-10 h-10 text-accent animate-spin mx-auto mb-3" fill="none" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
               <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
             </svg>
-            <p className="text-white font-medium">{t('flightList.loadingFlightMap')}</p>
-            <p className="text-gray-400 text-sm mt-1">{t('flightList.preparingFlyCard')}</p>
+            <p className="text-ink font-medium">{t('flightList.loadingFlightMap')}</p>
+            <p className="text-muted text-sm mt-1">{t('flightList.preparingFlyCard')}</p>
           </div>
         </div>
       )}
@@ -4680,11 +4665,11 @@ export function FlightList({
           }}
         >
           <div
-            className="bg-drone-dark rounded-xl p-5 shadow-xl border border-gray-700 w-[400px] max-w-[90vw] my-auto"
+            className="bg-canvas rounded-xl p-5 shadow-xl border border-line w-[400px] max-w-[90vw] my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h3 className="text-ink font-medium mb-3 flex items-center gap-2">
+              <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               {flights.find(f => f.id === notesModalFlightId)?.notes ? t('flightList.editNotesHeading') : t('flightList.addNotesHeading')}
@@ -4693,24 +4678,24 @@ export function FlightList({
               value={notesInput}
               onChange={(e) => setNotesInput(e.target.value.slice(0, 500))}
               placeholder={t('flightList.addNotePlaceholder')}
-              className={`w-full h-32 px-3 py-2 rounded-lg bg-drone-surface border border-gray-700 text-sm placeholder-gray-500 resize-none focus:outline-none focus:border-drone-primary ${isLight ? 'text-gray-800' : 'text-gray-200'}`}
+              className={`w-full h-32 px-3 py-2 rounded-lg bg-elevated border border-line text-sm placeholder:text-faint resize-none focus:outline-none focus:border-accent text-ink`}
               autoFocus
             />
             <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-gray-500">{notesInput.length}/500</span>
+              <span className="text-xs text-muted">{notesInput.length}/500</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
                     setNotesModalFlightId(null);
                     setNotesInput('');
                   }}
-                  className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+                  className="px-3 py-1.5 text-sm text-muted hover:text-ink transition-colors"
                 >
                   {t('flightList.cancel')}
                 </button>
                 <button
                   onClick={handleSaveNotes}
-                  className="px-4 py-1.5 text-sm bg-drone-primary text-white rounded-lg hover:bg-drone-primary/80 transition-colors"
+                  className="px-4 py-1.5 text-sm bg-accent text-accent-ink rounded-lg hover:bg-accent-hover transition-colors"
                 >
                   {t('flightList.save')}
                 </button>
@@ -4776,7 +4761,7 @@ function CalendarIcon() {
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="text-gray-400"
+      className="text-muted"
       aria-hidden="true"
     >
       <rect x="3" y="4" width="18" height="18" rx="2" />

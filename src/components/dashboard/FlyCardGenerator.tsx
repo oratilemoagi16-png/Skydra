@@ -219,14 +219,14 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center p-4 overflow-y-auto bg-black/70 backdrop-blur-sm">
-      <div className="bg-drone-surface border border-gray-700 rounded-xl p-6 max-w-lg w-full mx-4 shadow-2xl my-auto">
+      <div className="bg-elevated border border-line rounded-xl p-6 max-w-lg w-full mx-4 shadow-2xl my-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">{t('flyCard.title')}</h2>
+          <h2 className="text-lg font-semibold text-ink">{t('flyCard.title')}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-white transition-colors"
+            className="p-1 rounded hover:bg-line/50 text-muted hover:text-ink transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -236,13 +236,13 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
 
         {/* Background image upload */}
         <div className="mb-4">
-          <label className="block text-sm text-gray-400 mb-2">
+          <label className="block text-sm text-muted mb-2">
             {t('flyCard.customBackground')}
             {backgroundImage && (
               <button
                 type="button"
                 onClick={handleClearBackground}
-                className="ml-2 text-xs text-red-400 hover:text-red-300"
+                className="ml-2 text-xs text-danger hover:text-danger"
               >
                 {t('flyCard.clear')}
               </button>
@@ -252,29 +252,29 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="block w-full text-sm text-gray-400
+            className="block w-full text-sm text-muted
               file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0
               file:text-sm file:font-medium
-              file:bg-drone-primary file:text-white
-              hover:file:bg-drone-primary/80
+              file:bg-accent file:text-accent-ink
+              hover:file:bg-accent/80
               file:cursor-pointer cursor-pointer"
           />
           {!backgroundImage && mapBackground && (
-            <p className="mt-1 text-xs text-gray-500">{t('flyCard.usingFlightMap')}</p>
+            <p className="mt-1 text-xs text-muted">{t('flyCard.usingFlightMap')}</p>
           )}
         </div>
 
         {/* FlyCard Preview */}
-        <div className="mb-4 rounded-lg overflow-hidden border border-gray-600">
+        <div className="mb-4 rounded-lg overflow-hidden border border-line-strong">
           {isLoading ? (
-            <div className="w-full aspect-square flex items-center justify-center bg-gray-800">
+            <div className="w-full aspect-square flex items-center justify-center bg-canvas">
               <div className="text-center">
-                <svg className="w-8 h-8 text-drone-primary animate-spin mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-accent animate-spin mx-auto mb-2" fill="none" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
                   <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
                 </svg>
-                <p className="text-sm text-gray-400">{t('flyCard.generatingPreview')}</p>
+                <p className="text-sm text-muted">{t('flyCard.generatingPreview')}</p>
               </div>
             </div>
           ) : (
@@ -285,7 +285,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                 backgroundImage: currentBackground ? `url(${currentBackground})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                backgroundColor: currentBackground ? 'transparent' : '#1a1a2e',
+                backgroundColor: currentBackground ? 'transparent' : '#15161a',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
               }}
             >
@@ -356,7 +356,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
               >
                 {/* Aircraft Name */}
                 <p
-                  className="text-white mb-2"
+                  className="text-ink mb-2"
                   style={{
                     fontSize: '11px',
                     fontWeight: 400,
@@ -373,7 +373,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                   {/* Flight Time */}
                   <div>
                     <p
-                      className="text-white uppercase tracking-wider"
+                      className="text-ink uppercase tracking-wider"
                       style={{
                         fontSize: '8px',
                         fontWeight: 600,
@@ -385,7 +385,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                       {t('flyCard.flightTime')}
                     </p>
                     <p
-                      className="text-white"
+                      className="text-ink"
                       style={{
                         fontSize: '22px',
                         fontWeight: 800,
@@ -400,7 +400,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                   {/* Distance */}
                   <div>
                     <p
-                      className="text-white uppercase tracking-wider"
+                      className="text-ink uppercase tracking-wider"
                       style={{
                         fontSize: '8px',
                         fontWeight: 600,
@@ -412,7 +412,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                       {t('flyCard.distance')}
                     </p>
                     <p
-                      className="text-white"
+                      className="text-ink"
                       style={{
                         fontSize: '22px',
                         fontWeight: 800,
@@ -427,7 +427,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                   {/* Max Height */}
                   <div>
                     <p
-                      className="text-white uppercase tracking-wider"
+                      className="text-ink uppercase tracking-wider"
                       style={{
                         fontSize: '8px',
                         fontWeight: 600,
@@ -439,7 +439,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                       {t('flyCard.maxHeight')}
                     </p>
                     <p
-                      className="text-white"
+                      className="text-ink"
                       style={{
                         fontSize: '22px',
                         fontWeight: 800,
@@ -454,7 +454,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                   {/* Max Speed */}
                   <div>
                     <p
-                      className="text-white uppercase tracking-wider"
+                      className="text-ink uppercase tracking-wider"
                       style={{
                         fontSize: '8px',
                         fontWeight: 600,
@@ -466,7 +466,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
                       {t('flyCard.maxSpeed')}
                     </p>
                     <p
-                      className="text-white"
+                      className="text-ink"
                       style={{
                         fontSize: '22px',
                         fontWeight: 800,
@@ -488,7 +488,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-ink hover:text-ink hover:bg-line/50 rounded-lg transition-colors"
           >
             {t('flyCard.cancel')}
           </button>
@@ -496,7 +496,7 @@ export function FlyCardGenerator({ flight, unitPrefs, onClose }: FlyCardGenerato
             type="button"
             onClick={handleExport}
             disabled={isExporting || isLoading}
-            className="px-4 py-2 text-sm font-medium text-white bg-drone-primary hover:bg-drone-primary/80 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-ink bg-accent hover:bg-accent-hover rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {isExporting ? (
               <>
